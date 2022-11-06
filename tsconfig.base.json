@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "suppressImplicitAnyIndexErrors": false,
+    "alwaysStrict": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "useUnknownInCatchVariables": true,
+    "noUnusedLocals": true,
+    // 开启了在函数未使用的参数前要加上'_'，模版类不能开，否则意思就不对了
+    "noUnusedParameters": true,
+    // 开了以后 ?:type 后面都要加上一个｜undefined， 有点多此一举
+    "exactOptionalPropertyTypes": false,
+    "noImplicitReturns": true,
+    // "noFallthroughCasesInSwitch": true,
+    // 类型中的任何未声明字段添加undefined
+    // 如果设置了[propName: string]: string;获取任意key都是string|undefined
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    // 对象未明确定义的字段要使用['key']获取或赋值
+    "noPropertyAccessFromIndexSignature": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false
+  },
+}

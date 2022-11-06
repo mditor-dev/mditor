@@ -1,0 +1,13 @@
+/dist/*
+.local
+.output.js
+/node_modules/**
+
+**/*.svg
+**/*.sh
+
+/public/*
+/types/*
+**/dist/*
+/release
+/dist-electron
