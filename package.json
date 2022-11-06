@@ -1,9 +1,9 @@
 {
-  "name": "electron-vue-vite",
-  "version": "2.1.0",
+  "name": "mditor",
+  "version": "0.0.0",
   "main": "dist-electron/main/index.js",
-  "description": "Really simple Electron + Vue + Vite boilerplate.",
-  "author": "草鞋没号 <308487730@qq.com>",
+  "description": "所见即所得的 markdown 编辑器 app",
+  "author": "dyh_a",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -61,9 +61,16 @@
   },
   "keywords": [
     "electron",
-    "rollup",
-    "vite",
-    "vue3",
-    "vue"
-  ]
+    "markdown",
+    "markdown-edior",
+    "markdown-app"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mengxinssfd/mditor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mengxinssfd/mditor/issues"
+  },
+  "homepage": "https://github.com/mengxinssfd/mditor#readme"
 }
