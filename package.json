@@ -20,7 +20,7 @@
     "init-pkg": "node scripts/init-pkg.js"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,html,md}": [
+    "*.{js,jsx,ts,tsx,json,html,md,vue}": [
       "eslint",
       "git add"
     ]
