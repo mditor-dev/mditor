@@ -17,6 +17,8 @@ process.env['PUBLIC'] = app.isPackaged
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
+import { readFile, setMenu } from './menu';
+import { saveFile } from './save-file';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -44,6 +46,8 @@ async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
     icon: join(process.env['PUBLIC'] as string, 'favicon.ico'),
+    width: 1000,
+    height: 600,
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -54,13 +58,23 @@ async function createWindow() {
     },
   });
 
-  if (process.env['VITE_DEV_SERVER_URL']) {
-    // electron-vite-vue#298
+  ipcMain.on('set-window-size', (_event, { width, height }) => {
+    console.log('set-window-size', width, height);
+    (win as BrowserWindow).setSize(width, height);
+  });
+  ipcMain.on('save-file', (_event, { file, filename }: { file: string; filename: string }) => {
+    if (file === undefined) {
+      throw new Error('文件不能为空');
+    }
+    saveFile(file, filename);
+  });
+
+  if (app.isPackaged) {
+    win.loadFile(indexHtml);
+  } else {
     win.loadURL(url);
     // Open devTool if the app is not packaged
     win.webContents.openDevTools();
-  } else {
-    win.loadFile(indexHtml);
   }
 
   // Test actively push message to the Electron-Renderer
@@ -73,6 +87,8 @@ async function createWindow() {
     if (url.startsWith('https:')) shell.openExternal(url);
     return { action: 'deny' };
   });
+
+  setMenu(win);
 }
 
 app.whenReady().then(createWindow);
@@ -80,6 +96,11 @@ app.whenReady().then(createWindow);
 app.on('window-all-closed', () => {
   win = null;
   if (process.platform !== 'darwin') app.quit();
+});
+
+// 点击最近打开的文件，读取文件
+app.on('open-file', function (_event, filepath: string) {
+  readFile(win as BrowserWindow, filepath);
 });
 
 app.on('second-instance', () => {
