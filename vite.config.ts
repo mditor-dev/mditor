@@ -5,6 +5,7 @@ import electron from 'vite-electron-plugin';
 import { customStart, loadViteEnv } from 'vite-electron-plugin/plugin';
 import renderer from 'vite-plugin-electron-renderer';
 import pkg from './package.json';
+import { resolve } from 'path';
 
 rmSync('dist-electron', { recursive: true, force: true });
 
@@ -15,10 +16,10 @@ export default defineConfig({
     electron({
       include: ['electron'],
       transformOptions: {
-        sourcemap: !!process.env.VSCODE_DEBUG,
+        sourcemap: !!process.env['VSCODE_DEBUG'],
       },
       plugins: [
-        ...(process.env.VSCODE_DEBUG
+        ...(process.env['VSCODE_DEBUG']
           ? [
               // Will start Electron via VSCode Debug
               customStart(
@@ -37,7 +38,7 @@ export default defineConfig({
       nodeIntegration: true,
     }),
   ],
-  server: process.env.VSCODE_DEBUG
+  server: process.env['VSCODE_DEBUG']
     ? (() => {
         const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
         return {
@@ -47,6 +48,11 @@ export default defineConfig({
       })()
     : undefined,
   clearScreen: false,
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
   build: {
     assetsDir: '', // #287
   },
