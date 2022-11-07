@@ -3,12 +3,14 @@ import MdEditor from '@/components/MdEditor.vue';
 import MdMenu from '@/components/MdMenu.vue';
 import { ref } from 'vue';
 import { ipcRenderer } from 'electron';
+import { MDDirectory } from '../types/interfaces';
 
 document.title = '未命名';
 
 const editorRef = ref();
 const mdData = ref('');
-const activeTitle = ref('');
+const activeTitleIndex = ref(0);
+const directory = ref<MDDirectory[]>([]);
 
 ipcRenderer.on('read-file', (_event, { file, filename }: { file: string; filename: string }) => {
   mdData.value = file;
@@ -26,12 +28,18 @@ window.ondragstart = (event) => {
     <section class="menu">
       <md-menu
         :md="mdData"
-        :active-title="activeTitle"
+        :active-title-index="activeTitleIndex"
+        :directory="directory"
         @scroll-to="editorRef.scrollToElement($event)"
       ></md-menu>
     </section>
     <section class="editor">
-      <md-editor ref="editorRef" v-model:value="mdData" @scroll="activeTitle = $event"></md-editor>
+      <md-editor
+        ref="editorRef"
+        v-model:value="mdData"
+        @scroll="activeTitleIndex = $event"
+        @directory="directory = $event"
+      ></md-editor>
     </section>
   </div>
 </template>

@@ -9,12 +9,14 @@ import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
+import { debounce } from '@mxssfd/ts-utils';
 
 import { computed, onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { ipcRenderer } from 'electron';
+import { MDDirectory } from '../../types/interfaces';
 
 const props = defineProps({ value: { type: String, default: '' } });
-const emits = defineEmits(['update:value', 'scroll']);
+const emits = defineEmits(['update:value', 'scroll', 'directory']);
 
 const editorDomRef = ref<HTMLElement>();
 const mdData = computed({
@@ -30,10 +32,15 @@ function saveFile() {
   ipcRenderer.send('save-file', { file: mdData.value, filename: '' });
 }
 
-let editor: Editor;
+type EditorMode = 'wysiwyg' | 'markdown';
 
+let editor: Editor;
 let lastHeadingList: HTMLElement[];
 let lastGetHeadingListTime = Date.now();
+
+function getEditorMode(): EditorMode {
+  return editor.isWysiwygMode() ? 'wysiwyg' : 'markdown';
+}
 
 const getHeadingList = (): HTMLElement[] => {
   const now = Date.now();
@@ -41,7 +48,7 @@ const getHeadingList = (): HTMLElement[] => {
   if (now - lastGetHeadingListTime < 50) return lastHeadingList;
   lastGetHeadingListTime = now;
 
-  const mode = editor.isWysiwygMode() ? 'wysiwyg' : 'markdown';
+  const mode = getEditorMode();
 
   // eslint-disable-next-line no-undef
   let headingList: NodeListOf<HTMLElement>;
@@ -61,14 +68,31 @@ const getHeadingList = (): HTMLElement[] => {
   return result;
 };
 
-function scrollToElement(innerText: string) {
+const emitMdDirectory = debounce(() => {
+  const list = getHeadingList();
+  const mode = getEditorMode();
+
+  const getLevel =
+    mode === 'wysiwyg'
+      ? (dom: HTMLElement) => dom.tagName.replace(/H/i, '')
+      : (dom: HTMLElement) => /toastui-editor-md-heading(\d)/.exec(dom.className)?.[1] || '';
+
+  const dir: MDDirectory[] = list.map((item) => ({
+    level: Number(getLevel(item)),
+    value: item.innerText.replace(/^#+\s?/, ''),
+  }));
+
+  emits('directory', dir);
+}, 200);
+
+function scrollToElement(index: number) {
   const headingList = getHeadingList();
   if (!headingList || !headingList.length) return;
 
-  const target = headingList.find((item) => item.innerText.replace(/#+\s?/, '') === innerText);
+  const target = headingList[index];
   if (!target) return;
 
-  editor.setScrollTop(target.offsetTop);
+  editor.setScrollTop(target.offsetTop - 10);
 }
 
 defineExpose({ scrollToElement });
@@ -89,6 +113,7 @@ onMounted(() => {
 
   editor.on('change', () => {
     mdData.value = editor.getMarkdown();
+    emitMdDirectory();
   });
 
   editor.on('scroll', function () {
@@ -98,16 +123,16 @@ onMounted(() => {
     const scrollTop = editor.getScrollTop();
     const height = parseInt(editor.getHeight());
     const hlLen = headingList.length;
-    const find = headingList.find((item, index) => {
+    const index = headingList.findIndex((item, index) => {
       if (index === hlLen - 1) return true;
       const { offsetTop } = item;
       const nextOffsetTop = (headingList[index + 1] as HTMLElement).offsetTop;
       // 如果是在top在屏幕内，或者比较高的内容
       return offsetTop - scrollTop > 0 || nextOffsetTop - scrollTop > height / 2;
     });
-    if (!find) return;
-    const innerText = find.innerText.replace(/#+\s?/, '');
-    emits('scroll', innerText);
+    if (index === -1) return;
+    // const innerText = find.innerText.replace(/#+\s?/, '');
+    emits('scroll', index);
   });
 
   watch(mdData, (n) => {

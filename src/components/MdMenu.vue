@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref, toRefs, watch } from 'vue';
+import { PropType, ref, toRefs, watch } from 'vue';
 import { throttle } from '@mxssfd/ts-utils';
+import { MDDirectory } from '../../types/interfaces';
 
 const props = defineProps({
-  md: {
-    type: String,
-    default: '',
+  activeTitleIndex: {
+    type: Number,
+    default: 0,
   },
-  activeTitle: {
-    type: String,
-    default: '',
+  directory: {
+    type: Array as PropType<MDDirectory[]>,
+    default: () => [],
   },
 });
 
@@ -17,61 +18,42 @@ const emits = defineEmits(['scrollTo']);
 
 const propsRefs = toRefs(props);
 
-interface TitleItem {
-  level: string;
-  value: string;
-}
-
-const titleList = ref<TitleItem[]>([]);
-
-function getTitleList(md: string) {
-  // console.log(md);
-  const reg = /(?:^|\n)(?<level>#+) (?<value>.+)/g;
-
-  let match: RegExpExecArray | null = null;
-
-  const titleList: TitleItem[] = [];
-  while ((match = reg.exec(md))) {
-    const { level, value } = match.groups as { level: string; value: string };
-    titleList.push({ level, value });
-  }
-  return titleList;
-}
-
-function scrollTo(innerText: string) {
-  emits('scrollTo', innerText);
-}
-
-watch(propsRefs.md, (n) => {
-  titleList.value = getTitleList(n);
-});
-
 const menuRef = ref();
+const ulRef = ref();
+function scrollTo(index: number) {
+  if (!props.directory?.length) return;
+  const target = (ulRef.value as HTMLUListElement).children[index];
+
+  if (!target) return;
+
+  menuRef.value.scrollTo({ top: (target as HTMLLIElement).offsetTop - 150, behavior: 'smooth' });
+}
+
+function editorScrollTo(index: number) {
+  scrollTo(index);
+  emits('scrollTo', index);
+}
+
 watch(
-  propsRefs.activeTitle,
-  throttle((value: string) => {
-    if (!value) return;
-
-    const active = (menuRef.value as HTMLElement).querySelector<HTMLElement>('li.active');
-
-    if (!active) return;
-
-    menuRef.value.scrollTo({ top: active.offsetTop - 150, behavior: 'smooth', block: 'center' });
+  propsRefs.activeTitleIndex,
+  throttle((index: number) => {
+    if (index === -1) return;
+    scrollTo(index);
   }, 500),
 );
 </script>
 <template>
   <div ref="menuRef" class="md-menu">
-    <ul>
+    <ul ref="ulRef">
       <li
-        v-for="item in titleList"
-        :key="item.value + item.level.length"
-        :class="{ ['level-' + item.level.length]: true, active: item.value === activeTitle }"
-        :data-level="item.level"
-        @click="scrollTo(item.value)"
-      >
-        {{ item.value }}
-      </li>
+        v-for="(item, index) in directory"
+        :key="item.value + item.level"
+        :class="{ ['level-' + item.level]: true, active: index === activeTitleIndex }"
+        :data-level="'#'.repeat(item.level)"
+        :data-value="item.value"
+        @click="editorScrollTo(index)"
+        v-html="item.value"
+      ></li>
     </ul>
   </div>
 </template>
@@ -93,11 +75,12 @@ watch(
   li {
     padding: 4px 0;
     cursor: pointer;
+    word-break: break-all;
     &.active {
-      color: #4b96e6;
+      color: #8c06b8;
     }
     &:hover {
-      color: #009bf2;
+      color: #4b96e6;
       &::before {
         display: initial;
       }
