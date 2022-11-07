@@ -53,6 +53,19 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  css: {
+    // dev时生成sourcemap
+    devSourcemap: true,
+    preprocessorOptions: {
+      scss: {
+        // 这样就能全局使用 src/common/styles/variable.scss 定义的 变量
+        // 注意⚠️：只导入变量或函数，公共类不要这样导入，建议用@improt的方式导入，否则每一个scoped组件都会生成一个公共类
+        // additionalData: `@import "src/common/styles/variable.scss";`,
+        // build时不能生成sourcemap
+        // sourceMap: {},
+      },
+    },
+  },
   build: {
     assetsDir: '', // #287
   },
