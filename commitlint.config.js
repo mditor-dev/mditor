@@ -17,6 +17,7 @@ module.exports = {
         'revert', // feat(pencil): add ‘graphiteWidth’ option (撤销之前的commit)
         'merge', // 合并分支， 例如： merge（前端页面）： feature-xxxx修改线程地址
         'ci', // ci
+        'perf', // 优化
       ],
     ],
   },

@@ -96,7 +96,15 @@ onMounted(() => {
     if (!headingList) return;
 
     const scrollTop = editor.getScrollTop();
-    const find = headingList.find((item) => item.offsetTop - scrollTop > 0);
+    const height = parseInt(editor.getHeight());
+    const hlLen = headingList.length;
+    const find = headingList.find((item, index) => {
+      if (index === hlLen - 1) return true;
+      const { offsetTop } = item;
+      const nextOffsetTop = (headingList[index + 1] as HTMLElement).offsetTop;
+      // 如果是在top在屏幕内，或者比较高的内容
+      return offsetTop - scrollTop > 0 || nextOffsetTop - scrollTop > height / 2;
+    });
     if (!find) return;
     const innerText = find.innerText.replace(/#+\s?/, '');
     emits('scroll', innerText);
