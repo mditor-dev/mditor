@@ -110,7 +110,6 @@ app.on('ready', async () => {
       label: '退出',
       role: 'quit',
       click: function () {
-        console.log(52222);
         app.quit();
       },
     },
