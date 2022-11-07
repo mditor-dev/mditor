@@ -48,7 +48,7 @@ onMounted(() => {
   });
 
   watch(mdData, (n) => {
-    editor.setMarkdown(n);
+    if (n !== editor.getMarkdown()) editor.setMarkdown(n);
   });
 
   function exec(name: string) {
@@ -124,16 +124,6 @@ onMounted(() => {
 
 .editor-wrapper {
   /*overflow: hidden;*/
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-li {
-  display: inline-block;
 }
 
 .tui-colorpicker-slider-left {
