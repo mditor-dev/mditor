@@ -10,13 +10,13 @@ import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-sy
 import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
 
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { ipcRenderer } from 'electron';
 
 const props = defineProps({ value: { type: String, default: '' } });
-const emits = defineEmits(['update:value']);
+const emits = defineEmits(['update:value', 'scroll']);
 
-const editorDomRef = ref();
+const editorDomRef = ref<HTMLElement>();
 const mdData = computed({
   get: () => props.value,
   set: (v: string) => emits('update:value', v),
@@ -30,9 +30,52 @@ function saveFile() {
   ipcRenderer.send('save-file', { file: mdData.value, filename: '' });
 }
 
+let editor: Editor;
+
+let lastHeadingList: HTMLElement[];
+let lastGetHeadingListTime = Date.now();
+
+const getHeadingList = (): HTMLElement[] => {
+  const now = Date.now();
+  // 节流避免滚动时不停的获取节点
+  if (now - lastGetHeadingListTime < 50) return lastHeadingList;
+  lastGetHeadingListTime = now;
+
+  const mode = editor.isWysiwygMode() ? 'wysiwyg' : 'markdown';
+
+  // eslint-disable-next-line no-undef
+  let headingList: NodeListOf<HTMLElement>;
+  if (mode === 'markdown') {
+    headingList = (editorDomRef.value as HTMLDivElement).querySelectorAll<HTMLSpanElement>(
+      '.toastui-editor-md-heading',
+    );
+  } else {
+    headingList = (editorDomRef.value as HTMLDivElement).querySelectorAll<HTMLHeadingElement>(
+      [...Array(6).keys()]
+        .map((i) => '.ProseMirror.toastui-editor-contents > h' + (i + 1))
+        .join(','),
+    );
+  }
+  const result = [...headingList];
+  lastHeadingList = result;
+  return result;
+};
+
+function scrollToElement(innerText: string) {
+  const headingList = getHeadingList();
+  if (!headingList || !headingList.length) return;
+
+  const target = headingList.find((item) => item.innerText.replace(/#+\s?/, '') === innerText);
+  if (!target) return;
+
+  editor.setScrollTop(target.offsetTop);
+}
+
+defineExpose({ scrollToElement });
+
 onMounted(() => {
-  const editor = new Editor({
-    el: editorDomRef.value,
+  editor = new Editor({
+    el: editorDomRef.value as HTMLElement,
     previewStyle: 'vertical',
     height: getHeight(),
     language: 'zh-CN',
@@ -43,12 +86,29 @@ onMounted(() => {
   });
 
   editor.changeMode('wysiwyg');
+
   editor.on('change', () => {
     mdData.value = editor.getMarkdown();
   });
 
+  editor.on('scroll', function () {
+    const headingList = getHeadingList();
+    if (!headingList) return;
+
+    const scrollTop = editor.getScrollTop();
+    const find = headingList.find((item) => item.offsetTop - scrollTop > 0);
+    if (!find) return;
+    const innerText = find.innerText.replace(/#+\s?/, '');
+    emits('scroll', innerText);
+  });
+
   watch(mdData, (n) => {
-    if (n !== editor.getMarkdown()) editor.setMarkdown(n);
+    if (n !== editor.getMarkdown()) {
+      editor.setMarkdown(n);
+      setTimeout(() => {
+        editor.setScrollTop(0);
+      }, 50);
+    }
   });
 
   function exec(name: string) {
@@ -90,7 +150,7 @@ onMounted(() => {
     };
   }
 
-  keymap(editorDomRef.value, [
+  keymap(editorDomRef.value as HTMLDivElement, [
     // 回退
     { map: ['Meta', 'z'], handler: exec('undo') },
     { map: ['Control', 'z'], handler: exec('undo') },

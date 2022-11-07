@@ -6,7 +6,13 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  activeTitle: {
+    type: String,
+    default: '',
+  },
 });
+
+const emits = defineEmits(['scrollTo']);
 
 const propsRefs = toRefs(props);
 
@@ -18,6 +24,7 @@ interface TitleItem {
 const titleList = ref<TitleItem[]>([]);
 
 function getTitleList(md: string) {
+  // console.log(md);
   const reg = /(?:^|\n)(?<level>#+) (?<value>.+)/g;
 
   let match: RegExpExecArray | null = null;
@@ -30,6 +37,10 @@ function getTitleList(md: string) {
   return titleList;
 }
 
+function scrollTo(innerText: string) {
+  emits('scrollTo', innerText);
+}
+
 watch(propsRefs.md, (n) => {
   titleList.value = getTitleList(n);
 });
@@ -40,8 +51,9 @@ watch(propsRefs.md, (n) => {
       <li
         v-for="item in titleList"
         :key="item.value + item.level.length"
-        :class="'level-' + item.level.length"
+        :class="{ ['level-' + item.level.length]: true, active: item.value === activeTitle }"
         :data-level="item.level"
+        @click="scrollTo(item.value)"
       >
         {{ item.value }}
       </li>
@@ -63,6 +75,9 @@ watch(propsRefs.md, (n) => {
   li {
     padding: 4px 0;
     cursor: pointer;
+    &.active {
+      color: #4b96e6;
+    }
     &:hover {
       color: #009bf2;
       &::before {

@@ -6,7 +6,9 @@ import { ipcRenderer } from 'electron';
 
 document.title = '未命名';
 
+const editorRef = ref();
 const mdData = ref('');
+const activeTitle = ref('');
 
 ipcRenderer.on('read-file', (_event, { file, filename }: { file: string; filename: string }) => {
   mdData.value = file;
@@ -22,10 +24,14 @@ window.ondragstart = (event) => {
 <template>
   <div class="app-main">
     <section class="menu">
-      <md-menu :md="mdData"></md-menu>
+      <md-menu
+        :md="mdData"
+        :active-title="activeTitle"
+        @scroll-to="editorRef.scrollToElement($event)"
+      ></md-menu>
     </section>
     <section class="editor">
-      <md-editor v-model:value="mdData"></md-editor>
+      <md-editor ref="editorRef" v-model:value="mdData" @scroll="activeTitle = $event"></md-editor>
     </section>
   </div>
 </template>
