@@ -14,7 +14,7 @@ process.env['PUBLIC'] = app.isPackaged
   ? process.env['DIST']
   : join(process.env['DIST_ELECTRON'], '../public');
 
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
 import { readFile, setMenu } from './menu';
@@ -36,6 +36,7 @@ if (!app.requestSingleInstanceLock()) {
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
+let tray = null;
 let win: BrowserWindow | null = null;
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js');
@@ -89,9 +90,39 @@ async function createWindow() {
   });
 
   setMenu(win);
+
+  win.on('close', (event) => {
+    event.preventDefault();
+    win?.hide();
+  });
 }
 
 app.whenReady().then(createWindow);
+
+app.on('ready', async () => {
+  tray = new Tray(join(__dirname, '../../public/favicon.ico'));
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: '退出',
+      click: function () {
+        console.log(5624554);
+        app.quit();
+      },
+    },
+  ]);
+  tray.setToolTip('提示语');
+  //显示程序页面
+  tray.on('click', () => {
+    win?.show();
+  });
+  tray.setContextMenu(contextMenu);
+});
+
+// app.on('window-all-closed', (event) => {
+//   win?.hide();
+//   win?.setSkipTaskbar(true);
+//   event.preventDefault();
+// });
 
 app.on('window-all-closed', () => {
   win = null;
