@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, toRefs, watch } from 'vue';
+import { throttle } from '@mxssfd/ts-utils';
 
 const props = defineProps({
   md: {
@@ -44,9 +45,23 @@ function scrollTo(innerText: string) {
 watch(propsRefs.md, (n) => {
   titleList.value = getTitleList(n);
 });
+
+const menuRef = ref();
+watch(
+  propsRefs.activeTitle,
+  throttle((value: string) => {
+    if (!value) return;
+
+    const active = (menuRef.value as HTMLElement).querySelector<HTMLElement>('li.active');
+
+    if (!active) return;
+
+    menuRef.value.scrollTo({ top: active.offsetTop - 150, behavior: 'smooth', block: 'center' });
+  }, 500),
+);
 </script>
 <template>
-  <div class="md-menu">
+  <div ref="menuRef" class="md-menu">
     <ul>
       <li
         v-for="item in titleList"
@@ -64,6 +79,9 @@ watch(propsRefs.md, (n) => {
 <style lang="scss" scoped>
 .md-menu {
   padding: 10px;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: auto;
   ul {
     margin: 0;
     padding: 0;
