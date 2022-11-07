@@ -49,8 +49,6 @@ watch(
         v-for="(item, index) in directory"
         :key="item.value + item.level"
         :class="{ ['level-' + item.level]: true, active: index === activeTitleIndex }"
-        :data-level="'#'.repeat(item.level)"
-        :data-value="item.value"
         @click="editorScrollTo(index)"
         v-html="item.value"
       ></li>
@@ -95,7 +93,11 @@ watch(
       &::before {
         display: none;
         margin-right: 2px;
-        content: attr(data-level);
+        $tag: '';
+        @for $j from 0 through $i {
+          $tag: $tag + '#';
+        }
+        content: $tag;
       }
     }
   }
