@@ -43,7 +43,7 @@ watch(
 );
 </script>
 <template>
-  <div ref="menuRef" class="md-menu">
+  <div ref="menuRef" class="md-directory">
     <ul ref="ulRef">
       <li
         v-for="(item, index) in directory"
@@ -59,7 +59,7 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-.md-menu {
+.md-directory {
   padding: 10px;
   height: 100vh;
   box-sizing: border-box;

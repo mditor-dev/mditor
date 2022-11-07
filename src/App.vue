@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MdEditor from '@/components/MdEditor.vue';
-import MdMenu from '@/components/MdMenu.vue';
+import MdDirectory from '@/components/MdDirectory.vue';
 import { ref } from 'vue';
 import { ipcRenderer } from 'electron';
 import { MDDirectory } from '../types/interfaces';
@@ -25,13 +25,13 @@ window.ondragstart = (event) => {
 
 <template>
   <div class="app-main">
-    <section class="menu">
-      <md-menu
+    <section class="directory">
+      <md-directory
         :md="mdData"
         :active-title-index="activeTitleIndex"
         :directory="directory"
         @scroll-to="editorRef.scrollToElement($event)"
-      ></md-menu>
+      ></md-directory>
     </section>
     <section class="editor">
       <md-editor
@@ -54,7 +54,7 @@ body {
   display: flex;
   align-items: flex-start;
   > section {
-    &.menu {
+    &.directory {
       flex: 0 0 200px;
     }
     &.editor {
