@@ -23,7 +23,7 @@ const mdData = computed({
 });
 
 function getHeight() {
-  return window.innerHeight - 2 + 'px';
+  return window.innerHeight + 'px';
 }
 
 function saveFile() {
@@ -117,6 +117,14 @@ onMounted(() => {
   </div>
 </template>
 
+<style lang="scss">
+.md-editor {
+  box-sizing: border-box;
+  .toastui-editor-defaultUI {
+    border-radius: 0;
+  }
+}
+</style>
 <style>
 .md-editor {
   box-sizing: border-box;
