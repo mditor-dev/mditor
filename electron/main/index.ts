@@ -92,8 +92,12 @@ async function createWindow() {
   setMenu(win);
 
   win.on('close', (event) => {
-    event.preventDefault();
-    win?.hide();
+    if (!win?.isFocused()) {
+      win = null;
+    } else {
+      event.preventDefault(); //阻止窗口的关闭事件
+      win?.hide();
+    }
   });
 }
 
@@ -104,8 +108,9 @@ app.on('ready', async () => {
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '退出',
+      role: 'quit',
       click: function () {
-        console.log(5624554);
+        console.log(52222);
         app.quit();
       },
     },
