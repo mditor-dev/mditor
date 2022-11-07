@@ -92,6 +92,10 @@ async function createWindow() {
   setMenu(win);
 
   win.on('close', (event) => {
+    if (process.platform === 'darwin') {
+      win = null;
+      app.quit();
+    }
     if (!win?.isFocused()) {
       win = null;
     } else {
@@ -122,16 +126,10 @@ app.on('ready', async () => {
   tray.setContextMenu(contextMenu);
 });
 
-// app.on('window-all-closed', (event) => {
-//   win?.hide();
-//   win?.setSkipTaskbar(true);
-//   event.preventDefault();
+// app.on('window-all-closed', () => {
+//   win = null;
+//   if (process.platform !== 'darwin') app.quit();
 // });
-
-app.on('window-all-closed', () => {
-  win = null;
-  if (process.platform !== 'darwin') app.quit();
-});
 
 // 点击最近打开的文件，读取文件
 app.on('open-file', function (_event, filepath: string) {
