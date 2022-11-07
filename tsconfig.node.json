@@ -9,5 +9,8 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["package.json", "electron/*/*.ts", "vite.config.ts"]
+  // vite.config.ts内部import的vite-electron-plugin包的types指向src目录，
+  // tsc会检查到 导致tsc失败 所以暂时移除vite.config.ts
+  //  "include": ["package.json", "electron/*/*.ts", "vite.config.ts"]
+  "include": ["package.json", "electron/*/*.ts"]
 }
