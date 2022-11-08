@@ -101,6 +101,24 @@ function scrollToElement(index: number) {
 
 defineExpose({ scrollToElement });
 
+watch(mdData, (n) => {
+  if (!editor) return;
+  if (n !== editor.getMarkdown()) {
+    editor.setMarkdown(n);
+    setTimeout(() => {
+      editor.setScrollTop(0);
+    }, 50);
+  }
+});
+
+const listener = () => {
+  editor.setHeight(getHeight());
+};
+window.addEventListener('resize', listener);
+onUnmounted(() => {
+  window.removeEventListener('resize', listener);
+});
+
 onMounted(() => {
   editor = new Editor({
     el: editorDomRef.value as HTMLElement,
@@ -137,15 +155,6 @@ onMounted(() => {
     if (index === -1) return;
     // const innerText = find.innerText.replace(/#+\s?/, '');
     emits('scroll', index);
-  });
-
-  watch(mdData, (n) => {
-    if (n !== editor.getMarkdown()) {
-      editor.setMarkdown(n);
-      setTimeout(() => {
-        editor.setScrollTop(0);
-      }, 50);
-    }
   });
 
   function exec(name: string) {
@@ -198,14 +207,6 @@ onMounted(() => {
     { map: ['Meta', 's'], handler: saveFile },
     { map: ['Control', 's'], handler: saveFile },
   ]);
-
-  const listener = () => {
-    editor.setHeight(getHeight());
-  };
-  window.addEventListener('resize', listener);
-  onUnmounted(() => {
-    window.removeEventListener('resize', listener);
-  });
 });
 
 const isShowClick = () => {
