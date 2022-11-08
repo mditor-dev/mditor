@@ -78,6 +78,7 @@ watch(directoryList, (value) => {
   height: 100vh;
   overflow: hidden;
   .title {
+    position: relative;
     padding: 10px 0 10px;
     font-size: 14px;
     text-align: center;

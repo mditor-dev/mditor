@@ -14,11 +14,15 @@ import { debounce } from '@mxssfd/ts-utils';
 import { computed, onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { ipcRenderer } from 'electron';
 import { MDDirectory } from '../../types/interfaces';
+import { useStore } from '@/store';
 
 const props = defineProps({ value: { type: String, default: '' } });
 const emits = defineEmits(['update:value', 'scroll', 'directory']);
 
 const editorDomRef = ref<HTMLElement>();
+
+const store = useStore();
+
 const mdData = computed({
   get: () => props.value,
   set: (v: string) => emits('update:value', v),
@@ -203,18 +207,34 @@ onMounted(() => {
     window.removeEventListener('resize', listener);
   });
 });
+
+const isShowClick = () => {
+  store.setIsShowCatalogue(!store.getIsShowCatalogue);
+};
 </script>
 <template>
   <div class="md-editor">
     <div ref="editorDomRef" class="editor-wrapper"></div>
+    <div class="isShow" @click="isShowClick">666</div>
   </div>
 </template>
 
 <style lang="scss">
 .md-editor {
+  position: relative;
   box-sizing: border-box;
   .toastui-editor-defaultUI {
     border-radius: 0;
+  }
+  .isShow {
+    position: absolute;
+    bottom: 2px;
+    left: 5px;
+    color: rgb(138, 138, 138);
+    cursor: pointer;
+    &:hover {
+      color: #000;
+    }
   }
 }
 </style>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import MdEditor from '@/components/MdEditor.vue';
 import MdDirectory from '@/components/MdDirectory.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { ipcRenderer } from 'electron';
 import { MDDirectory } from '../types/interfaces';
+import { useStore } from '@/store';
 
 document.title = '未命名';
 
+const store = useStore();
+const isShowClass = ref<string>('');
 const editorRef = ref();
 const mdData = ref('');
 const activeTitleIndex = ref(0);
@@ -21,11 +24,22 @@ window.ondragstart = (event) => {
   event.preventDefault();
   (window as any).electron.startDrag('drag-and-drop-1.md');
 };
+
+watch(
+  () => store.getIsShowCatalogue,
+  (newVal: boolean) => {
+    if (newVal) {
+      isShowClass.value = '';
+    } else {
+      isShowClass.value = 'none';
+    }
+  },
+);
 </script>
 
 <template>
   <div class="app-main">
-    <section class="directory">
+    <section class="directory" :class="isShowClass">
       <md-directory
         :active-title-index="activeTitleIndex"
         :directory="directory"
@@ -64,5 +78,8 @@ body {
       overflow: hidden;
     }
   }
+}
+.none {
+  display: none;
 }
 </style>
