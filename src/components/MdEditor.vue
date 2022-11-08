@@ -113,7 +113,7 @@ onMounted(() => {
     plugins: [[codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
   });
 
-  editor.changeMode('wysiwyg');
+  // editor.changeMode('wysiwyg');
 
   editor.on('change', () => {
     mdData.value = editor.getMarkdown();
