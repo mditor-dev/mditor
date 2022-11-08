@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { PropType, ref, toRefs, watch } from 'vue';
+import { computed, PropType, ref, toRefs, watch } from 'vue';
 import { throttle } from '@mxssfd/ts-utils';
+import MarkdownIt from 'markdown-it';
 import { MDDirectory } from '../../types/interfaces';
+
+const md = new MarkdownIt({ html: true });
 
 const props = defineProps({
   activeTitleIndex: {
@@ -40,19 +43,30 @@ watch(
     scrollTo(index);
   }, 500),
 );
+
+const directoryList = computed(() => {
+  return (props.directory as MDDirectory[]).map((item) => {
+    return {
+      level: item.level,
+      value: md.render(item.value),
+    };
+  });
+});
+watch(directoryList, (value) => {
+  console.log(value);
+});
 </script>
 <template>
   <div class="md-directory">
     <div class="title">大纲</div>
     <ul ref="ulRef">
       <li
-        v-for="(item, index) in directory"
+        v-for="(item, index) in directoryList"
         :key="item.value + item.level"
         :class="{ ['level-' + item.level]: true, active: index === activeTitleIndex }"
         @click="editorScrollTo(index)"
-      >
-        <span class="li-content" v-html="item.value"></span>
-      </li>
+        v-html="item.value"
+      ></li>
     </ul>
   </div>
 </template>
@@ -82,8 +96,7 @@ watch(
     padding: 6px 10px;
     cursor: pointer;
     word-break: break-all;
-    font-weight: lighter;
-    color: #383839;
+    color: #383838;
     font-size: 14px;
     font-family: sans-serif;
     &.active {
@@ -91,7 +104,17 @@ watch(
       color: black;
       font-weight: bold;
     }
-    .li-content {
+    :deep(p) {
+      display: inline;
+      > * {
+        pointer-events: none;
+      }
+      code {
+        color: #c1798b;
+        background-color: #f9f2f4;
+        padding: 2px;
+        border-radius: 2px;
+      }
       &:hover {
         text-decoration: underline;
       }
@@ -112,6 +135,7 @@ watch(
       &::before {
         display: none;
         margin-right: 2px;
+        color: #c1798b;
         $tag: '';
         @for $j from 0 through $i {
           $tag: $tag + '#';
