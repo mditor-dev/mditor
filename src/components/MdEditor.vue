@@ -33,7 +33,8 @@ function getHeight() {
 }
 
 function saveFile() {
-  ipcRenderer.send('save-file', { file: mdData.value, filename: '' });
+  // 通知electron保存文件
+  ipcRenderer.send('save-md-file', { file: mdData.value, filePath: '' });
 }
 
 type EditorMode = 'wysiwyg' | 'markdown';

@@ -1,5 +1,5 @@
 import { Menu, dialog, BrowserWindow, MenuItem } from 'electron';
-import { readFile } from '../utils/file';
+import { readMDFile } from '../utils/file';
 
 export function setMenu(win: BrowserWindow) {
   const isDev = process.env['npm_lifecycle_event'] === 'dev';
@@ -22,7 +22,7 @@ export function setMenu(win: BrowserWindow) {
         if (canceled) return;
 
         const [filePath] = filePaths as [string];
-        readFile(win, filePath);
+        readMDFile(win, filePath);
       },
     }),
     new MenuItem({

@@ -18,7 +18,7 @@ import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
 import { setMenu } from './menu';
-import { readFile, saveFile } from '../utils/file';
+import { readMDFile, saveMDFile } from '../utils/file';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -63,11 +63,11 @@ async function createWindow() {
     console.log('set-window-size', width, height);
     (win as BrowserWindow).setSize(width, height);
   });
-  ipcMain.on('save-file', (_event, { file, filename }: { file: string; filename: string }) => {
+  ipcMain.on('save-md-file', (_event, { file, filePath }: { file: string; filePath: string }) => {
     if (file === undefined) {
       throw new Error('文件不能为空');
     }
-    saveFile(file, filename);
+    saveMDFile(file, filePath);
   });
 
   if (app.isPackaged) {
@@ -133,7 +133,7 @@ app.on('ready', async () => {
 
 // 点击最近打开的文件，读取文件
 app.on('open-file', function (_event, filepath: string) {
-  readFile(win as BrowserWindow, filepath);
+  readMDFile(win as BrowserWindow, filepath);
 });
 
 app.on('second-instance', () => {

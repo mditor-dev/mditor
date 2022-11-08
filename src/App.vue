@@ -15,7 +15,7 @@ const mdData = ref('');
 const activeTitleIndex = ref(0);
 const directory = ref<MDDirectory[]>([]);
 
-ipcRenderer.on('read-file', (_event, { file, filename }: { file: string; filename: string }) => {
+ipcRenderer.on('read-md-file', (_event, { file, filename }: { file: string; filename: string }) => {
   mdData.value = file;
   document.title = filename;
 });
