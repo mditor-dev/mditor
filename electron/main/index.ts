@@ -17,8 +17,8 @@ process.env['PUBLIC'] = app.isPackaged
 import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
-import { readFile, setMenu } from './menu';
-import { saveFile } from './save-file';
+import { setMenu } from './menu';
+import { readFile, saveFile } from '../utils/file';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();

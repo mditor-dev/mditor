@@ -1,5 +1,18 @@
-import { dialog } from 'electron';
 import fs from 'fs';
+import * as path from 'path';
+import { dialog, BrowserWindow, app } from 'electron';
+
+export function readFile(win: BrowserWindow, filePath: string) {
+  try {
+    const file = fs.readFileSync(filePath).toString();
+
+    app.addRecentDocument(filePath);
+
+    win.webContents.send('read-file', { file, filename: path.basename(filePath) });
+  } catch (e: any) {
+    dialog.showErrorBox('读取文件失败', e);
+  }
+}
 
 export async function saveFile(file: string, filename: string) {
   try {

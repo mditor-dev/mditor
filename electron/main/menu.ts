@@ -1,18 +1,6 @@
-import { Menu, dialog, BrowserWindow, MenuItem, app } from 'electron';
-import fs from 'fs';
-import * as path from 'path';
+import { Menu, dialog, BrowserWindow, MenuItem } from 'electron';
+import { readFile } from '../utils/file';
 
-export function readFile(win: BrowserWindow, filePath: string) {
-  try {
-    const file = fs.readFileSync(filePath).toString();
-
-    app.addRecentDocument(filePath);
-
-    win.webContents.send('read-file', { file, filename: path.basename(filePath) });
-  } catch (e: any) {
-    dialog.showErrorBox('读取文件失败', e);
-  }
-}
 export function setMenu(win: BrowserWindow) {
   const isDev = process.env['npm_lifecycle_event'] === 'dev';
   const oldMenu = Menu.getApplicationMenu() as Menu;
