@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { PropType, ref, toRefs, watch } from 'vue';
+import { computed, PropType, ref, toRefs, watch } from 'vue';
 import { throttle } from '@mxssfd/ts-utils';
+import MarkdownIt from 'markdown-it';
 import { MDDirectory } from '../../types/interfaces';
+
+const md = new MarkdownIt({ html: true });
 
 const props = defineProps({
   activeTitleIndex: {
@@ -18,7 +21,6 @@ const emits = defineEmits(['scrollTo']);
 
 const propsRefs = toRefs(props);
 
-const menuRef = ref();
 const ulRef = ref();
 function scrollTo(index: number) {
   if (!props.directory?.length) return;
@@ -26,7 +28,7 @@ function scrollTo(index: number) {
 
   if (!target) return;
 
-  menuRef.value.scrollTo({ top: (target as HTMLLIElement).offsetTop - 150, behavior: 'smooth' });
+  ulRef.value.scrollTo({ top: (target as HTMLLIElement).offsetTop - 150, behavior: 'smooth' });
 }
 
 function editorScrollTo(index: number) {
@@ -41,12 +43,25 @@ watch(
     scrollTo(index);
   }, 500),
 );
+
+const directoryList = computed(() => {
+  return (props.directory as MDDirectory[]).map((item) => {
+    return {
+      level: item.level,
+      value: md.render(item.value),
+    };
+  });
+});
+watch(directoryList, (value) => {
+  console.log(value);
+});
 </script>
 <template>
-  <div ref="menuRef" class="md-directory">
+  <div class="md-directory">
+    <div class="title">大纲</div>
     <ul ref="ulRef">
       <li
-        v-for="(item, index) in directory"
+        v-for="(item, index) in directoryList"
         :key="item.value + item.level"
         :class="{ ['level-' + item.level]: true, active: index === activeTitleIndex }"
         @click="editorScrollTo(index)"
@@ -58,27 +73,54 @@ watch(
 
 <style lang="scss" scoped>
 .md-directory {
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  box-sizing: border-box;
-  overflow: auto;
+  overflow: hidden;
+  .title {
+    padding: 10px 0 10px;
+    font-size: 14px;
+    text-align: center;
+  }
   ul {
+    flex: 1;
     margin: 0;
     padding: 0;
+    overflow: auto;
   }
   ul,
   li {
     list-style: none;
   }
   li {
-    padding: 4px 0;
+    padding: 6px 10px;
     cursor: pointer;
     word-break: break-all;
+    color: #383838;
+    font-size: 14px;
+    font-family: sans-serif;
     &.active {
-      color: #8c06b8;
+      //color: #4b96e6;
+      color: black;
+      font-weight: bold;
+    }
+    :deep(p) {
+      display: inline;
+      > * {
+        pointer-events: none;
+      }
+      code {
+        color: #c1798b;
+        background-color: #f9f2f4;
+        padding: 2px;
+        border-radius: 2px;
+      }
+      &:hover {
+        text-decoration: underline;
+      }
     }
     &:hover {
-      color: #4b96e6;
+      background: #f5f5f5;
       &::before {
         display: initial;
       }
@@ -86,13 +128,14 @@ watch(
   }
   @for $i from 0 through 5 {
     .level-#{$i + 1} {
-      padding-left: $i * 4px;
-      font-size: (20px - $i);
-      $color: lighten(black, 15% * $i);
-      color: $color;
+      padding-left: $i * 12px + 18px;
+      //font-size: (20px - $i);
+      //$color: lighten(black, 15% * $i);
+      //color: $color;
       &::before {
         display: none;
         margin-right: 2px;
+        color: #c1798b;
         $tag: '';
         @for $j from 0 through $i {
           $tag: $tag + '#';
