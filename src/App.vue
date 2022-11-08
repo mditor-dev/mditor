@@ -27,7 +27,6 @@ window.ondragstart = (event) => {
   <div class="app-main">
     <section class="directory">
       <md-directory
-        :md="mdData"
         :active-title-index="activeTitleIndex"
         :directory="directory"
         @scroll-to="editorRef.scrollToElement($event)"
@@ -45,6 +44,9 @@ window.ondragstart = (event) => {
 </template>
 
 <style lang="scss">
+:root {
+  -webkit-font-smoothing: antialiased;
+}
 :root,
 body {
   margin: 0;
@@ -55,7 +57,7 @@ body {
   align-items: flex-start;
   > section {
     &.directory {
-      flex: 0 0 200px;
+      flex: 0 0 260px;
     }
     &.editor {
       flex: 1;
