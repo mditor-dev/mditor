@@ -19,6 +19,7 @@ import { release } from 'os';
 import { join } from 'path';
 import { setMenu } from './menu';
 import { readMDFile, saveMDFile } from '../utils/file';
+import { isMac } from '../utils/platform';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -92,7 +93,7 @@ async function createWindow() {
   setMenu(win);
 
   win.on('close', (event) => {
-    if (process.platform === 'darwin') {
+    if (isMac()) {
       win = null;
       app.quit();
     }
