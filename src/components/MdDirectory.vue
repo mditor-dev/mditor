@@ -18,7 +18,6 @@ const emits = defineEmits(['scrollTo']);
 
 const propsRefs = toRefs(props);
 
-const menuRef = ref();
 const ulRef = ref();
 function scrollTo(index: number) {
   if (!props.directory?.length) return;
@@ -26,7 +25,7 @@ function scrollTo(index: number) {
 
   if (!target) return;
 
-  menuRef.value.scrollTo({ top: (target as HTMLLIElement).offsetTop - 150, behavior: 'smooth' });
+  ulRef.value.scrollTo({ top: (target as HTMLLIElement).offsetTop - 150, behavior: 'smooth' });
 }
 
 function editorScrollTo(index: number) {
@@ -43,7 +42,7 @@ watch(
 );
 </script>
 <template>
-  <div ref="menuRef" class="md-directory">
+  <div class="md-directory">
     <div class="title">大纲</div>
     <ul ref="ulRef">
       <li
