@@ -11,29 +11,24 @@ import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
 import { debounce } from '@mxssfd/ts-utils';
 
-import { computed, onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
-import { ipcRenderer } from 'electron';
+import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { MDDirectory } from '../../types/interfaces';
 import { useStore } from '@/store';
+import { useMarkdownStore } from '@/store/markdown';
 
-const props = defineProps({ value: { type: String, default: '' } });
-const emits = defineEmits(['update:value', 'scroll', 'directory']);
+const emits = defineEmits(['scroll', 'directory']);
 
 const editorDomRef = ref<HTMLElement>();
 
 const store = useStore();
-
-const mdData = computed({
-  get: () => props.value,
-  set: (v: string) => emits('update:value', v),
-});
+const mdStore = useMarkdownStore();
 
 function getHeight() {
   return window.innerHeight + 'px';
 }
 
 function saveFile() {
-  ipcRenderer.send('save-file', { file: mdData.value, filename: '' });
+  mdStore.save();
 }
 
 type EditorMode = 'wysiwyg' | 'markdown';
@@ -101,10 +96,10 @@ function scrollToElement(index: number) {
 
 defineExpose({ scrollToElement });
 
-watch(mdData, (n) => {
+watch(mdStore, (n) => {
   if (!editor) return;
-  if (n !== editor.getMarkdown()) {
-    editor.setMarkdown(n);
+  if (n.content !== editor.getMarkdown()) {
+    editor.setMarkdown(n.content);
     setTimeout(() => {
       editor.setScrollTop(0);
     }, 50);
@@ -127,14 +122,14 @@ onMounted(() => {
     language: 'zh-CN',
     usageStatistics: true,
     useCommandShortcut: false,
-    initialValue: mdData.value,
+    initialValue: mdStore.content,
     plugins: [[codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
   });
 
   // editor.changeMode('wysiwyg');
 
   editor.on('change', () => {
-    mdData.value = editor.getMarkdown();
+    mdStore.content = editor.getMarkdown();
     emitMdDirectory();
   });
 

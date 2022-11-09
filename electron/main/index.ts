@@ -17,8 +17,9 @@ process.env['PUBLIC'] = app.isPackaged
 import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
-import { readFile, setMenu } from './menu';
-import { saveFile } from './save-file';
+import { setMenu } from './menu';
+import { readMDFile, saveMDFile } from '../utils/file';
+import { isMac } from '../utils/platform';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -63,11 +64,11 @@ async function createWindow() {
     console.log('set-window-size', width, height);
     (win as BrowserWindow).setSize(width, height);
   });
-  ipcMain.on('save-file', (_event, { file, filename }: { file: string; filename: string }) => {
+  ipcMain.on('save-md-file', (_event, { file, filePath }: { file: string; filePath: string }) => {
     if (file === undefined) {
       throw new Error('文件不能为空');
     }
-    saveFile(file, filename);
+    saveMDFile(file, filePath);
   });
 
   if (app.isPackaged) {
@@ -92,7 +93,7 @@ async function createWindow() {
   setMenu(win);
 
   win.on('close', (event) => {
-    if (process.platform === 'darwin') {
+    if (isMac()) {
       win = null;
       app.quit();
     }
@@ -133,7 +134,7 @@ app.on('ready', async () => {
 
 // 点击最近打开的文件，读取文件
 app.on('open-file', function (_event, filepath: string) {
-  readFile(win as BrowserWindow, filepath);
+  readMDFile(win as BrowserWindow, filepath);
 });
 
 app.on('second-instance', () => {
