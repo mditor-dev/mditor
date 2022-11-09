@@ -69,6 +69,10 @@ async function createWindow() {
     }
     saveMDFile(file, filePath);
   });
+  ipcMain.on('drop-file', (_event, filePath: string) => {
+    // 记录最近打开的文件
+    app.addRecentDocument(filePath);
+  });
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);
