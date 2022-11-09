@@ -159,14 +159,14 @@ onMounted(() => {
 
   keymap(editorDomRef.value as HTMLDivElement, [
     // 回退
-    { map: ['Meta', 'z'], platform: 'mac', handler: exec('undo') },
-    { map: ['Control', 'z'], platform: 'win', handler: exec('undo') },
+    { keys: ['Meta', 'z'], platform: 'mac', handler: exec('undo') },
+    { keys: ['Control', 'z'], platform: 'win', handler: exec('undo') },
     // 前进
-    { map: ['Meta', 'Shift', 'z'], platform: 'mac', handler: exec('redo') },
-    { map: ['Control', 'y'], platform: 'win', handler: exec('redo') },
+    { keys: ['Meta', 'Shift', 'z'], platform: 'mac', handler: exec('redo') },
+    { keys: ['Control', 'y'], platform: 'win', handler: exec('redo') },
     // 保存文件
-    { map: ['Meta', 's'], platform: 'mac', handler: saveFile },
-    { map: ['Control', 's'], platform: 'win', handler: saveFile },
+    { keys: ['Meta', 's'], platform: 'mac', handler: saveFile },
+    { keys: ['Control', 's'], platform: 'win', handler: saveFile },
   ]);
 });
 
