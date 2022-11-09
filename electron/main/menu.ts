@@ -28,6 +28,13 @@ export function setMenu(win: BrowserWindow) {
       },
     }),
     new MenuItem({
+      label: '另存为',
+      accelerator: isMac() ? 'Meta+Shift+s' : 'Control+Shift+s',
+      async click() {
+        win.webContents.send('save-as');
+      },
+    }),
+    new MenuItem({
       label: '打开最近文件',
       role: 'recentDocuments',
       submenu: [
