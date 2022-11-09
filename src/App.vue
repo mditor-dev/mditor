@@ -15,7 +15,7 @@ const editorRef = ref();
 const activeTitleIndex = ref(0);
 const directory = ref<MDDirectory[]>([]);
 
-mdStore.watchReadMdFile();
+mdStore.addListener();
 
 watch(mdStore, (n) => {
   if (n.name) {
