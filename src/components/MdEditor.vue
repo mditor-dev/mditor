@@ -15,6 +15,7 @@ import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { MDDirectory } from '../../types/interfaces';
 import { useStore } from '@/store';
 import { useMarkdownStore } from '@/store/markdown';
+import { keymap } from '@/utils/keymap';
 
 const emits = defineEmits(['scroll', 'directory']);
 
@@ -156,51 +157,16 @@ onMounted(() => {
     return () => editor.exec(name);
   }
 
-  function keymap(dom: HTMLElement, map: { map: string[]; handler: Function }[]) {
-    const keySet = new Set<string>();
-    map.forEach((item) => (item.map = item.map.map((it) => it.toLowerCase())));
-
-    const keydownHandler = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase();
-      keySet.add(key);
-      map.forEach((item) => {
-        if (item.map.every((k) => keySet.has(k))) {
-          item.handler();
-        }
-      });
-      console.log(keySet);
-    };
-
-    const keyupHandler = (e: KeyboardEvent) => {
-      const key = e.key.toLowerCase();
-      console.log('keyup', key);
-      keySet.delete(key);
-      // 在mac中按下meta组合键后释放其他按键会漏掉事件
-      if (key === 'meta') keySet.clear();
-    };
-
-    const blurHandler = () => keySet.clear();
-
-    dom.addEventListener('keydown', keydownHandler);
-    dom.addEventListener('keyup', keyupHandler);
-    window.addEventListener('blur', blurHandler);
-    return function () {
-      dom.removeEventListener('keydown', keydownHandler);
-      dom.removeEventListener('keyup', keyupHandler);
-      window.removeEventListener('blur', blurHandler);
-    };
-  }
-
   keymap(editorDomRef.value as HTMLDivElement, [
     // 回退
-    { map: ['Meta', 'z'], handler: exec('undo') },
-    { map: ['Control', 'z'], handler: exec('undo') },
+    { map: ['Meta', 'z'], platform: 'mac', handler: exec('undo') },
+    { map: ['Control', 'z'], platform: 'win', handler: exec('undo') },
     // 前进
-    { map: ['Meta', 'Shift', 'z'], handler: exec('redo') },
-    { map: ['Control', 'Shift', 'z'], handler: exec('redo') },
+    { map: ['Meta', 'Shift', 'z'], platform: 'mac', handler: exec('redo') },
+    { map: ['Control', 'y'], platform: 'win', handler: exec('redo') },
     // 保存文件
-    { map: ['Meta', 's'], handler: saveFile },
-    { map: ['Control', 's'], handler: saveFile },
+    { map: ['Meta', 's'], platform: 'mac', handler: saveFile },
+    { map: ['Control', 's'], platform: 'win', handler: saveFile },
   ]);
 });
 

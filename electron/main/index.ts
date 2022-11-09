@@ -74,6 +74,10 @@ async function createWindow() {
     app.addRecentDocument(filePath);
   });
 
+  win.on('blur', function () {
+    (win as BrowserWindow).webContents.send('window-blur');
+  });
+
   if (app.isPackaged) {
     win.loadFile(indexHtml);
   } else {

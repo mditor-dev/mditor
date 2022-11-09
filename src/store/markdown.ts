@@ -26,7 +26,7 @@ export const useMarkdownStore = defineStore('md-file-store', {
       // 更新originContent
       this.originContent = content;
     },
-    watchReadMdFile(): void {
+    addListener(): void {
       if (isWatched) return;
       ipcRenderer.on(
         'read-md-file',
@@ -37,6 +37,10 @@ export const useMarkdownStore = defineStore('md-file-store', {
           this.name = name;
         },
       );
+      ipcRenderer.on('window-blur', () => {
+        if (!this.isModify || !this.path) return;
+        this.save();
+      });
       isWatched = true;
     },
     onDrop(event: DragEvent): void {
