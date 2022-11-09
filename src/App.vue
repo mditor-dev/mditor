@@ -6,8 +6,6 @@ import { MDDirectory } from '../types/interfaces';
 import { useStore } from '@/store';
 import { useMarkdownStore } from '@/store/markdown';
 
-document.title = '未命名';
-
 const mdStore = useMarkdownStore();
 const store = useStore();
 const isShowClass = ref<string>('');
@@ -17,6 +15,7 @@ const directory = ref<MDDirectory[]>([]);
 
 mdStore.addListener();
 
+document.title = mdStore.name || '未命名';
 watch(mdStore, (n) => {
   if (n.name) {
     document.title = n.isModify ? n.name + '*' : n.name;
