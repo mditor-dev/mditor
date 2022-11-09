@@ -2,28 +2,26 @@
 import MdEditor from '@/components/MdEditor.vue';
 import MdDirectory from '@/components/MdDirectory.vue';
 import { ref, watch } from 'vue';
-import { ipcRenderer } from 'electron';
 import { MDDirectory } from '../types/interfaces';
 import { useStore } from '@/store';
+import { useMarkdownStore } from '@/store/markdown';
 
 document.title = '未命名';
 
+const mdStore = useMarkdownStore();
 const store = useStore();
 const isShowClass = ref<string>('');
 const editorRef = ref();
-const mdData = ref('');
 const activeTitleIndex = ref(0);
 const directory = ref<MDDirectory[]>([]);
 
-ipcRenderer.on('read-md-file', (_event, { file, filename }: { file: string; filename: string }) => {
-  mdData.value = file;
-  document.title = filename;
-});
+mdStore.watchReadMdFile();
 
-window.ondragstart = (event) => {
-  event.preventDefault();
-  (window as any).electron.startDrag('drag-and-drop-1.md');
-};
+watch(mdStore, (n) => {
+  if (n.name) {
+    document.title = n.isModify ? n.name + '*' : n.name;
+  }
+});
 
 watch(
   () => store.getIsShowCatalogue,
@@ -49,7 +47,6 @@ watch(
     <section class="editor">
       <md-editor
         ref="editorRef"
-        v-model:value="mdData"
         @scroll="activeTitleIndex = $event"
         @directory="directory = $event"
       ></md-editor>

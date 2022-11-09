@@ -10,13 +10,17 @@ import { dialog, BrowserWindow, app } from 'electron';
 export function readMDFile(win: BrowserWindow, filePath: string): void {
   try {
     // 读取文件内容
-    const file = fs.readFileSync(filePath).toString();
+    const content = fs.readFileSync(filePath).toString();
 
     // 添加至最近打开的文件
     app.addRecentDocument(filePath);
 
     // 通知前台读取
-    win.webContents.send('read-md-file', { file, filename: path.basename(filePath) });
+    win.webContents.send('read-md-file', {
+      content,
+      name: path.basename(filePath),
+      path: filePath,
+    });
   } catch (e: any) {
     dialog.showErrorBox('读取文件失败', e);
   }
