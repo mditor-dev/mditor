@@ -52,9 +52,6 @@ const directoryList = computed(() => {
     };
   });
 });
-watch(directoryList, (value) => {
-  console.log(value);
-});
 </script>
 <template>
   <div class="md-directory">
