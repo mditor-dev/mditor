@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ipcRenderer } from 'electron';
+import { MDFile } from '../../types/interfaces';
 
 let isWatched = false;
 export const useMarkdownStore = defineStore('md-file-store', {
@@ -9,7 +10,7 @@ export const useMarkdownStore = defineStore('md-file-store', {
       originContent: '',
       content: '',
       path: '',
-    };
+    } as MDFile;
   },
   getters: {
     isModify(): boolean {
@@ -20,28 +21,39 @@ export const useMarkdownStore = defineStore('md-file-store', {
   },
   actions: {
     save(): void {
-      const { content, path } = this.$state;
       // 通知electron保存文件
-      ipcRenderer.send('save-md-file', { file: content, filePath: path });
+      ipcRenderer.send('save-md-file', { ...this.$state });
       // 更新originContent
-      this.originContent = content;
+      this.originContent = this.content;
     },
     addListener(): void {
       if (isWatched) return;
-      ipcRenderer.on(
-        'read-md-file',
-        (_event, { content, path, name }: { content: string; path: string; name: string }) => {
-          this.path = path;
-          this.originContent = content;
-          this.content = content;
-          this.name = name;
-        },
-      );
+      isWatched = true;
+
+      // 打开文件时的通知
+      ipcRenderer.on('read-md-file', (_event, { content, path, name }: MDFile) => {
+        this.path = path;
+        this.originContent = content;
+        this.content = content;
+        this.name = name;
+      });
+
+      // 窗口blur通知
       ipcRenderer.on('window-blur', () => {
         if (!this.isModify || !this.path) return;
         this.save();
       });
-      isWatched = true;
+
+      // 另存为通知
+      ipcRenderer.on('save-as', (event) => {
+        event.sender.send('save-md-file', { ...this.$state, type: 'save-as' });
+      });
+
+      // 保存成功通知
+      ipcRenderer.on('save-md-success', (_event, options: MDFile & { type: string }) => {
+        this.path = options.path;
+        this.name = options.name;
+      });
     },
     onDrop(event: DragEvent): void {
       const dt = event.dataTransfer;

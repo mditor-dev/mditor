@@ -63,11 +63,8 @@ async function createWindow() {
     console.log('set-window-size', width, height);
     (win as BrowserWindow).setSize(width, height);
   });
-  ipcMain.on('save-md-file', (_event, { file, filePath }: { file: string; filePath: string }) => {
-    if (file === undefined) {
-      throw new Error('文件不能为空');
-    }
-    saveMDFile(file, filePath);
+  ipcMain.on('save-md-file', (_event, args) => {
+    saveMDFile(win as BrowserWindow, args);
   });
   ipcMain.on('drop-file', (_event, filePath: string) => {
     // 记录最近打开的文件

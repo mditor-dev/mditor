@@ -1,6 +1,7 @@
 import fs from 'fs';
-import * as path from 'path';
+import * as Path from 'path';
 import { dialog, BrowserWindow, app } from 'electron';
+import { MDFile } from '../../types/interfaces';
 
 /**
  * 读取md文件
@@ -18,7 +19,7 @@ export function readMDFile(win: BrowserWindow, filePath: string): void {
     // 通知前台读取
     win.webContents.send('read-md-file', {
       content,
-      name: path.basename(filePath),
+      name: Path.basename(filePath),
       path: filePath,
     });
   } catch (e: any) {
@@ -28,15 +29,19 @@ export function readMDFile(win: BrowserWindow, filePath: string): void {
 
 /**
  * 保存md文件
- * @param file
- * @param filePath
  */
-export async function saveMDFile(file: string, filePath?: string): Promise<void> {
+export async function saveMDFile(
+  win: BrowserWindow,
+  options: MDFile & { type?: 'save' | 'save-as' },
+): Promise<void> {
+  const { content, type = 'save' } = options;
+  let { path } = options;
   try {
-    if (!filePath) {
+    if (!path || type === 'save-as') {
       // 显示文件保存窗口
       const res = await dialog.showSaveDialog({
-        defaultPath: '',
+        title: type === 'save-as' ? '另存为' : '',
+        defaultPath: path,
         // message: '111',
         filters: [
           { name: 'Markdown', extensions: ['md'] },
@@ -44,15 +49,18 @@ export async function saveMDFile(file: string, filePath?: string): Promise<void>
         ],
       });
       if (res.canceled || !res.filePath) return;
-      filePath = res.filePath;
+      path = res.filePath;
     }
 
     try {
       // 保存文件
-      fs.writeFileSync(filePath, file);
+      fs.writeFileSync(path, content);
 
       // 添加至最近打开的文件
-      app.addRecentDocument(filePath);
+      app.addRecentDocument(path);
+
+      // 通知渲染线程保存成功
+      win.webContents.send('save-md-success', { ...options, path, name: Path.basename(path) });
     } catch (e: any) {
       dialog.showErrorBox('保存md文件出错', e);
     }

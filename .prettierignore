@@ -7,7 +7,6 @@
 **/*.sh
 
 /public/*
-/types/*
 **/dist/*
 /release
 /dist-electron

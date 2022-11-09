@@ -1,5 +1,6 @@
 import { Menu, dialog, BrowserWindow, MenuItem } from 'electron';
 import { readMDFile } from '../utils/file';
+import { isMac } from '../utils/platform';
 
 export function setMenu(win: BrowserWindow) {
   const isDev = process.env['npm_lifecycle_event'] === 'dev';
@@ -11,7 +12,8 @@ export function setMenu(win: BrowserWindow) {
 
   const template: Array<MenuItem> = [
     new MenuItem({
-      label: '打开...',
+      label: '打开文件',
+      accelerator: isMac() ? 'Meta+o' : 'Control+o',
       async click() {
         const { filePaths, canceled } = await dialog.showOpenDialog({
           filters: [
@@ -23,6 +25,13 @@ export function setMenu(win: BrowserWindow) {
 
         const [filePath] = filePaths as [string];
         readMDFile(win, filePath);
+      },
+    }),
+    new MenuItem({
+      label: '另存为',
+      accelerator: isMac() ? 'Meta+Shift+s' : 'Control+Shift+s',
+      async click() {
+        win.webContents.send('save-as');
       },
     }),
     new MenuItem({
