@@ -1,25 +1,24 @@
 import { isMac } from '@/utils/index';
 
-export function keymap(
-  dom: HTMLElement,
-  map: Array<{
-    map: string[];
-    platform?: 'win' | 'mac';
-    handler: Function;
-  }>,
-) {
+interface KeyMap {
+  keys: string[];
+  platform?: 'win' | 'mac';
+  handler: Function;
+}
+
+export function keymap(dom: HTMLElement, maps: KeyMap[]) {
   const keySet = new Set<string>();
-  map.forEach((item) => (item.map = item.map.map((it) => it.toLowerCase())));
+  maps.forEach((item) => (item.keys = item.keys.map((it) => it.toLowerCase())));
 
   const keydownHandler = (e: KeyboardEvent) => {
     const key = e.key.toLowerCase();
     keySet.add(key);
     const platform = isMac() ? 'mac' : 'win';
-    map.forEach((item) => {
+    maps.forEach((item) => {
       if (item.platform && item.platform !== platform) return;
-      if (item.map.every((k) => keySet.has(k))) {
-        item.handler();
-      }
+      if (item.keys.length !== keySet.size) return;
+      if (!item.keys.every((k) => keySet.has(k))) return;
+      item.handler();
     });
     console.log(keySet);
   };
