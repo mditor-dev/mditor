@@ -39,5 +39,28 @@ export const useMarkdownStore = defineStore('md-file-store', {
       );
       isWatched = true;
     },
+    onDrop(event: DragEvent): void {
+      const dt = event.dataTransfer;
+      if (!dt) return;
+      event.preventDefault();
+      event.stopPropagation();
+
+      // 可以拖放多个文件
+      const file = dt.files[0];
+      if (!file) return;
+
+      const fr = new FileReader();
+      fr.onload = (e) => {
+        if (!e.target) return;
+
+        this.content = e.target.result as string;
+        this.originContent = this.content;
+        this.path = file.path;
+        this.name = file.name;
+
+        ipcRenderer.send('drop-file', file.path);
+      };
+      fr.readAsText(file);
+    },
   },
 });

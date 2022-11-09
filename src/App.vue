@@ -33,10 +33,11 @@ watch(
     }
   },
 );
+const onDrop = mdStore.onDrop.bind(mdStore);
 </script>
 
 <template>
-  <div class="app-main">
+  <div class="app-main" draggable="true" @drop.stop.prevent="onDrop" @dragover.stop.prevent>
     <section class="directory" :class="isShowClass">
       <md-directory
         :active-title-index="activeTitleIndex"
