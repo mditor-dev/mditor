@@ -1,9 +1,9 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import './samples/node-api';
-import { store } from './store/index';
+import pinia from './store/init';
 createApp(App)
-  .use(store)
+  .use(pinia)
   .mount('#app')
   .$nextTick(() => {
     postMessage({ payload: 'removeLoading' }, '*');
