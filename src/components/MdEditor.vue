@@ -211,7 +211,7 @@ const isShowClick = () => {
 <template>
   <div class="md-editor">
     <div ref="editorDomRef" class="editor-wrapper"></div>
-    <div class="isShow" @click="isShowClick">666</div>
+    <img src="../assets/mulu.svg" alt="打开目录" class="isShow" @click="isShowClick" />
   </div>
 </template>
 
@@ -224,12 +224,13 @@ const isShowClick = () => {
   }
   .isShow {
     position: absolute;
+    width: 25px;
     bottom: 2px;
     left: 5px;
     color: rgb(138, 138, 138);
     cursor: pointer;
     &:hover {
-      color: #000;
+      filter: contrast(0);
     }
   }
 }

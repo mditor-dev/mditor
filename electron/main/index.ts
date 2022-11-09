@@ -16,7 +16,7 @@ process.env['PUBLIC'] = app.isPackaged
 
 import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
 import { release } from 'os';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { setMenu } from './menu';
 import { readMDFile, saveMDFile } from '../utils/file';
 import { isMac } from '../utils/platform';
@@ -31,7 +31,6 @@ if (!app.requestSingleInstanceLock()) {
   app.quit();
   process.exit(0);
 }
-
 // Remove electron security warnings
 // This warning only shows in development mode
 // Read more on https://www.electronjs.org/docs/latest/tutorial/security
@@ -109,7 +108,17 @@ async function createWindow() {
 app.whenReady().then(createWindow);
 
 app.on('ready', async () => {
-  tray = new Tray(join(__dirname, '../../public/favicon.ico'));
+  let iconPath = '';
+  if (url) {
+    // 测试环境
+    console.log(app.getAppPath(), __dirname, 8999999);
+    // iconPath = join(__dirname, '../../public/favicon.ico');
+    iconPath = join(app.getAppPath(), 'favicon.ico');
+  } else {
+    // 正式环境
+    iconPath = join(dirname(app.getPath('exe')), 'favicon.ico');
+  }
+  tray = new Tray(iconPath);
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '退出',
@@ -119,7 +128,7 @@ app.on('ready', async () => {
       },
     },
   ]);
-  tray.setToolTip('提示语');
+  tray.setToolTip('编辑器');
   //显示程序页面
   tray.on('click', () => {
     win?.show();
