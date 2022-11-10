@@ -8,7 +8,7 @@ import { MDFile } from '../../types/interfaces';
  * @param win
  * @param filePath
  */
-export function readMDFile(win: BrowserWindow, filePath: string): void {
+export function readMDFile(win: BrowserWindow | null, filePath: string): void {
   try {
     // 读取文件内容
     const content = fs.readFileSync(filePath).toString();
@@ -17,7 +17,7 @@ export function readMDFile(win: BrowserWindow, filePath: string): void {
     app.addRecentDocument(filePath);
 
     // 通知前台读取
-    win.webContents.send('read-md-file', {
+    win?.webContents.send('read-md-file', {
       content,
       name: Path.basename(filePath),
       path: filePath,
@@ -31,7 +31,7 @@ export function readMDFile(win: BrowserWindow, filePath: string): void {
  * 保存md文件
  */
 export async function saveMDFile(
-  win: BrowserWindow,
+  win: BrowserWindow | void,
   options: MDFile & { type?: 'save' | 'save-as' },
 ): Promise<void> {
   const { content, type = 'save' } = options;
@@ -60,7 +60,7 @@ export async function saveMDFile(
       app.addRecentDocument(path);
 
       // 通知渲染线程保存成功
-      win.webContents.send('save-md-success', { ...options, path, name: Path.basename(path) });
+      win?.webContents.send('save-md-success', { ...options, path, name: Path.basename(path) });
     } catch (e: any) {
       dialog.showErrorBox('保存md文件出错', e);
     }

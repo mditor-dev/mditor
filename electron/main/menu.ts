@@ -1,7 +1,7 @@
 import { Menu, dialog, BrowserWindow, MenuItem } from 'electron';
 import { readMDFile } from '../utils/file';
 
-export function setMenu(win: BrowserWindow) {
+export function setMenu(getWin: () => BrowserWindow | null) {
   const isDev = process.env['npm_lifecycle_event'] === 'dev';
   const oldMenu = Menu.getApplicationMenu() as Menu;
   oldMenu.items.forEach((menu) => {
@@ -23,14 +23,14 @@ export function setMenu(win: BrowserWindow) {
         if (canceled) return;
 
         const [filePath] = filePaths as [string];
-        readMDFile(win, filePath);
+        readMDFile(getWin(), filePath);
       },
     }),
     new MenuItem({
       label: '另存为',
       accelerator: 'CommandOrControl+Shift+s',
       async click() {
-        win.webContents.send('save-as');
+        getWin()?.webContents.send('save-as');
       },
     }),
     new MenuItem({

@@ -1,13 +1,3 @@
-// The built directory structure
-//
-// ├─┬ dist-electron
-// │ ├─┬ main
-// │ │ └── index.js    > Electron-Main
-// │ └─┬ preload
-// │   └── index.js    > Preload-Scripts
-// ├─┬ dist
-// │ └── index.html    > Electron-Renderer
-//
 process.env['DIST_ELECTRON'] = join(__dirname, '..');
 process.env['DIST'] = join(process.env['DIST_ELECTRON'], '../dist');
 process.env['PUBLIC'] = app.isPackaged
@@ -59,22 +49,6 @@ async function createWindow() {
     },
   });
 
-  ipcMain.on('set-window-size', (_event, { width, height }) => {
-    console.log('set-window-size', width, height);
-    (win as BrowserWindow).setSize(width, height);
-  });
-  ipcMain.on('save-md-file', (_event, args) => {
-    saveMDFile(win as BrowserWindow, args);
-  });
-  ipcMain.on('drop-file', (_event, filePath: string) => {
-    // 记录最近打开的文件
-    app.addRecentDocument(filePath);
-  });
-
-  win.on('blur', function () {
-    (win as BrowserWindow).webContents.send('window-blur');
-  });
-
   if (app.isPackaged) {
     win.loadFile(indexHtml);
   } else {
@@ -82,6 +56,10 @@ async function createWindow() {
     // Open devTool if the app is not packaged
     win.webContents.openDevTools();
   }
+
+  win.on('blur', function () {
+    win?.webContents.send('window-blur');
+  });
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
@@ -94,26 +72,72 @@ async function createWindow() {
     return { action: 'deny' };
   });
 
-  setMenu(win);
-
   win.on('close', (event) => {
-    if (isMac()) {
-      win = null;
-      app.quit();
-    }
-    if (!win?.isFocused()) {
-      win = null;
-    } else {
+    if (!canClose) {
+      win?.webContents.send('win-close-tips');
       event.preventDefault(); //阻止窗口的关闭事件
+      return;
+    }
+
+    canClose = false;
+
+    if (isMac()) return;
+
+    if (win?.isVisible()) {
       win?.hide();
+      event.preventDefault();
+    } else {
+      app.exit(0);
     }
   });
 }
 
+let canClose = false;
+ipcMain.on('set-can-close', (_, payload: boolean) => (canClose = payload));
+
+ipcMain.on('set-window-size', (_event, { width, height }) => {
+  console.log('set-window-size', width, height);
+  win?.setSize(width, height);
+});
+
+ipcMain.on('save-md-file', (_event, args) => {
+  win && saveMDFile(win, args);
+});
+
+ipcMain.on('drop-file', (_event, filePath: string) => {
+  // 记录最近打开的文件
+  app.addRecentDocument(filePath);
+});
+
+// 渲染线程请求关闭窗口
+ipcMain.on('close-window', () => {
+  win?.close();
+});
+
+// new window example arg: new windows url
+ipcMain.handle('open-win', (_event, arg) => {
+  const childWindow = new BrowserWindow({
+    webPreferences: {
+      preload,
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  if (app.isPackaged) {
+    childWindow.loadFile(indexHtml, { hash: arg });
+  } else {
+    childWindow.loadURL(`${url}#${arg}`);
+    // childWindow.webContents.openDevTools({ mode: "undocked", activate: true })
+  }
+});
+
 app.whenReady().then(createWindow);
 
 app.on('ready', async () => {
-  let iconPath = '';
+  setMenu(() => win);
+  if (isMac()) return;
+  let iconPath: string;
   if (url) {
     // 测试环境
     console.log(app.getAppPath(), __dirname, 8999999);
@@ -142,8 +166,8 @@ app.on('ready', async () => {
 });
 
 // app.on('window-all-closed', () => {
-//   win = null;
-//   if (process.platform !== 'darwin') app.quit();
+// win = null;
+// if (process.platform !== 'darwin') app.quit();
 // });
 
 // 点击最近打开的文件，读取文件
@@ -165,23 +189,5 @@ app.on('activate', () => {
     allWindows[0]?.focus();
   } else {
     createWindow();
-  }
-});
-
-// new window example arg: new windows url
-ipcMain.handle('open-win', (_event, arg) => {
-  const childWindow = new BrowserWindow({
-    webPreferences: {
-      preload,
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-  });
-
-  if (app.isPackaged) {
-    childWindow.loadFile(indexHtml, { hash: arg });
-  } else {
-    childWindow.loadURL(`${url}#${arg}`);
-    // childWindow.webContents.openDevTools({ mode: "undocked", activate: true })
   }
 });

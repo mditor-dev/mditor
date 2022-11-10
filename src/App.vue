@@ -13,14 +13,17 @@ const editorRef = ref();
 const activeTitleIndex = ref(0);
 const directory = ref<MDDirectory[]>([]);
 
-mdStore.addListener();
-
-document.title = mdStore.name || '未命名';
-watch(mdStore, (n) => {
-  if (n.name) {
-    document.title = n.isModify ? n.name + '*' : n.name;
-  }
-});
+watch(
+  mdStore,
+  (n) => {
+    if (n.name) {
+      document.title = n.name + (n.isModify ? '- 已编辑' : '');
+    } else {
+      document.title = '未命名' + (n.isModify ? '- 已编辑' : '');
+    }
+  },
+  { immediate: true },
+);
 
 watch(
   () => store.getIsShowCatalogue,
