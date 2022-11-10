@@ -1,13 +1,3 @@
-// The built directory structure
-//
-// ├─┬ dist-electron
-// │ ├─┬ main
-// │ │ └── index.js    > Electron-Main
-// │ └─┬ preload
-// │   └── index.js    > Preload-Scripts
-// ├─┬ dist
-// │ └── index.html    > Electron-Renderer
-//
 process.env['DIST_ELECTRON'] = join(__dirname, '..');
 process.env['DIST'] = join(process.env['DIST_ELECTRON'], '../dist');
 process.env['PUBLIC'] = app.isPackaged
@@ -61,10 +51,10 @@ async function createWindow() {
 
   ipcMain.on('set-window-size', (_event, { width, height }) => {
     console.log('set-window-size', width, height);
-    (win as BrowserWindow).setSize(width, height);
+    win?.setSize(width, height);
   });
   ipcMain.on('save-md-file', (_event, args) => {
-    saveMDFile(win as BrowserWindow, args);
+    win && saveMDFile(win, args);
   });
   ipcMain.on('drop-file', (_event, filePath: string) => {
     // 记录最近打开的文件
@@ -72,7 +62,7 @@ async function createWindow() {
   });
 
   win.on('blur', function () {
-    (win as BrowserWindow).webContents.send('window-blur');
+    win?.webContents.send('window-blur');
   });
 
   if (app.isPackaged) {
@@ -97,16 +87,20 @@ async function createWindow() {
   setMenu(win);
 
   win.on('close', (event) => {
-    if (isMac()) {
-      win = null;
-      app.quit();
-    }
-    if (!win?.isFocused()) {
-      win = null;
-    } else {
-      event.preventDefault(); //阻止窗口的关闭事件
-      win?.hide();
-    }
+    ipcMain.once('win-close-tips-reply', () => {
+      if (!win?.isFocused()) {
+        win = null;
+        if (isMac()) {
+          app.quit();
+        }
+      } else {
+        win?.hide();
+      }
+    });
+
+    win?.webContents.send('win-close-tips');
+
+    event.preventDefault(); //阻止窗口的关闭事件
   });
 }
 

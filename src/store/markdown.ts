@@ -59,26 +59,30 @@ export const useMarkdownStore = defineStore('md-file-store', {
 
       // query-md-save-status
       ipcRenderer.on(
-        'query-md-save-status',
+        'win-close-tips',
 
         (event) => {
+          function reply(delay = 0) {
+            setTimeout(() => event.sender.send('win-close-tips-reply'), delay);
+          }
+
           // 文件内容未改动，直接退出
           if (!this.isModify) {
-            event.sender.send('close-window');
+            reply();
             return;
           }
           // 内容已改动，询问是否保存
           const confirm = window.confirm('文件未保存，是否保存再离开？');
           // 确认保存
           if (confirm) {
-            ipcRenderer.once('save-md-success', (e) => {
-              e.sender.send('close-window');
+            ipcRenderer.once('save-md-success', () => {
+              reply(1000);
             });
             this.save();
             return;
           }
           // 直接离开
-          event.sender.send('close-window');
+          reply();
         },
       );
     },
