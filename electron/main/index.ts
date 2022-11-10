@@ -113,6 +113,7 @@ async function createWindow() {
 app.whenReady().then(createWindow);
 
 app.on('ready', async () => {
+  if (isMac()) return;
   let iconPath = '';
   if (url) {
     // 测试环境
@@ -141,14 +142,19 @@ app.on('ready', async () => {
   tray.setContextMenu(contextMenu);
 });
 
-// app.on('window-all-closed', () => {
-//   win = null;
-//   if (process.platform !== 'darwin') app.quit();
-// });
+app.on('window-all-closed', () => {
+  win = null;
+  // if (process.platform !== 'darwin') app.quit();
+});
 
 // 点击最近打开的文件，读取文件
 app.on('open-file', function (_event, filepath: string) {
   readMDFile(win as BrowserWindow, filepath);
+});
+// 渲染线程请求关闭窗口
+ipcMain.on('close-window', () => {
+  win?.destroy();
+  win = null;
 });
 
 app.on('second-instance', () => {

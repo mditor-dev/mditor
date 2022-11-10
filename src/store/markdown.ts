@@ -54,6 +54,33 @@ export const useMarkdownStore = defineStore('md-file-store', {
         this.path = options.path;
         this.name = options.name;
       });
+
+      // window.addEventListener('e')
+
+      // query-md-save-status
+      ipcRenderer.on(
+        'query-md-save-status',
+
+        (event) => {
+          // 文件内容未改动，直接退出
+          if (!this.isModify) {
+            event.sender.send('close-window');
+            return;
+          }
+          // 内容已改动，询问是否保存
+          const confirm = window.confirm('文件未保存，是否保存再离开？');
+          // 确认保存
+          if (confirm) {
+            ipcRenderer.once('save-md-success', (e) => {
+              e.sender.send('close-window');
+            });
+            this.save();
+            return;
+          }
+          // 直接离开
+          event.sender.send('close-window');
+        },
+      );
     },
     onDrop(event: DragEvent): void {
       const dt = event.dataTransfer;
