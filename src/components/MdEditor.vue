@@ -15,7 +15,7 @@ import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { MDDirectory } from '../../types/interfaces';
 import { useStore } from '@/store';
 import { useMarkdownStore } from '@/store/markdown';
-import { keymap } from '@/utils/keymap';
+import { useKeymap } from '@/utils/useKeymap';
 
 const emits = defineEmits(['scroll', 'directory']);
 
@@ -157,17 +157,20 @@ onMounted(() => {
     return () => editor.exec(name);
   }
 
-  keymap(editorDomRef.value as HTMLDivElement, [
-    // 回退
-    { keys: ['Meta', 'z'], platform: 'mac', handler: exec('undo') },
-    { keys: ['Control', 'z'], platform: 'win', handler: exec('undo') },
-    // 前进
-    { keys: ['Meta', 'Shift', 'z'], platform: 'mac', handler: exec('redo') },
-    { keys: ['Control', 'y'], platform: 'win', handler: exec('redo') },
-    // 保存文件
-    { keys: ['Meta', 's'], platform: 'mac', handler: saveFile },
-    { keys: ['Control', 's'], platform: 'win', handler: saveFile },
-  ]);
+  useKeymap(
+    [
+      // 回退
+      { keys: ['Meta', 'z'], platform: 'mac', handler: exec('undo') },
+      { keys: ['Control', 'z'], platform: 'win', handler: exec('undo') },
+      // 前进
+      { keys: ['Meta', 'Shift', 'z'], platform: 'mac', handler: exec('redo') },
+      { keys: ['Control', 'y'], platform: 'win', handler: exec('redo') },
+      // 保存文件
+      { keys: ['Meta', 's'], platform: 'mac', handler: saveFile },
+      { keys: ['Control', 's'], platform: 'win', handler: saveFile },
+    ],
+    editorDomRef.value as HTMLDivElement,
+  );
 });
 
 const isShowClick = () => {
