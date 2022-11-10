@@ -165,10 +165,11 @@ app.on('ready', async () => {
   tray.setContextMenu(contextMenu);
 });
 
-// app.on('window-all-closed', () => {
-// win = null;
-// if (process.platform !== 'darwin') app.quit();
-// });
+// 这里还是有必要的，否则mac直接就关闭了，就算是空的listener都能让窗口维持在任务栏
+app.on('window-all-closed', () => {
+  // win = null;
+  // if (process.platform !== 'darwin') app.quit();
+});
 
 // 点击最近打开的文件，读取文件
 app.on('open-file', function (_event, filepath: string) {
