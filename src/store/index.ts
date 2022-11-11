@@ -23,7 +23,7 @@ export const useStore = defineStore('store', () => {
 
     ipcRenderer.on('changeTheme', (event, value) => {
       // state.theme = value;
-      console.log(63311);
+      console.log(63311, event);
       actions.setTheme(value);
     });
   }
