@@ -111,7 +111,6 @@ ipcMain.on('drop-file', (_event, filePath: string) => {
 });
 
 ipcMain.on('changeSystemTheme', (_event, value: any) => {
-  console.log(value, 9666);
   // 记录最近打开的文件
   nativeTheme.themeSource = value;
 });
