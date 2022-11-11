@@ -1,0 +1,23 @@
+// 暂定
+.dark {
+  background: #1a2229;
+  color: #fff;
+  
+  .md-directory li {
+    color: #fff;
+    &.active {
+      color: #fff;
+    }
+    &:hover {
+      background: #626262;
+    }
+  }
+  .md-editor {
+    position: relative;
+    box-sizing: border-box;
+    .toastui-editor-defaultUI {
+      border-radius: 0;
+      border: #1a2229;
+    }
+  }
+}

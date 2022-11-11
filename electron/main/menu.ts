@@ -1,4 +1,4 @@
-import { Menu, dialog, BrowserWindow, MenuItem } from 'electron';
+import { Menu, dialog, BrowserWindow, MenuItem, nativeTheme } from 'electron';
 import { readMDFile } from '../utils/file';
 
 export function setMenu(getWin: () => BrowserWindow | null) {
@@ -46,6 +46,30 @@ export function setMenu(getWin: () => BrowserWindow | null) {
       ],
     }),
   ];
+
+  // 主题切换菜单
+  oldMenu.insert(
+    5,
+    new MenuItem({
+      label: 'Theme',
+      submenu: [
+        {
+          label: 'light',
+          click() {
+            nativeTheme.themeSource = 'light';
+            getWin()?.webContents.send('changeTheme', 'light');
+          },
+        },
+        {
+          label: 'dark',
+          click() {
+            nativeTheme.themeSource = 'dark';
+            getWin()?.webContents.send('changeTheme', 'dark');
+          },
+        },
+      ],
+    }),
+  );
 
   const fileMenuSub = fileMenu.submenu as Menu;
   for (let i = template.length - 1; i >= 0; i--) {

@@ -4,7 +4,7 @@ process.env['PUBLIC'] = app.isPackaged
   ? process.env['DIST']
   : join(process.env['DIST_ELECTRON'], '../public');
 
-import { app, BrowserWindow, shell, ipcMain, Tray, Menu } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu, nativeTheme } from 'electron';
 import { release } from 'os';
 import { join, dirname } from 'path';
 import { setMenu } from './menu';
@@ -108,6 +108,12 @@ ipcMain.on('drop-file', (_event, filePath: string) => {
   // 记录最近打开的文件
   app.addRecentDocument(filePath);
   win?.setRepresentedFilename(filePath);
+});
+
+ipcMain.on('changeSystemTheme', (_event, value: any) => {
+  console.log(value, 9666);
+  // 记录最近打开的文件
+  nativeTheme.themeSource = value;
 });
 
 // 渲染线程请求关闭窗口

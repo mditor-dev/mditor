@@ -7,6 +7,7 @@ import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
+import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
 import { debounce } from '@mxssfd/ts-utils';
@@ -35,7 +36,7 @@ function saveFile() {
 
 type EditorMode = 'wysiwyg' | 'markdown';
 
-let editor: Editor;
+let editor: any;
 let lastHeadingList: HTMLElement[];
 let lastGetHeadingListTime = Date.now();
 
@@ -116,6 +117,19 @@ onUnmounted(() => {
   window.removeEventListener('resize', listener);
 });
 
+watch(
+  () => store.theme,
+  (newVal) => {
+    const editorDom: any = editorDomRef.value;
+    console.log(newVal);
+    if (newVal === 'dark') {
+      editorDom.classList.add('toastui-editor-dark');
+    } else {
+      editorDom.classList.remove('toastui-editor-dark');
+    }
+  },
+);
+
 onMounted(() => {
   editor = new Editor({
     el: editorDomRef.value as HTMLElement,
@@ -128,7 +142,12 @@ onMounted(() => {
     plugins: [[codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
   });
 
-  // editor.changeMode('wysiwyg');
+  const editorDom: any = editorDomRef.value;
+  if (localStorage.getItem('theme') === 'dark') {
+    editorDom.classList.add('toastui-editor-dark');
+  } else {
+    editorDom.classList.remove('toastui-editor-dark');
+  }
 
   editor.on('change', () => {
     mdStore.content = editor.getMarkdown();
@@ -176,7 +195,7 @@ onMounted(() => {
 });
 
 const isShowClick = () => {
-  store.setIsShowCatalogue(!store.getIsShowCatalogue);
+  store.setIsShowCatalogue(!store.isShowCatalogue);
 };
 </script>
 <template>
