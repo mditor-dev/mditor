@@ -16,10 +16,19 @@ type Handler = (dom: HTMLElement, maps: HandledKeyMap[]) => () => void;
  */
 function handleKeys(keys: string): [string, string[]] {
   keys = keys.toLowerCase();
+  const moc = isMac() ? 'meta' : 'control';
+
+  function isMOC(key: string): boolean {
+    const mc = 'MetaOrControl'.toLowerCase();
+    const cc = 'CommandOrControl'.toLowerCase();
+    return key === mc || key === cc;
+  }
+  function replace(key: string): string {
+    if (isMOC(key)) return moc;
+    return key === 'command' ? 'meta' : key;
+  }
   // const keyList = keys.replace(/\+(\+)?/g, ' $1').split(' ');
-  const mc = 'MetaOrControl'.toLowerCase();
-  const metaOrControl = isMac() ? 'meta' : 'control';
-  const keyList = keys.split(/(?<!\+)\+/).map((item) => (item === mc ? metaOrControl : item));
+  const keyList = keys.split(/(?<!\+)\+/).map((key) => replace(key));
   return [keys, keyList];
 }
 

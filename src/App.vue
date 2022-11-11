@@ -42,7 +42,6 @@ watch(
     }
   },
 );
-const onDrop = mdStore.onDrop.bind(mdStore);
 </script>
 
 <template>
@@ -50,7 +49,7 @@ const onDrop = mdStore.onDrop.bind(mdStore);
     class="app-main"
     :class="store.theme"
     draggable="true"
-    @drop.stop.prevent="onDrop"
+    @drop.stop.prevent="mdStore.onDrop"
     @dragover.stop.prevent
   >
     <section class="directory" :class="isShowClass">

@@ -15,7 +15,7 @@ export function readMDFile(win: BrowserWindow | null, filePath: string): void {
 
     // 添加至最近打开的文件
     app.addRecentDocument(filePath);
-
+    win?.setRepresentedFilename(filePath);
     // 通知前台读取
     win?.webContents.send('read-md-file', {
       content,
@@ -31,15 +31,16 @@ export function readMDFile(win: BrowserWindow | null, filePath: string): void {
  * 保存md文件
  */
 export async function saveMDFile(
-  win: BrowserWindow | void,
+  win: BrowserWindow | null,
   options: MDFile & { type?: 'save' | 'save-as' },
 ): Promise<void> {
+  if (!win) return;
   const { content, type = 'save' } = options;
   let { path } = options;
   try {
     if (!path || type === 'save-as') {
       // 显示文件保存窗口
-      const res = await dialog.showSaveDialog({
+      const res = await dialog.showSaveDialog(win, {
         title: type === 'save-as' ? '另存为' : '',
         defaultPath: path,
         // message: '111',
@@ -58,6 +59,8 @@ export async function saveMDFile(
 
       // 添加至最近打开的文件
       app.addRecentDocument(path);
+
+      win?.setRepresentedFilename(path);
 
       // 通知渲染线程保存成功
       win?.webContents.send('save-md-success', { ...options, path, name: Path.basename(path) });

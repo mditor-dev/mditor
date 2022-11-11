@@ -14,7 +14,9 @@ export function setMenu(getWin: () => BrowserWindow | null) {
       label: '打开文件',
       accelerator: 'CommandOrControl+o',
       async click() {
-        const { filePaths, canceled } = await dialog.showOpenDialog({
+        const win = getWin();
+        if (!win) return;
+        const { filePaths, canceled } = await dialog.showOpenDialog(win, {
           filters: [
             { name: 'Markdown', extensions: ['md'] },
             { name: 'Plain Text', extensions: [''] },
@@ -74,6 +76,22 @@ export function setMenu(getWin: () => BrowserWindow | null) {
     const item = template[i as keyof typeof template] as MenuItem;
     fileMenuSub.insert(0, item);
   }
+
+  const editMenu = oldMenu.getMenuItemById('editmenu') as MenuItem;
+
+  editMenu.submenu?.insert(
+    0,
+    new MenuItem({
+      label: '格式化',
+      accelerator: 'CommandOrControl+Shift+f',
+      click() {
+        getWin()?.webContents.send('format-md');
+      },
+    }),
+  );
+
+  console.log('1', editMenu);
+
   if (!isDev) {
     const viewMenu = oldMenu.getMenuItemById('viewmenu') as MenuItem;
     ((viewMenu.submenu as Menu).items[2] as MenuItem).visible = false;
