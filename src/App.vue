@@ -5,6 +5,7 @@ import { ref, watch } from 'vue';
 import { MDDirectory } from '../types/interfaces';
 import { useStore } from '@/store';
 import { useMarkdownStore } from '@/store/markdown';
+import { isMac } from '@/utils';
 
 const mdStore = useMarkdownStore();
 const store = useStore();
@@ -19,6 +20,10 @@ const directory = ref<MDDirectory[]>([]);
 //   console.log(event, value);
 //   theme.value = value;
 // });
+
+if (isMac()) {
+  document.documentElement.classList.add('mac');
+}
 
 watch(
   mdStore,
