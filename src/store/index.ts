@@ -16,7 +16,10 @@ export const useStore = defineStore('store', () => {
   });
 
   function addListener(): void {
-    ipcRenderer.send('changeSystemTheme', localStorage.getItem('theme'));
+    ipcRenderer.send(
+      'changeSystemTheme',
+      localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light',
+    );
 
     ipcRenderer.on('changeTheme', (event, value) => {
       // state.theme = value;
