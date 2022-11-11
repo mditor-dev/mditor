@@ -107,6 +107,7 @@ ipcMain.on('save-md-file', (_event, args) => {
 ipcMain.on('drop-file', (_event, filePath: string) => {
   // 记录最近打开的文件
   app.addRecentDocument(filePath);
+  win?.setRepresentedFilename(filePath);
 });
 
 // 渲染线程请求关闭窗口
@@ -132,7 +133,11 @@ ipcMain.handle('open-win', (_event, arg) => {
   }
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  win?.setDocumentEdited(true);
+});
 
 app.on('ready', async () => {
   setMenu(() => win);
