@@ -12,6 +12,13 @@ const isShowClass = ref<string>('');
 const editorRef = ref();
 const activeTitleIndex = ref(0);
 const directory = ref<MDDirectory[]>([]);
+// const theme = ref('');
+
+// // 暂定
+// ipcRenderer.on('changeTheme', (event, value) => {
+//   console.log(event, value);
+//   theme.value = value;
+// });
 
 watch(
   mdStore,
@@ -26,7 +33,7 @@ watch(
 );
 
 watch(
-  () => store.getIsShowCatalogue,
+  () => store.isShowCatalogue,
   (newVal: boolean) => {
     if (newVal) {
       isShowClass.value = '';
@@ -39,7 +46,13 @@ const onDrop = mdStore.onDrop.bind(mdStore);
 </script>
 
 <template>
-  <div class="app-main" draggable="true" @drop.stop.prevent="onDrop" @dragover.stop.prevent>
+  <div
+    class="app-main"
+    :class="store.theme"
+    draggable="true"
+    @drop.stop.prevent="onDrop"
+    @dragover.stop.prevent
+  >
     <section class="directory" :class="isShowClass">
       <md-directory
         :active-title-index="activeTitleIndex"
