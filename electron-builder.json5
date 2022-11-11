@@ -27,7 +27,7 @@
       name: 'Markdown Document',
       description: 'Markdown Document Editor',
       role: 'Editor',
-      icon: 'public/node.png',
+      icon: 'public/icon.png',
     },
   ],
   nsis: {

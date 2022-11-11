@@ -9,7 +9,7 @@ import { release } from 'os';
 import { join, dirname } from 'path';
 import { setMenu } from './menu';
 import { readMDFile, saveMDFile } from '../utils/file';
-import { isMac } from '../utils/platform';
+import { isMac, isWin } from '../utils/platform';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -36,7 +36,7 @@ const indexHtml = join(process.env['DIST'], 'index.html');
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
-    icon: join(process.env['PUBLIC'] as string, 'favicon.ico'),
+    icon: join(process.env['PUBLIC'] as string, 'icon.png'),
     width: 1000,
     height: 600,
     webPreferences: {
@@ -51,6 +51,7 @@ async function createWindow() {
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);
+    win.webContents.openDevTools();
   } else {
     win.loadURL(url);
     // Open devTool if the app is not packaged
@@ -81,7 +82,7 @@ async function createWindow() {
 
     canClose = false;
 
-    if (isMac()) return;
+    if (isMac) return;
 
     if (win?.isVisible()) {
       win?.hide();
@@ -142,20 +143,28 @@ app.whenReady().then(() => {
   createWindow();
 
   win?.setDocumentEdited(true);
-});
 
+  // 通过文件关联打开的app
+  const filePath = process.argv[1];
+  if (app.isPackaged && isWin && filePath) {
+    // 渲染线程有可能还没启动，直接调会漏掉通知
+    win?.webContents.on('did-finish-load', () => {
+      readMDFile(win as BrowserWindow, filePath);
+    });
+  }
+});
 app.on('ready', async () => {
   setMenu(() => win);
-  if (isMac()) return;
+  if (isMac) return;
   let iconPath: string;
-  if (url) {
+  if (!app.isPackaged) {
     // 测试环境
     console.log(app.getAppPath(), __dirname, 8999999);
     // iconPath = join(__dirname, '../../public/favicon.ico');
-    iconPath = join(app.getAppPath(), 'favicon.ico');
+    iconPath = join(app.getAppPath(), 'icon.png');
   } else {
     // 正式环境
-    iconPath = join(dirname(app.getPath('exe')), 'favicon.ico');
+    iconPath = join(dirname(app.getPath('exe')), 'icon.png');
   }
   tray = new Tray(iconPath);
   const contextMenu = Menu.buildFromTemplate([
