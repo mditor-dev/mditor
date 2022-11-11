@@ -27,7 +27,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     immediate: true,
   });
 
-  const actions = reactive({
+  const actions = {
     save(): void {
       // 通知electron保存文件
       ipcRenderer.send('save-md-file', { ...state });
@@ -55,7 +55,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
       };
       fr.readAsText(file);
     },
-  });
+  };
 
   function addListener(): void {
     if (isWatched) return;
