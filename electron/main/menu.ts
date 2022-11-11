@@ -14,7 +14,9 @@ export function setMenu(getWin: () => BrowserWindow | null) {
       label: '打开文件',
       accelerator: 'CommandOrControl+o',
       async click() {
-        const { filePaths, canceled } = await dialog.showOpenDialog({
+        const win = getWin();
+        if (!win) return;
+        const { filePaths, canceled } = await dialog.showOpenDialog(win, {
           filters: [
             { name: 'Markdown', extensions: ['md'] },
             { name: 'Plain Text', extensions: [''] },

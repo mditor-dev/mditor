@@ -34,12 +34,13 @@ export async function saveMDFile(
   win: BrowserWindow | null,
   options: MDFile & { type?: 'save' | 'save-as' },
 ): Promise<void> {
+  if (!win) return;
   const { content, type = 'save' } = options;
   let { path } = options;
   try {
     if (!path || type === 'save-as') {
       // 显示文件保存窗口
-      const res = await dialog.showSaveDialog({
+      const res = await dialog.showSaveDialog(win, {
         title: type === 'save-as' ? '另存为' : '',
         defaultPath: path,
         // message: '111',
