@@ -59,7 +59,7 @@ const directoryList = computed(() => {
     <ul ref="ulRef">
       <li
         v-for="(item, index) in directoryList"
-        :key="item.value + item.level"
+        :key="index"
         :class="{ ['level-' + item.level]: true, active: index === activeTitleIndex }"
         @click="editorScrollTo(index)"
         v-html="item.value"
