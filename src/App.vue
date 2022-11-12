@@ -26,18 +26,6 @@ if (isMac()) {
 }
 
 watch(
-  mdStore,
-  (n) => {
-    if (n.name) {
-      document.title = n.name + (n.isModify ? ' - 已编辑*' : '');
-    } else {
-      document.title = '未命名' + (n.isModify ? ' - 已编辑*' : '');
-    }
-  },
-  { immediate: true },
-);
-
-watch(
   () => store.isShowCatalogue,
   (newVal: boolean) => {
     if (newVal) {

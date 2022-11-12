@@ -27,6 +27,18 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     immediate: true,
   });
 
+  watch(
+    state,
+    (n) => {
+      if (n.name) {
+        document.title = n.name + (isModify.value ? ' - 已编辑*' : '');
+      } else {
+        document.title = '未命名' + (isModify.value ? ' - 已编辑*' : '');
+      }
+    },
+    { immediate: true },
+  );
+
   const actions = {
     save(): void {
       // 通知electron保存文件
@@ -173,5 +185,5 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
 
   addListener();
 
-  return { ...toRefs(state), ...actions, isModify };
+  return { ...toRefs(state), ...actions };
 });
