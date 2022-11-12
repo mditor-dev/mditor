@@ -4,9 +4,9 @@ process.env['PUBLIC'] = app.isPackaged
   ? process.env['DIST']
   : join(process.env['DIST_ELECTRON'], '../public');
 
-import { app, BrowserWindow, shell, ipcMain, Tray, Menu, nativeTheme } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu, nativeTheme, nativeImage } from 'electron';
 import { release } from 'os';
-import { join, dirname } from 'path';
+import { join } from 'path';
 import { setMenu } from './menu';
 import { readMDFile, saveMDFile } from '../utils/file';
 import { isMac, isWin } from '../utils/platform';
@@ -156,18 +156,10 @@ app.whenReady().then(() => {
 });
 app.on('ready', async () => {
   setMenu(() => win);
-  if (isMac) return;
-  let iconPath: string;
-  if (!app.isPackaged) {
-    // 测试环境
-    console.log(app.getAppPath(), __dirname, 8999999);
-    // iconPath = join(__dirname, '../../public/favicon.ico');
-    iconPath = join(app.getAppPath(), 'icon.png');
-  } else {
-    // 正式环境
-    iconPath = join(dirname(app.getPath('exe')), 'icon.png');
-  }
-  tray = new Tray(iconPath);
+  const iconPath = join(app.getAppPath(), (app.isPackaged ? '../' : 'public/') + 'icon.png');
+  // 使用nativeImage的话，就算图片是空的也会有个占位
+  const icon = nativeImage.createFromPath(iconPath);
+  tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([
     {
       label: '退出',
