@@ -117,18 +117,15 @@ onUnmounted(() => {
   window.removeEventListener('resize', listener);
 });
 
-watch(
-  () => store.theme,
-  (newVal) => {
-    const editorDom: any = editorDomRef.value;
-    console.log(newVal);
-    if (newVal === 'dark') {
-      editorDom.classList.add('toastui-editor-dark');
-    } else {
-      editorDom.classList.remove('toastui-editor-dark');
-    }
-  },
-);
+function setTheme() {
+  const editorDom: any = editorDomRef.value;
+  if (store.theme === 'dark') {
+    editorDom.classList.add('toastui-editor-dark');
+  } else {
+    editorDom.classList.remove('toastui-editor-dark');
+  }
+}
+watch(() => store.theme, setTheme);
 
 onMounted(() => {
   editor = new Editor({
@@ -142,12 +139,7 @@ onMounted(() => {
     plugins: [[codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
   });
 
-  const editorDom: any = editorDomRef.value;
-  if (localStorage.getItem('theme') === 'dark') {
-    editorDom.classList.add('toastui-editor-dark');
-  } else {
-    editorDom.classList.remove('toastui-editor-dark');
-  }
+  setTheme();
 
   editor.on('change', () => {
     mdStore.content = editor.getMarkdown();

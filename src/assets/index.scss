@@ -1,8 +1,9 @@
 // 暂定
-.dark {
-  background: #232428;
-  color: #fff;
-
+@media (prefers-color-scheme: dark) {
+  .app-main {
+    background: #232428;
+    color: #fff;
+  }
   .md-directory li {
     color: #c2c2c2;
     &.active {
@@ -34,7 +35,7 @@
 .token.operator {
   background: none;
 }
-.light {
+@media (prefers-color-scheme: light) {
   .md-directory {
     //border-right: 1px solid #ebedf2;
   }

@@ -26,18 +26,6 @@ if (isMac()) {
 }
 
 watch(
-  mdStore,
-  (n) => {
-    if (n.name) {
-      document.title = n.name + (n.isModify ? ' - 已编辑*' : '');
-    } else {
-      document.title = '未命名' + (n.isModify ? ' - 已编辑*' : '');
-    }
-  },
-  { immediate: true },
-);
-
-watch(
   () => store.isShowCatalogue,
   (newVal: boolean) => {
     if (newVal) {
@@ -50,13 +38,7 @@ watch(
 </script>
 
 <template>
-  <div
-    class="app-main"
-    :class="store.theme"
-    draggable="true"
-    @drop.stop.prevent="mdStore.onDrop"
-    @dragover.stop.prevent
-  >
+  <div class="app-main" draggable="true" @drop.stop.prevent="mdStore.onDrop" @dragover.stop.prevent>
     <section class="directory" :class="isShowClass">
       <md-directory
         :active-title-index="activeTitleIndex"

@@ -1,30 +1,29 @@
 import { defineStore } from 'pinia';
 import { reactive, toRefs } from 'vue';
-import { ipcRenderer } from 'electron';
 
 export const useStore = defineStore('store', () => {
-  const state = reactive({ isShowCatalogue: true, theme: localStorage.getItem('theme') });
+  const state = reactive({ isShowCatalogue: true, theme: 'light' });
 
   const actions = reactive({
     setIsShowCatalogue(isShowCatalogue: boolean): void {
       state.isShowCatalogue = isShowCatalogue;
     },
-    setTheme(theme: any): void {
-      localStorage.setItem('theme', theme);
-      state.theme = theme;
-    },
   });
 
   function addListener(): void {
-    ipcRenderer.send(
-      'changeSystemTheme',
-      localStorage.getItem('theme') ? localStorage.getItem('theme') : 'light',
-    );
+    const media = window.matchMedia('(prefers-color-scheme:dark)');
 
-    ipcRenderer.on('changeTheme', (event, value) => {
-      // state.theme = value;
-      console.log(63311, event);
-      actions.setTheme(value);
+    state.theme = media.matches ? 'dark' : 'light';
+
+    //监听样式切换
+    media.addEventListener('change', (e) => {
+      if (e.matches) {
+        console.log('黑暗模式');
+        state.theme = 'dark';
+      } else {
+        console.log('亮色模式');
+        state.theme = 'light';
+      }
     });
   }
   addListener();
