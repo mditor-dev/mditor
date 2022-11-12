@@ -1,5 +1,5 @@
 import { MenuItem, BrowserWindow } from 'electron';
-import { isMac, isWin } from '../utils/platform';
+import { isMac } from '../utils/platform';
 export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
   // 编辑菜单
   return new MenuItem({
@@ -45,11 +45,6 @@ export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
         click() {
           getWin()?.webContents.send('format-md');
         },
-      },
-      {
-        label: '开始听写',
-        role: 'startSpeaking',
-        visible: !isWin,
       },
     ],
   });
