@@ -21,7 +21,6 @@ export function getRecentDocumentsMenu(
     if (isWin) {
       const list = appConfig.recentDocuments.map<MenuItemConstructorOptions>((filepath) => ({
         label: Path.basename(filepath),
-        type: 'radio',
         click() {
           const win = getWin();
           win && readMDFile(win, filepath);
