@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as Path from 'path';
 import { app, ipcMain, nativeTheme, BrowserWindow } from 'electron';
-import { arrayRemoveItem, debounce } from '@mxssfd/ts-utils';
+import { arrayRemoveItem, debounce } from '@mxssfd/core';
 import { AppConfig } from '../../types/interfaces';
 
 // 配置文件保存路径
