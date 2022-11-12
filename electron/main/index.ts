@@ -10,7 +10,7 @@ import { join } from 'path';
 import { setMenu } from '../menu';
 import { readMDFile, saveMDFile } from '../utils/file';
 import { isMac, isWin } from '../utils/platform';
-import { appConfig, addRecentDocument, setTheme, Theme } from '../utils/app-config';
+import { appConfig, addRecentDocument, setTheme, Theme, saveAppConfig } from '../utils/app-config';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -40,6 +40,8 @@ function createWindow(filePath?: string) {
     icon: join(process.env['PUBLIC'] as string, 'icon.png'),
     width: appConfig.window.width,
     height: appConfig.window.height,
+    minWidth: 560,
+    minHeight: 380,
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -97,6 +99,14 @@ function createWindow(filePath?: string) {
     } else {
       app.exit(0);
     }
+  });
+
+  win.on('resized', function () {
+    if (!win) return;
+    const [width, height] = win.getContentSize() as [number, number];
+    appConfig.window.width = width;
+    appConfig.window.height = height;
+    saveAppConfig();
   });
 }
 
