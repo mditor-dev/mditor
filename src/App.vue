@@ -38,13 +38,7 @@ watch(
 </script>
 
 <template>
-  <div
-    class="app-main"
-    :class="store.theme"
-    draggable="true"
-    @drop.stop.prevent="mdStore.onDrop"
-    @dragover.stop.prevent
-  >
+  <div class="app-main" draggable="true" @drop.stop.prevent="mdStore.onDrop" @dragover.stop.prevent>
     <section class="directory" :class="isShowClass">
       <md-directory
         :active-title-index="activeTitleIndex"

@@ -4,13 +4,13 @@ process.env['PUBLIC'] = app.isPackaged
   ? process.env['DIST']
   : join(process.env['DIST_ELECTRON'], '../public');
 
-import { app, BrowserWindow, shell, ipcMain, Tray, Menu, nativeTheme, nativeImage } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray, Menu, nativeImage } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
 import { setMenu } from '../menu';
 import { readMDFile, saveMDFile } from '../utils/file';
 import { isMac, isWin } from '../utils/platform';
-import { appConfig, addRecentDocument } from '../utils/app-config';
+import { appConfig, addRecentDocument, setTheme, Theme } from '../utils/app-config';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -69,6 +69,7 @@ function createWindow(filePath?: string) {
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
+    setTheme(win as BrowserWindow, appConfig.theme as Theme);
     // 通过文件关联打开的app
     filePath && readMDFile(win as BrowserWindow, filePath);
   });
@@ -117,10 +118,10 @@ ipcMain.on('drop-file', (_event, filePath: string) => {
   win?.setRepresentedFilename(filePath);
 });
 
-ipcMain.on('changeSystemTheme', (_event, value: any) => {
-  // 记录最近打开的文件
-  nativeTheme.themeSource = value;
-});
+// ipcMain.on('changeSystemTheme', (_event, value: any) => {
+//   // 记录最近打开的文件
+//   nativeTheme.themeSource = value;
+// });
 
 // 渲染线程请求关闭窗口
 ipcMain.on('close-window', () => {

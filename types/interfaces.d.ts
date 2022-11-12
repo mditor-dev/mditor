@@ -11,7 +11,7 @@ export interface MDFile {
 }
 
 export interface AppConfig {
-  theme: 'light' | 'dark';
+  theme: 'light' | 'dark' | 'system';
   window: {
     width: number;
     height: number;
