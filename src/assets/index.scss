@@ -1,10 +1,10 @@
 // 暂定
 .dark {
-  background: #1a2229;
+  background: #232428;
   color: #fff;
 
   .md-directory li {
-    color: #fff;
+    color: #c2c2c2;
     &.active {
       color: #fff;
     }
@@ -19,6 +19,31 @@
       border-radius: 0;
       border: #1a2229;
     }
+  }
+  code[class*='language-'],
+  pre[class*='language-'] {
+    text-shadow: none;
+  }
+}
+.toastui-editor-defaultUI-toolbar {
+  border: 0;
+}
+.light {
+  .md-directory {
+    //border-right: 1px solid #ebedf2;
+  }
+  .toastui-editor-defaultUI,
+  .toastui-editor-mode-switch {
+    border: 0;
+  }
+  .toastui-editor-defaultUI-toolbar {
+    background: none;
+  }
+  .toastui-editor-main-container {
+    background: #fefeff;
+  }
+  .toastui-editor-defaultUI-toolbar button {
+    border-color: transparent;
   }
 }
 
@@ -41,7 +66,6 @@
   }
 
   * {
-
     /*鼠标悬浮在该类指向的控件上时滑块的样式*/
     &:hover::-webkit-scrollbar-thumb {
       background-color: #9093995e;
