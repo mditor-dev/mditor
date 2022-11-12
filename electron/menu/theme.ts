@@ -1,9 +1,10 @@
 import { MenuItem, nativeTheme, BrowserWindow } from 'electron';
+import { isMac } from '../utils/platform';
 export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
   // 主题切换菜单
   return new MenuItem({
     id: 'ThemeMenu',
-    label: '主题(T)(&T)',
+    label: isMac ? '主题' : '主题(T)(&T)',
     submenu: [
       {
         label: 'light',

@@ -1,10 +1,10 @@
 import { MenuItem, app } from 'electron';
-import { isWin } from '../utils/platform';
+import { isMac, isWin } from '../utils/platform';
 export function getViewMenu(): MenuItem {
   // 显示菜单
   return new MenuItem({
     id: 'ViewMenu',
-    label: '显示(V)(&V)',
+    label: isMac ? '显示' : '显示(V)(&V)',
     submenu: [
       ...(app.isPackaged
         ? ([] as any)
