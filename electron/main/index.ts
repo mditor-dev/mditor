@@ -9,7 +9,7 @@ import { release } from 'os';
 import { join, dirname } from 'path';
 import { setMenu } from './menu';
 import { readMDFile, saveMDFile } from '../utils/file';
-import { isMac } from '../utils/platform';
+import { isMac, isWin } from '../utils/platform';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -33,10 +33,10 @@ const preload = join(__dirname, '../preload/index.js');
 const url = process.env['VITE_DEV_SERVER_URL'] as string;
 const indexHtml = join(process.env['DIST'], 'index.html');
 
-async function createWindow() {
+function createWindow(filePath?: string) {
   win = new BrowserWindow({
     title: 'Main window',
-    icon: join(process.env['PUBLIC'] as string, 'favicon.ico'),
+    icon: join(process.env['PUBLIC'] as string, 'icon.png'),
     width: 1000,
     height: 600,
     webPreferences: {
@@ -46,11 +46,15 @@ async function createWindow() {
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
       nodeIntegration: true,
       contextIsolation: false,
+      spellcheck: false,
     },
   });
 
+  win.setDocumentEdited(true);
+
   if (app.isPackaged) {
     win.loadFile(indexHtml);
+    // win.webContents.openDevTools();
   } else {
     win.loadURL(url);
     // Open devTool if the app is not packaged
@@ -64,6 +68,8 @@ async function createWindow() {
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
+    // 通过文件关联打开的app
+    filePath && readMDFile(win as BrowserWindow, filePath);
   });
 
   // Make all links open with the browser, not with the application
@@ -81,7 +87,7 @@ async function createWindow() {
 
     canClose = false;
 
-    if (isMac()) return;
+    if (isMac) return;
 
     if (win?.isVisible()) {
       win?.hide();
@@ -138,24 +144,28 @@ ipcMain.handle('open-win', (_event, arg) => {
   }
 });
 
+let filePath: string | undefined;
+// window关联app启动
+if (app.isPackaged && isWin && process.argv[1]) {
+  filePath = process.argv[1];
+}
+
 app.whenReady().then(() => {
-  createWindow();
-
-  win?.setDocumentEdited(true);
+  createWindow(filePath);
+  filePath = undefined;
 });
-
 app.on('ready', async () => {
   setMenu(() => win);
-  if (isMac()) return;
+  if (isMac) return;
   let iconPath: string;
-  if (url) {
+  if (!app.isPackaged) {
     // 测试环境
     console.log(app.getAppPath(), __dirname, 8999999);
     // iconPath = join(__dirname, '../../public/favicon.ico');
-    iconPath = join(app.getAppPath(), 'favicon.ico');
+    iconPath = join(app.getAppPath(), 'icon.png');
   } else {
     // 正式环境
-    iconPath = join(dirname(app.getPath('exe')), 'favicon.ico');
+    iconPath = join(dirname(app.getPath('exe')), 'icon.png');
   }
   tray = new Tray(iconPath);
   const contextMenu = Menu.buildFromTemplate([
@@ -181,16 +191,37 @@ app.on('window-all-closed', () => {
   // if (process.platform !== 'darwin') app.quit();
 });
 
-// 点击最近打开的文件，读取文件
+// mac专用：点击最近打开的文件或者通过文件关联打开app，读取文件
 app.on('open-file', function (_event, filepath: string) {
-  readMDFile(win as BrowserWindow, filepath);
+  // 最近文件打开
+  if (win && !win.isDestroyed()) {
+    readMDFile(win, filepath);
+    return;
+  }
+
+  // 文件关联，但窗口关闭时打开
+  if (app.isReady()) {
+    // 当文件关闭窗口在dock栏的时候，此时没有了窗口
+    // 需要重新开启一个窗口
+    createWindow(filepath);
+  }
+
+  // app未启动，通过文件关联启动，whenReady().then
+  filePath = filepath;
 });
 
-app.on('second-instance', () => {
+// windows通过任务栏的图标上的最近的文件打开
+app.on('second-instance', (_e, args) => {
   if (win) {
     // Focus on the main window if the user tried to open another
     if (win.isMinimized()) win.restore();
     win.focus();
+
+    // windows点击最近的文件
+    const filePath = args[2];
+    if (isWin && filePath) {
+      readMDFile(win, filePath);
+    }
   }
 });
 

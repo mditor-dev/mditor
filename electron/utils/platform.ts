@@ -3,20 +3,19 @@ import { release } from 'os';
 /**
  * mac
  */
-export function isMac(): boolean {
-  return process.platform === 'darwin';
-}
+export const isMac = process.platform === 'darwin';
 
 /**
- * win7
+ * win7-
  */
-export function isWin7(): boolean {
-  return release().startsWith('6.1');
-}
+export const isWin7 = release().startsWith('6.1');
 
 /**
  * Windows 10+
  */
-export function isWin10(): boolean {
-  return process.platform === 'win32';
-}
+export const isWin10 = process.platform === 'win32';
+
+/**
+ * win
+ */
+export const isWin = isWin10 || isWin7;
