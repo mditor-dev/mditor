@@ -24,9 +24,15 @@
   pre[class*='language-'] {
     text-shadow: none;
   }
+  .toastui-editor-contents .toastui-editor-md-preview-highlight::after {
+    background: #191a12;
+  }
 }
 .toastui-editor-defaultUI-toolbar {
   border: 0;
+}
+.token.operator {
+  background: none;
 }
 .light {
   .md-directory {
