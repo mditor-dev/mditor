@@ -1,10 +1,10 @@
 import { MenuItem, BrowserWindow } from 'electron';
-import { isWin } from '../utils/platform';
+import { isMac, isWin } from '../utils/platform';
 export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
   // 编辑菜单
   return new MenuItem({
     id: 'EditMenu',
-    label: '编辑(E)(&E)',
+    label: isMac ? '编辑' : '编辑(E)(&E)',
     submenu: [
       {
         label: '撤回',
@@ -14,7 +14,7 @@ export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
       {
         label: '重做',
         role: 'redo',
-        accelerator: 'CommandOrControl+z',
+        accelerator: isMac ? 'Command+Shift+z' : 'Control+y',
       },
       {
         type: 'separator',

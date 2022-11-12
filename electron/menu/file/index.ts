@@ -1,10 +1,11 @@
 import { MenuItem, BrowserWindow, dialog } from 'electron';
 import { readMDFile } from '../../utils/file';
 import { getRecentDocumentsMenu } from './recent-documents';
+import { isMac } from '../../utils/platform';
 export function getFileMenu(getWin: () => BrowserWindow | null): MenuItem {
   return new MenuItem({
     id: 'FileMenu',
-    label: '文件(F)(&F)',
+    label: isMac ? '文件' : '文件(F)(&F)',
     submenu: [
       {
         label: '打开文件',
