@@ -1,12 +1,12 @@
 import fs from 'fs';
 import * as Path from 'path';
-import { app } from 'electron';
+import { app, ipcMain } from 'electron';
 import { arrayRemoveItem, debounce } from '@mxssfd/ts-utils';
 import { AppConfig } from '../../types/interfaces';
 
 // 配置文件保存路径
 const configPath = Path.resolve(app.getPath('userData'), 'app.config.json');
-
+console.log(configPath);
 // 默认配置
 export let appConfig: AppConfig = {
   theme: 'light',
@@ -26,6 +26,7 @@ if (fs.existsSync(configPath)) {
  * 保存配置
  */
 export const saveAppConfig = debounce(() => {
+  ipcMain.emit('config-change');
   fs.writeFileSync(configPath, JSON.stringify(appConfig));
 }, 500);
 
@@ -37,6 +38,7 @@ export function addRecentDocument(filepath: string) {
   arrayRemoveItem(filepath, appConfig.recentDocuments);
   appConfig.recentDocuments.unshift(filepath);
   saveAppConfig();
+  ipcMain.emit('recent-document-change');
 }
 
 /**
@@ -46,4 +48,5 @@ export function clearRecentDocument() {
   app.clearRecentDocuments();
   appConfig.recentDocuments.length = 0;
   saveAppConfig();
+  ipcMain.emit('recent-document-change');
 }
