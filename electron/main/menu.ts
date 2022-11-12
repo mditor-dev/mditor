@@ -1,6 +1,15 @@
-import { Menu, dialog, BrowserWindow, MenuItem, nativeTheme } from 'electron';
+import * as Path from 'path';
+import {
+  BrowserWindow,
+  dialog,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  nativeTheme,
+} from 'electron';
 import { readMDFile } from '../utils/file';
-import { clearRecentDocument } from '../utils/app-config';
+import { appConfig, clearRecentDocument } from '../utils/app-config';
+import { isWin } from '../utils/platform';
 
 export function setMenu(getWin: () => BrowserWindow | null) {
   const isDev = process.env['npm_lifecycle_event'] === 'dev';
@@ -36,19 +45,50 @@ export function setMenu(getWin: () => BrowserWindow | null) {
         getWin()?.webContents.send('save-as');
       },
     }),
-    new MenuItem({
-      label: '打开最近文件',
-      role: 'recentDocuments',
-      submenu: [
-        {
-          label: 'Clear Recent',
-          role: 'clearRecentDocuments',
-          click() {
-            clearRecentDocument();
+    (function () {
+      function getSubmenu(): MenuItemConstructorOptions[] {
+        const submenu: MenuItemConstructorOptions[] = [
+          {
+            label: '清除最近文件',
+            role: 'clearRecentDocuments',
+            click() {
+              clearRecentDocument();
+            },
           },
-        },
-      ],
-    }),
+        ];
+        if (isWin) {
+          // 给filename计数查重
+          const exits: Record<string, number> = {};
+          appConfig.recentDocuments.forEach((filepath) => {
+            const filename = Path.basename(filepath);
+            exits[filename] = (exits[filename] || 0) + 1;
+          });
+
+          // 生成文件列表
+          const list = appConfig.recentDocuments.map<MenuItemConstructorOptions>((filepath) => {
+            const filename = Path.basename(filepath);
+            return {
+              // 如果有重名的文件则显示全路径
+              label: (exits[filename] as number) > 1 ? filepath : filename,
+              click() {
+                const win = getWin();
+                win && readMDFile(win, filepath);
+              },
+            };
+          });
+          submenu.unshift(...list, {
+            type: 'separator',
+          });
+        }
+        return submenu;
+      }
+
+      return new MenuItem({
+        label: '打开最近文件',
+        role: 'recentDocuments',
+        submenu: getSubmenu(),
+      });
+    })(),
   ];
 
   // 主题切换菜单
@@ -93,8 +133,6 @@ export function setMenu(getWin: () => BrowserWindow | null) {
       },
     }),
   );
-
-  console.log('1', editMenu);
 
   if (!isDev) {
     const viewMenu = oldMenu.getMenuItemById('viewmenu') as MenuItem;
