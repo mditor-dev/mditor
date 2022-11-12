@@ -36,8 +36,14 @@
   background: none;
 }
 @media (prefers-color-scheme: light) {
-  .md-directory {
-    //border-right: 1px solid #ebedf2;
+  .md-directory li {
+    color: #383838;
+    &.active {
+      color: black;
+    }
+    &:hover {
+      background: #f5f5f5;
+    }
   }
   .toastui-editor-defaultUI,
   .toastui-editor-mode-switch {
