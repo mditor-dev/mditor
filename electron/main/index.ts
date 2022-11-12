@@ -54,7 +54,7 @@ function createWindow(filePath?: string) {
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
   } else {
     win.loadURL(url);
     // Open devTool if the app is not packaged
@@ -210,11 +210,18 @@ app.on('open-file', function (_event, filepath: string) {
   filePath = filepath;
 });
 
-app.on('second-instance', () => {
+// windows通过任务栏的图标上的最近的文件打开
+app.on('second-instance', (_e, args) => {
   if (win) {
     // Focus on the main window if the user tried to open another
     if (win.isMinimized()) win.restore();
     win.focus();
+
+    // windows点击最近的文件
+    const filePath = args[2];
+    if (isWin && filePath) {
+      readMDFile(win, filePath);
+    }
   }
 });
 
