@@ -1,6 +1,6 @@
 import fs from 'fs';
 import * as Path from 'path';
-import { app, ipcMain } from 'electron';
+import { app, ipcMain, nativeTheme, BrowserWindow } from 'electron';
 import { arrayRemoveItem, debounce } from '@mxssfd/ts-utils';
 import { AppConfig } from '../../types/interfaces';
 
@@ -49,4 +49,17 @@ export function clearRecentDocument() {
   appConfig.recentDocuments.length = 0;
   saveAppConfig();
   ipcMain.emit('recent-document-change');
+}
+
+export enum Theme {
+  light = 'light',
+  dark = 'dark',
+  system = 'system',
+}
+
+export function setTheme(win: BrowserWindow, theme: Theme = nativeTheme.themeSource as Theme) {
+  nativeTheme.themeSource = theme;
+  win.webContents.send('change-theme', theme);
+  appConfig.theme = theme;
+  saveAppConfig();
 }

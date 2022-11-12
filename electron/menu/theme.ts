@@ -1,5 +1,7 @@
-import { MenuItem, nativeTheme, BrowserWindow } from 'electron';
+import { BrowserWindow, MenuItem } from 'electron';
 import { isMac } from '../utils/platform';
+import { appConfig, Theme, setTheme } from '../utils/app-config';
+
 export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
   // 主题切换菜单
   return new MenuItem({
@@ -7,17 +9,30 @@ export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
     label: isMac ? '主题' : '主题(T)(&T)',
     submenu: [
       {
-        label: 'light',
+        label: Theme.light,
+        type: 'radio',
+        checked: appConfig.theme === Theme.light,
         click() {
-          nativeTheme.themeSource = 'light';
-          getWin()?.webContents.send('changeTheme', 'light');
+          const win = getWin();
+          win && setTheme(win, Theme.light);
         },
       },
       {
-        label: 'dark',
+        label: Theme.dark,
+        type: 'radio',
+        checked: appConfig.theme === Theme.dark,
         click() {
-          nativeTheme.themeSource = 'dark';
-          getWin()?.webContents.send('changeTheme', 'dark');
+          const win = getWin();
+          win && setTheme(win, Theme.dark);
+        },
+      },
+      {
+        label: '跟随系统',
+        type: 'radio',
+        checked: appConfig.theme === Theme.system,
+        click() {
+          const win = getWin();
+          win && setTheme(win, Theme.system);
         },
       },
     ],
