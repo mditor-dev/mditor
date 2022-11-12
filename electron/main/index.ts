@@ -7,7 +7,7 @@ process.env['PUBLIC'] = app.isPackaged
 import { app, BrowserWindow, shell, ipcMain, Tray, Menu, nativeTheme, nativeImage } from 'electron';
 import { release } from 'os';
 import { join } from 'path';
-import { setMenu } from './menu';
+import { setMenu } from '../menu';
 import { readMDFile, saveMDFile } from '../utils/file';
 import { isMac, isWin } from '../utils/platform';
 import { appConfig, addRecentDocument } from '../utils/app-config';
