@@ -1,0 +1,56 @@
+import { MenuItem, BrowserWindow } from 'electron';
+import { isWin } from '../utils/platform';
+export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
+  // 编辑菜单
+  return new MenuItem({
+    id: 'EditMenu',
+    label: '编辑(E)(&E)',
+    submenu: [
+      {
+        label: '撤回',
+        role: 'undo',
+        accelerator: 'CommandOrControl+z',
+      },
+      {
+        label: '重做',
+        role: 'redo',
+        accelerator: 'CommandOrControl+z',
+      },
+      {
+        type: 'separator',
+      },
+
+      {
+        label: '剪切',
+        role: 'cut',
+        accelerator: 'CommandOrControl+x',
+      },
+      {
+        label: '拷贝',
+        role: 'copy',
+        accelerator: 'CommandOrControl+c',
+      },
+      {
+        label: '粘贴',
+        role: 'paste',
+        accelerator: 'CommandOrControl+v',
+      },
+      {
+        type: 'separator',
+      },
+
+      {
+        label: '格式化',
+        accelerator: 'CommandOrControl+Shift+f',
+        click() {
+          getWin()?.webContents.send('format-md');
+        },
+      },
+      {
+        label: '开始听写',
+        role: 'startSpeaking',
+        visible: !isWin,
+      },
+    ],
+  });
+}
