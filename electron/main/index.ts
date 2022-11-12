@@ -10,6 +10,7 @@ import { join } from 'path';
 import { setMenu } from './menu';
 import { readMDFile, saveMDFile } from '../utils/file';
 import { isMac, isWin } from '../utils/platform';
+import { appConfig, addRecentDocument } from '../utils/app-config';
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -37,8 +38,8 @@ function createWindow(filePath?: string) {
   win = new BrowserWindow({
     title: 'Main window',
     icon: join(process.env['PUBLIC'] as string, 'icon.png'),
-    width: 1000,
-    height: 600,
+    width: appConfig.window.width,
+    height: appConfig.window.height,
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -112,7 +113,7 @@ ipcMain.on('save-md-file', (_event, args) => {
 
 ipcMain.on('drop-file', (_event, filePath: string) => {
   // 记录最近打开的文件
-  app.addRecentDocument(filePath);
+  addRecentDocument(filePath);
   win?.setRepresentedFilename(filePath);
 });
 

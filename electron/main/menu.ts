@@ -1,5 +1,6 @@
 import { Menu, dialog, BrowserWindow, MenuItem, nativeTheme } from 'electron';
 import { readMDFile } from '../utils/file';
+import { clearRecentDocument } from '../utils/app-config';
 
 export function setMenu(getWin: () => BrowserWindow | null) {
   const isDev = process.env['npm_lifecycle_event'] === 'dev';
@@ -42,6 +43,9 @@ export function setMenu(getWin: () => BrowserWindow | null) {
         {
           label: 'Clear Recent',
           role: 'clearRecentDocuments',
+          click() {
+            clearRecentDocument();
+          },
         },
       ],
     }),

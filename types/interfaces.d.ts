@@ -9,3 +9,13 @@ export interface MDFile {
   content: string;
   path: string;
 }
+
+export interface AppConfig {
+  theme: 'light' | 'dark';
+  window: {
+    width: number;
+    height: number;
+    location?: [x: number, y: number];
+  };
+  recentDocuments: string[];
+}

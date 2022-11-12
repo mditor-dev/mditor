@@ -1,7 +1,8 @@
 import fs from 'fs';
 import * as Path from 'path';
-import { dialog, BrowserWindow, app } from 'electron';
+import { dialog, BrowserWindow } from 'electron';
 import { MDFile } from '../../types/interfaces';
+import { addRecentDocument } from './app-config';
 
 /**
  * 读取md文件
@@ -14,7 +15,7 @@ export function readMDFile(win: BrowserWindow | null, filePath: string): void {
     const content = fs.readFileSync(filePath).toString();
 
     // 添加至最近打开的文件
-    app.addRecentDocument(filePath);
+    addRecentDocument(filePath);
     win?.setRepresentedFilename(filePath);
     // 通知前台读取
     win?.webContents.send('read-md-file', {
@@ -58,7 +59,7 @@ export async function saveMDFile(
       fs.writeFileSync(path, content);
 
       // 添加至最近打开的文件
-      app.addRecentDocument(path);
+      addRecentDocument(path);
 
       win?.setRepresentedFilename(path);
 
