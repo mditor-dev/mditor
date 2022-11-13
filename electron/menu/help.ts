@@ -8,10 +8,15 @@ export function getHelpMenu(): MenuItem {
     label: isMac ? '帮助' : '帮助(H)(&H)',
     submenu: [
       {
-        label: '查看issue',
+        label: 'issue',
         click() {
           shell.openExternal(pkg.bugs.url);
         },
+      },
+      {
+        label: '关于',
+        role: 'about',
+        visible: !isMac,
       },
     ],
   });
