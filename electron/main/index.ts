@@ -90,7 +90,10 @@ function createWindow(filePath?: string) {
 
     canClose = false;
 
-    if (isMac) return;
+    if (isMac) {
+      win = null;
+      return;
+    }
 
     if (win?.isVisible()) {
       win?.hide();
@@ -167,7 +170,7 @@ app.whenReady().then(() => {
 });
 app.on('ready', async () => {
   setMenu(() => win);
-  const iconPath = join(app.getAppPath(), (app.isPackaged ? '../' : 'public/') + 'icon.png');
+  const iconPath = join(app.getAppPath(), (app.isPackaged ? '../' : 'public/') + 'icon_tray.png');
   // 使用nativeImage的话，就算图片是空的也会有个占位
   const icon = nativeImage.createFromPath(iconPath);
   tray = new Tray(icon);
@@ -175,17 +178,26 @@ app.on('ready', async () => {
     {
       label: '退出',
       role: 'quit',
-      click: function () {
-        app.quit();
-      },
     },
   ]);
   tray.setToolTip('编辑器');
   //显示程序页面
   tray.on('click', () => {
-    win?.show();
+    if (win) {
+      win.show();
+    } else {
+      createWindow();
+    }
   });
   tray.setContextMenu(contextMenu);
+});
+
+app.on('before-quit', () => {
+  // 因为拦截了关闭事件，所以要二次关闭，
+  // 如果是退出的话，before-quit会在window的close事件之前触发
+  ipcMain.once('close-window', () => {
+    app.exit();
+  });
 });
 
 // 这里还是有必要的，否则mac直接就关闭了，就算是空的listener都能让窗口维持在任务栏
