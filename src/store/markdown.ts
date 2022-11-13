@@ -23,7 +23,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     return originContent !== content;
   });
 
-  watch(isModify, (n) => ipcRenderer.send('set-can-close', !n), {
+  watch(isModify, (n) => ipcRenderer.send('md-store:isModify', n), {
     immediate: true,
   });
 
@@ -106,7 +106,6 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
 
       (event) => {
         function reply(delay = 0) {
-          ipcRenderer.send('set-can-close', true);
           setTimeout(() => event.sender.send('close-window'), delay);
         }
 
@@ -124,11 +123,15 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
           ipcRenderer.once('save-md-success', () => {
             reply(1000);
           });
+          ipcRenderer.once('save-md-cancel', () => {
+            ipcRenderer.send('close-window-cancel');
+          });
           actions.save();
           return;
         }
 
         // 直接离开
+        state.content = state.originContent;
         reply();
       },
     );

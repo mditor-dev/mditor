@@ -50,7 +50,12 @@ export async function saveMDFile(
           { name: 'Plain Text', extensions: [''] },
         ],
       });
-      if (res.canceled || !res.filePath) return;
+
+      if (res.canceled || !res.filePath) {
+        win?.webContents.send('save-md-cancel');
+        return;
+      }
+
       path = res.filePath;
     }
 

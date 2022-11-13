@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MdEditor from '@/components/MdEditor.vue';
 import MdDirectory from '@/components/MdDirectory.vue';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { MDDirectory } from '../types/interfaces';
 import { useStore } from '@/store';
 import { useMarkdownStore } from '@/store/markdown';
@@ -9,7 +9,6 @@ import { isMac } from '@/utils';
 
 const mdStore = useMarkdownStore();
 const store = useStore();
-const isShowClass = ref<string>('');
 const editorRef = ref();
 const activeTitleIndex = ref(0);
 const directory = ref<MDDirectory[]>([]);
@@ -24,28 +23,19 @@ const directory = ref<MDDirectory[]>([]);
 if (isMac()) {
   document.documentElement.classList.add('mac');
 }
-
-watch(
-  () => store.isShowCatalogue,
-  (newVal: boolean) => {
-    if (newVal) {
-      isShowClass.value = '';
-    } else {
-      isShowClass.value = 'none';
-    }
-  },
-);
 </script>
 
 <template>
-  <div class="app-main" draggable="true" @drop.stop.prevent="mdStore.onDrop" @dragover.stop.prevent>
-    <section class="directory" :class="isShowClass">
-      <md-directory
-        :active-title-index="activeTitleIndex"
-        :directory="directory"
-        @scroll-to="editorRef.scrollToElement($event)"
-      ></md-directory>
-    </section>
+  <div class="app-main" @drop.stop.prevent="mdStore.onDrop" @dragover.stop.prevent>
+    <Transition duration="50500" name="dir">
+      <section v-if="store.isShowCatalogue" class="directory">
+        <md-directory
+          :active-title-index="activeTitleIndex"
+          :directory="directory"
+          @scroll-to="editorRef.scrollToElement($event)"
+        ></md-directory>
+      </section>
+    </Transition>
     <section class="editor">
       <md-editor
         ref="editorRef"
@@ -57,20 +47,15 @@ watch(
 </template>
 
 <style lang="scss">
-:root {
-  -webkit-font-smoothing: antialiased;
-}
-:root,
-body {
-  margin: 0;
-  padding: 0;
-}
 .app-main {
   display: flex;
   align-items: flex-start;
   > section {
     &.directory {
-      flex: 0 0 260px;
+      width: 200px;
+      > * {
+        width: 200px;
+      }
     }
     &.editor {
       flex: 1;
@@ -78,7 +63,22 @@ body {
     }
   }
 }
-.none {
-  display: none;
+
+.dir-enter-active,
+.dir-leave-active {
+  transition: all 0.3s ease-in-out;
+  > * {
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+.dir-enter-from,
+.dir-leave-to {
+  width: 0 !important;
+  opacity: 0;
+  > * {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
 }
 </style>

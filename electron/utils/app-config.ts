@@ -1,25 +1,40 @@
 import fs from 'fs';
 import * as Path from 'path';
 import { app, ipcMain, nativeTheme, BrowserWindow } from 'electron';
-import { arrayRemoveItem, debounce } from '@mxssfd/ts-utils';
+import { arrayRemoveItem, debounce } from '@mxssfd/core';
 import { AppConfig } from '../../types/interfaces';
+
+export enum Theme {
+  light = 'light',
+  dark = 'dark',
+  system = 'system',
+}
 
 // 配置文件保存路径
 const configPath = Path.resolve(app.getPath('userData'), 'app.config.json');
 console.log(configPath);
 // 默认配置
 export let appConfig: AppConfig = {
-  theme: 'light',
+  version: '0.0.0',
   window: {
+    theme: Theme.dark as const,
     width: 1000,
     height: 600,
+    autoHideMenuBar: false,
   },
   recentDocuments: [],
 };
 
 // 如果已经存在了配置文件，那么把配置文件读取出来
 if (fs.existsSync(configPath)) {
-  appConfig = JSON.parse(fs.readFileSync(configPath).toString());
+  try {
+    const read = JSON.parse(fs.readFileSync(configPath).toString()) as AppConfig;
+    if (read.version === appConfig.version) {
+      appConfig = read;
+    }
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 /**
@@ -51,15 +66,9 @@ export function clearRecentDocument() {
   ipcMain.emit('recent-document-change');
 }
 
-export enum Theme {
-  light = 'light',
-  dark = 'dark',
-  system = 'system',
-}
-
 export function setTheme(win: BrowserWindow, theme: Theme = nativeTheme.themeSource as Theme) {
   nativeTheme.themeSource = theme;
   win.webContents.send('change-theme', theme);
-  appConfig.theme = theme;
+  appConfig.window.theme = theme;
   saveAppConfig();
 }

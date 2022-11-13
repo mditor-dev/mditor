@@ -1,3 +1,12 @@
+:root {
+  -webkit-font-smoothing: antialiased;
+}
+:root,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 // 暂定
 @media (prefers-color-scheme: dark) {
   .app-main {
@@ -26,7 +35,7 @@
     text-shadow: none;
   }
   .toastui-editor-contents .toastui-editor-md-preview-highlight::after {
-    background: #191a12;
+    background: #191a12 !important;
   }
 }
 .toastui-editor-defaultUI-toolbar {
@@ -36,8 +45,14 @@
   background: none;
 }
 @media (prefers-color-scheme: light) {
-  .md-directory {
-    //border-right: 1px solid #ebedf2;
+  .md-directory li {
+    color: #383838;
+    &.active {
+      color: black;
+    }
+    &:hover {
+      background: #f5f5f5;
+    }
   }
   .toastui-editor-defaultUI,
   .toastui-editor-mode-switch {

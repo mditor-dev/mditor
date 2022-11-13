@@ -11,7 +11,7 @@ export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
       {
         label: Theme.light,
         type: 'radio',
-        checked: appConfig.theme === Theme.light,
+        checked: appConfig.window.theme === Theme.light,
         click() {
           const win = getWin();
           win && setTheme(win, Theme.light);
@@ -20,7 +20,7 @@ export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
       {
         label: Theme.dark,
         type: 'radio',
-        checked: appConfig.theme === Theme.dark,
+        checked: appConfig.window.theme === Theme.dark,
         click() {
           const win = getWin();
           win && setTheme(win, Theme.dark);
@@ -29,7 +29,7 @@ export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
       {
         label: '跟随系统',
         type: 'radio',
-        checked: appConfig.theme === Theme.system,
+        checked: appConfig.window.theme === Theme.system,
         click() {
           const win = getWin();
           win && setTheme(win, Theme.system);

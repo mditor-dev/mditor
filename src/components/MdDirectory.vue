@@ -59,7 +59,7 @@ const directoryList = computed(() => {
     <ul ref="ulRef">
       <li
         v-for="(item, index) in directoryList"
-        :key="item.value + item.level"
+        :key="index"
         :class="{ ['level-' + item.level]: true, active: index === activeTitleIndex }"
         @click="editorScrollTo(index)"
         v-html="item.value"
@@ -94,12 +94,10 @@ const directoryList = computed(() => {
     padding: 6px 10px;
     cursor: pointer;
     word-break: break-all;
-    color: #383838;
     font-size: 14px;
     font-family: sans-serif;
     &.active {
       //color: #4b96e6;
-      color: black;
       font-weight: bold;
     }
     :deep(p) {
@@ -118,7 +116,6 @@ const directoryList = computed(() => {
       }
     }
     &:hover {
-      background: #f5f5f5;
       &::before {
         display: initial;
       }
