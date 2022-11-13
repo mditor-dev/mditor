@@ -135,7 +135,9 @@ function createWindow(filePath?: string) {
 
   // 渲染线程请求关闭窗口
   win.webContents.ipc.on('close-window', () => {
-    win?.close();
+    if (win && !win.isDestroyed()) {
+      win.close();
+    }
   });
 }
 
