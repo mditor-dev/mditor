@@ -6,11 +6,13 @@ import { getThemeMenu } from './theme';
 import { getWindowMenu } from './window';
 import { getHelpMenu } from './help';
 import { isMac } from '../utils/platform';
+import { getParagraphMenu } from './paragraph';
 
 export function setMenu(getWin: () => BrowserWindow | null): void {
   const menu = Menu.buildFromTemplate([
     getFileMenu(getWin),
     getEditMenu(getWin),
+    getParagraphMenu(getWin),
     getViewMenu(),
     getThemeMenu(getWin),
     getWindowMenu(),

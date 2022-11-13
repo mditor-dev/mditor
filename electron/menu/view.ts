@@ -29,17 +29,17 @@ export function getViewMenu(): MenuItem {
       {
         label: '实际大小',
         role: 'resetZoom',
-        accelerator: 'CommandOrControl+0',
+        accelerator: 'CommandOrControl+Shift+0',
       },
       {
         label: '放大',
         role: 'zoomIn',
-        accelerator: 'CommandOrControl+=',
+        accelerator: 'CommandOrControl+Shift+=',
       },
       {
         label: '缩小',
         role: 'zoomOut',
-        accelerator: 'CommandOrControl+-',
+        accelerator: 'CommandOrControl+Shift+-',
       },
       {
         type: 'separator',
