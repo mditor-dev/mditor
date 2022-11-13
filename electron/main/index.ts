@@ -36,10 +36,9 @@ const indexHtml = join(process.env['DIST'], 'index.html');
 
 function createWindow(filePath?: string) {
   win = new BrowserWindow({
+    ...appConfig.window,
     title: 'Main window',
     icon: join(process.env['PUBLIC'] as string, 'icon.png'),
-    width: appConfig.window.width,
-    height: appConfig.window.height,
     minWidth: 560,
     minHeight: 380,
     webPreferences: {
@@ -69,7 +68,7 @@ function createWindow(filePath?: string) {
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString());
-    setTheme(win as BrowserWindow, appConfig.theme as Theme);
+    setTheme(win as BrowserWindow, appConfig.window.theme as Theme);
     // 通过文件关联打开的app
     filePath && readMDFile(win as BrowserWindow, filePath);
   });
