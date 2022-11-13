@@ -138,6 +138,10 @@ function createWindow(filePath?: string) {
 
   // 渲染线程请求关闭窗口
   win.webContents.ipc.on('close-window', () => {
+    // 当不可关闭时，去询问渲染进程是否可关闭，
+    // 渲染进程判断可以关闭时才会触发，并把可以关闭的条件设置为true，
+    // 且不会再次询问渲染进程
+    canClose = true;
     if (win && !win.isDestroyed()) {
       // 会触发win的close事件
       win.close();
