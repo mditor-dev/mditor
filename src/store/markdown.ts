@@ -106,7 +106,6 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
 
       (event) => {
         function reply(delay = 0) {
-          ipcRenderer.send('set-can-close', true);
           setTimeout(() => event.sender.send('close-window'), delay);
         }
 
@@ -129,6 +128,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
         }
 
         // 直接离开
+        state.content = state.originContent;
         reply();
       },
     );
