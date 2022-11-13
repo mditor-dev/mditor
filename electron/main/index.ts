@@ -97,6 +97,9 @@ function createWindow(filePath?: string) {
     if (win?.isVisible()) {
       win?.hide();
       event.preventDefault();
+      // 使用ipcMain触发，不会被win.webContents.ipc.on('close-window')监听到
+      // 只为触发app.on('before-quit')内的close-window
+      ipcMain.emit('close-window');
     } else {
       app.exit(0);
     }
@@ -136,6 +139,7 @@ function createWindow(filePath?: string) {
   // 渲染线程请求关闭窗口
   win.webContents.ipc.on('close-window', () => {
     if (win && !win.isDestroyed()) {
+      // 会触发win的close事件
       win.close();
     }
   });
@@ -198,6 +202,7 @@ app.on('before-quit', () => {
   // 因为拦截了关闭事件，所以要二次关闭，
   // 如果是退出的话，before-quit会在window的close事件之前触发
   ipcMain.once('close-window', () => {
+    // 不会触发窗口的close事件
     if (!cancelQuit) app.exit();
   });
   // 保存文件期间，可能会选择取消保存，这时候要取消退出
