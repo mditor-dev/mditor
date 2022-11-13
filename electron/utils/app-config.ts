@@ -31,6 +31,7 @@ if (fs.existsSync(configPath)) {
     const read = JSON.parse(fs.readFileSync(configPath).toString()) as AppConfig;
     if (read.version === appConfig.version) {
       appConfig = read;
+      console.log(read);
     }
   } catch (e) {
     console.error(e);

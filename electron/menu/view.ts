@@ -1,5 +1,6 @@
-import { MenuItem, app } from 'electron';
+import { MenuItem, app, BrowserWindow } from 'electron';
 import { isMac, isWin } from '../utils/platform';
+import { appConfig, saveAppConfig } from '../utils/app-config';
 export function getViewMenu(): MenuItem {
   // 显示菜单
   return new MenuItem({
@@ -43,6 +44,23 @@ export function getViewMenu(): MenuItem {
       },
       {
         type: 'separator',
+      },
+      {
+        label: '自动隐藏菜单栏(按ALT显示菜单栏)',
+        role: 'autoHideMenuBar',
+        type: 'checkbox',
+        visible: !isMac,
+        checked: appConfig.window.autoHideMenuBar,
+        click(e) {
+          const hide = e.checked;
+          const wins = BrowserWindow.getAllWindows();
+          if (!wins.length) return;
+          wins.forEach((win) => {
+            win.setAutoHideMenuBar(hide);
+          });
+          appConfig.window.autoHideMenuBar = hide;
+          saveAppConfig();
+        },
       },
       {
         label: '全屏切换',
