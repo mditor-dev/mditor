@@ -53,8 +53,6 @@ function createWindow(filePath?: string) {
     },
   });
 
-  win.setDocumentEdited(true);
-
   if (app.isPackaged) {
     win.loadFile(indexHtml);
     // win.webContents.openDevTools();
@@ -82,6 +80,7 @@ function createWindow(filePath?: string) {
     return { action: 'deny' };
   });
 
+  let canClose = false;
   win.on('close', (event) => {
     if (!canClose) {
       win?.webContents.send('win-close-tips');
@@ -108,35 +107,35 @@ function createWindow(filePath?: string) {
     appConfig.window.height = height;
     saveAppConfig();
   });
+
+  // win.webContents.on('ipc-message', (e, ...args) => {
+  //   console.log(e, args);
+  // });
+
+  win.webContents.ipc.on('md-store:isModify', (_, isModify: boolean) => {
+    canClose = !isModify;
+    win?.setDocumentEdited(isModify);
+  });
+
+  win.webContents.ipc.on('set-window-size', (_event, { width, height }) => {
+    win?.setSize(width, height);
+  });
+
+  win.webContents.ipc.on('save-md-file', (_event, args) => {
+    win && saveMDFile(win, args);
+  });
+
+  win.webContents.ipc.on('drop-file', (_event, filePath: string) => {
+    // 记录最近打开的文件
+    addRecentDocument(filePath);
+    win?.setRepresentedFilename(filePath);
+  });
+
+  // 渲染线程请求关闭窗口
+  win.webContents.ipc.on('close-window', () => {
+    win?.close();
+  });
 }
-
-let canClose = false;
-ipcMain.on('set-can-close', (_, payload: boolean) => (canClose = payload));
-
-ipcMain.on('set-window-size', (_event, { width, height }) => {
-  console.log('set-window-size', width, height);
-  win?.setSize(width, height);
-});
-
-ipcMain.on('save-md-file', (_event, args) => {
-  win && saveMDFile(win, args);
-});
-
-ipcMain.on('drop-file', (_event, filePath: string) => {
-  // 记录最近打开的文件
-  addRecentDocument(filePath);
-  win?.setRepresentedFilename(filePath);
-});
-
-// ipcMain.on('changeSystemTheme', (_event, value: any) => {
-//   // 记录最近打开的文件
-//   nativeTheme.themeSource = value;
-// });
-
-// 渲染线程请求关闭窗口
-ipcMain.on('close-window', () => {
-  win?.close();
-});
 
 // new window example arg: new windows url
 ipcMain.handle('open-win', (_event, arg) => {

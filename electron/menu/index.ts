@@ -21,7 +21,7 @@ export function setMenu(getWin: () => BrowserWindow | null): void {
     if (oldMenu && oldMenu.items[0]) {
       const appMenu = oldMenu.items[0];
       menu.insert(0, appMenu);
-      console.log(appMenu.submenu);
+      // console.log(appMenu.submenu);
     }
   }
   Menu.setApplicationMenu(menu);

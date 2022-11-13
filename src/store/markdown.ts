@@ -23,7 +23,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     return originContent !== content;
   });
 
-  watch(isModify, (n) => ipcRenderer.send('set-can-close', !n), {
+  watch(isModify, (n) => ipcRenderer.send('md-store:isModify', n), {
     immediate: true,
   });
 
