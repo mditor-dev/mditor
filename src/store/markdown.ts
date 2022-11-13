@@ -123,6 +123,9 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
           ipcRenderer.once('save-md-success', () => {
             reply(1000);
           });
+          ipcRenderer.once('save-md-cancel', () => {
+            ipcRenderer.send('close-window-cancel');
+          });
           actions.save();
           return;
         }

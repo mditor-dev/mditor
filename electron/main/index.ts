@@ -193,10 +193,22 @@ app.on('ready', async () => {
 });
 
 app.on('before-quit', () => {
+  let cancelQuit = false;
   // 因为拦截了关闭事件，所以要二次关闭，
   // 如果是退出的话，before-quit会在window的close事件之前触发
   ipcMain.once('close-window', () => {
-    app.exit();
+    if (!cancelQuit) app.exit();
+  });
+  // 保存文件期间，可能会选择取消保存，这时候要取消退出
+  // 重现步骤:
+  // 1.打开编辑器
+  // 2.编辑
+  // 3.退出编辑器在弹窗选择保存文件
+  // 4.在保存文件期间选择取消
+  // 5.关闭窗口
+  // 如果不取消的话，在第5步会关闭app而不是关闭窗口
+  ipcMain.once('close-window-cancel', () => {
+    cancelQuit = true;
   });
 });
 
