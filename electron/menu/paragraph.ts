@@ -87,11 +87,6 @@ export function getParagraphMenu(getWin: () => BrowserWindow | null): MenuItem {
       },
       separator,
       {
-        label: '行内代码块',
-        accelerator: 'CommandOrControl+Alt+`',
-        click: exec('code'),
-      },
-      {
         label: '代码块',
         accelerator: 'CommandOrControl+Alt+C',
         click: exec('codeBlock'),
@@ -100,11 +95,6 @@ export function getParagraphMenu(getWin: () => BrowserWindow | null): MenuItem {
         label: '引用',
         accelerator: 'CommandOrControl+Alt+q',
         click: exec('blockQuote'),
-      },
-      {
-        label: '链接',
-        accelerator: 'CommandOrControl+Alt+l',
-        click: exec('addLink', { linkUrl: 'https://', linkText: '链接' }),
       },
       separator,
       {
@@ -127,6 +117,11 @@ export function getParagraphMenu(getWin: () => BrowserWindow | null): MenuItem {
         label: '水平分割线',
         accelerator: 'CommandOrControl+Alt+-',
         click: exec('hr'),
+      },
+      {
+        label: 'Custom Block',
+        accelerator: 'CommandOrControl+Alt+m',
+        click: exec('customBlock', { info: 'myCustom' }),
       },
     ],
   });

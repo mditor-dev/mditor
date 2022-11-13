@@ -22,7 +22,7 @@ export function getViewMenu(): MenuItem {
             {
               label: 'Toggle Developer Tools',
               role: 'toggleDevTools',
-              accelerator: 'CommandOrControl+Alt+i',
+              accelerator: 'CommandOrControl+Shift+Alt+i',
             },
             { type: 'separator' },
           ]),
