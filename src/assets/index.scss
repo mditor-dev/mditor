@@ -1,3 +1,12 @@
+:root {
+  -webkit-font-smoothing: antialiased;
+}
+:root,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 // 暂定
 @media (prefers-color-scheme: dark) {
   .app-main {
