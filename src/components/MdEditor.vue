@@ -32,13 +32,9 @@ function getHeight() {
   return window.innerHeight + 'px';
 }
 
-function saveFile() {
-  mdStore.save();
-}
-
 type EditorMode = 'wysiwyg' | 'markdown';
 
-let editor: any;
+let editor: Editor;
 let lastHeadingList: HTMLElement[];
 let lastGetHeadingListTime = Date.now();
 
@@ -107,6 +103,7 @@ watch(mdStore, (n) => {
     editor.setMarkdown(n.content);
     setTimeout(() => {
       editor.setScrollTop(0);
+      editor.focus();
     }, 50);
   }
 });
@@ -175,7 +172,7 @@ onMounted(() => {
     [
       { desc: '回退', keys: 'MetaOrControl+z', handler: exec('undo') },
       { desc: '前进', keys: isMac() ? 'Meta+Shift+z' : 'Control+y', handler: exec('redo') },
-      { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
+      // { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
       { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
     ],
     editorDomRef.value as HTMLDivElement,

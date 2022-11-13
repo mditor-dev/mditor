@@ -12,17 +12,17 @@ export function getViewMenu(): MenuItem {
             {
               label: 'reload',
               role: 'reload',
-              accelerator: 'CommandOrControl+r',
+              accelerator: 'f5',
             },
             {
               label: 'force reload',
               role: 'forceReload',
-              accelerator: 'CommandOrControl+Shift+r',
+              accelerator: 'Shift+f5',
             },
             {
               label: 'Toggle Developer Tools',
               role: 'toggleDevTools',
-              accelerator: 'CommandOrControl+Shift+Alt+i',
+              accelerator: 'CommandOrControl+Shift+Alt+f12',
             },
             { type: 'separator' },
           ]),
