@@ -112,10 +112,9 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
       // 弹窗会触发blur
       blurCanCave = false;
       if (isModify.value) {
-        // const confirm = window.confirm('文本未保存，是否丢弃？');
-        // blurCanCave = true;
-        // if (!confirm) return;
-        alert('1233');
+        const confirm = window.confirm('文本未保存，是否丢弃？');
+        blurCanCave = true;
+        if (!confirm) return;
       }
       state.content = state.originContent;
       blurCanCave = true;
