@@ -17,7 +17,7 @@ console.log(configPath);
 export let appConfig: AppConfig = {
   version: '0.0.0',
   window: {
-    theme: Theme.light as const,
+    theme: Theme.dark as const,
     width: 1000,
     height: 600,
     autoHideMenuBar: false,
