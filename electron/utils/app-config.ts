@@ -1,6 +1,6 @@
 import fs from 'fs';
 import * as Path from 'path';
-import { app, ipcMain, nativeTheme, BrowserWindow } from 'electron';
+import { app, ipcMain, nativeTheme } from 'electron';
 import { arrayRemoveItem, debounce } from '@mxssfd/core';
 import { AppConfig } from '../../types/interfaces';
 
@@ -54,6 +54,14 @@ export function addRecentDocument(filepath: string) {
   saveAppConfig();
   ipcMain.emit('recent-document-change');
 }
+/**
+ * 添加最近打开的文件记录
+ */
+export function removeRecentDocument(filepath: string) {
+  arrayRemoveItem(filepath, appConfig.recentDocuments);
+  saveAppConfig();
+  ipcMain.emit('recent-document-change');
+}
 
 /**
  * 清除所有最近打开的文件记录
@@ -65,9 +73,8 @@ export function clearRecentDocument() {
   ipcMain.emit('recent-document-change');
 }
 
-export function setTheme(win: BrowserWindow, theme: Theme = nativeTheme.themeSource as Theme) {
+export function setTheme(theme: Theme = nativeTheme.themeSource as Theme) {
   nativeTheme.themeSource = theme;
-  win.webContents.send('change-theme', theme);
   appConfig.window.theme = theme;
   saveAppConfig();
 }
