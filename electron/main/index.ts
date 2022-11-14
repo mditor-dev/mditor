@@ -6,6 +6,7 @@ import { setMenu } from '../menu';
 import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
 import { appConfig, setTheme, Theme } from '../utils/app-config';
+import { getWinByFilepath } from '../utils/file';
 
 // Remove electron security warnings
 // This warning only shows in development mode
@@ -34,7 +35,9 @@ app.whenReady().then(() => {
   tray.on('click', () => {
     const wins = BrowserWindow.getAllWindows();
     if (wins.length) {
-      wins[wins.length - 1]?.show();
+      const find = wins.find((win) => win.isMinimized());
+      if (find) find.show();
+      else wins[0]?.focus();
     } else {
       createWindow();
     }
@@ -69,6 +72,11 @@ app.on('window-all-closed', () => {
   // win = null;
   // if (process.platform !== 'darwin') app.quit();
 });
+function openWindow(filepath: string) {
+  const win = getWinByFilepath(filepath);
+  if (win) win.focus();
+  else createWindow(filepath);
+}
 
 // mac专用：点击最近打开的文件或者通过文件关联打开app，读取文件
 // 只在打包安装后有效
@@ -77,7 +85,7 @@ app.on('open-file', function (_event, filepath: string) {
   if (app.isReady()) {
     // 当文件关闭窗口在dock栏的时候，此时没有了窗口
     // 需要重新开启一个窗口
-    createWindow(filepath);
+    openWindow(filepath);
   } else {
     // app未启动，通过文件关联启动，whenReady().then
     filePath = filepath;
@@ -87,16 +95,18 @@ app.on('open-file', function (_event, filepath: string) {
 // windows通过任务栏图标菜单上的最近的文件打开 或者 通过文件关联打开
 // 只在打包安装后有效
 app.on('second-instance', (_e, args) => {
-  const filePath = args[2];
-  if (filePath) {
-    createWindow(filePath);
+  const filepath = args[2];
+  if (filepath) {
+    openWindow(filepath);
   }
 });
 
 app.on('activate', () => {
   const allWindows = BrowserWindow.getAllWindows();
   if (allWindows.length) {
-    allWindows[0]?.focus();
+    const find = allWindows.find((win) => win.isMinimized());
+    if (find) find.show();
+    else allWindows[0]?.focus();
   } else {
     createWindow();
   }
