@@ -24,10 +24,6 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     return originContent !== content;
   });
 
-  watch(isModify, (n) => ipcRenderer.send('md-store:isModify', n), {
-    immediate: true,
-  });
-
   watch(
     state,
     (n) => {
@@ -48,12 +44,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     isFromIpcMain = false;
   });
 
-  let blurCanCave = true;
   const actions = {
-    save(): void {
-      // 通知electron保存文件
-      ipcRenderer.send('save-md-file', { ...state });
-    },
     onDrop(event: DragEvent): void {
       const dt = event.dataTransfer;
       if (!dt) return;
@@ -84,111 +75,12 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     isWatched = true;
 
     ipcRenderer.on('md-store:update', (_, md: MDFile) => {
-      updateObj(state, md);
       isFromIpcMain = true;
+      updateObj(state, md);
     });
-
-    ipcRenderer.on('md-store:get', () => {
-      ipcRenderer.send('md-store:get-return', { ...state });
-    });
-
-    // 打开文件时的通知
-    ipcRenderer.on('read-md-file', (_event, { content, path, name }: MDFile) => {
-      state.path = path;
-      state.originContent = content;
-      state.content = content;
-      state.name = name;
-    });
-
-    // 窗口blur通知
-    ipcRenderer.on('window-blur', () => {
-      console.log('blur');
-      if (!blurCanCave || !isModify.value || !state.path) return;
-      actions.save();
-    });
-
-    // 保存文件
-    ipcRenderer.on('md-store:save', () => {
-      actions.save();
-    });
-    // 新建
-    ipcRenderer.on('md-store:new', () => {
-      // 弹窗会触发blur
-      blurCanCave = false;
-      if (isModify.value) {
-        const confirm = window.confirm('文本未保存，是否丢弃？');
-        blurCanCave = true;
-        if (!confirm) return;
-      }
-      state.content = '';
-      state.originContent = '';
-      state.path = '';
-      state.name = '';
-      blurCanCave = true;
-    });
-    ipcRenderer.on('md-store:restore', () => {
-      // 弹窗会触发blur
-      blurCanCave = false;
-      if (isModify.value) {
-        const confirm = window.confirm('文本未保存，是否丢弃？');
-        blurCanCave = true;
-        if (!confirm) return;
-      }
-      state.content = state.originContent;
-      blurCanCave = true;
-    });
-
-    // 另存为通知
-    ipcRenderer.on('md-store:save-as', (event) => {
-      event.sender.send('save-md-file', { ...state, type: 'save-as' });
-    });
-
-    // 保存成功通知
-    ipcRenderer.on('save-md-success', (_event, options: MDFile & { type: string }) => {
-      state.path = options.path;
-      state.name = options.name;
-      // 更新originContent
-      state.originContent = options.content;
-    });
-
-    // 窗口关闭提示
-    ipcRenderer.on(
-      'win-close-tips',
-
-      (event) => {
-        function reply(delay = 0) {
-          setTimeout(() => event.sender.send('close-window'), delay);
-        }
-
-        // 文件内容未改动，直接退出
-        if (!isModify.value) {
-          reply();
-          return;
-        }
-
-        // 内容已改动，询问是否保存
-        const confirm = window.confirm('文件未保存，是否保存再离开？');
-
-        // 确认保存
-        if (confirm) {
-          ipcRenderer.once('save-md-success', () => {
-            reply(1000);
-          });
-          ipcRenderer.once('save-md-cancel', () => {
-            ipcRenderer.send('close-window-cancel');
-          });
-          actions.save();
-          return;
-        }
-
-        // 直接离开
-        state.content = state.originContent;
-        reply();
-      },
-    );
 
     // 格式化markdown
-    ipcRenderer.on('format-md', () => {
+    ipcRenderer.on('md-store:format', () => {
       state.content = prettier.format(state.content, {
         parser: 'markdown',
         plugins: [

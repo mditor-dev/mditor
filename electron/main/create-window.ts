@@ -27,7 +27,14 @@ export function createWindow(filePath?: string) {
     },
   });
 
-  const { setState: setMd, state: md, isModify: isMdModify } = useMd(win);
+  const {
+    setState: setMd,
+    state: md,
+    isModify: isMdModify,
+    save: saveMd,
+    lockSave,
+    unlockSave,
+  } = useMd(win);
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);
@@ -39,8 +46,7 @@ export function createWindow(filePath?: string) {
 
   win.on('blur', function () {
     if (!isMdModify() || !md.path || win.isDestroyed()) return;
-    setMd({ originContent: md.content });
-    saveMDFile(win, md);
+    saveMd();
   });
 
   // Test actively push message to the Electron-Renderer
@@ -67,30 +73,32 @@ export function createWindow(filePath?: string) {
 
     (async function () {
       function emitClose(delay = 0) {
-        // 使用ipcMain触发，不会被win.webContents.ipc.on('close-window')监听到
-        // 只为触发app.on('before-quit')内的close-window
-        setTimeout(() => {
-          win.close();
-          ipcMain.emit('window:close');
-        }, delay);
+        setTimeout(() => win.close(), delay);
       }
       function emitCancel() {
+        // 使用ipcMain触发，不会被win.webContents.ipc.on('window:cancel-close')监听到
+        // 只为触发app.on('before-quit')内的事件
         ipcMain.emit('window:cancel-close');
       }
+      lockSave();
       // 内容已改动，询问是否保存
       const { response } = await dialog.showMessageBox(win, {
         type: 'question',
         message: '文件未保存，是否保存再离开？',
-        buttons: ['放弃', '保存'],
+        buttons: ['取消', '放弃', '保存'],
       });
+      unlockSave();
       switch (response) {
-        // 放弃
         case 0:
+          emitCancel();
+          break;
+        // 放弃
+        case 1:
           md.content = md.originContent;
           emitClose();
           break;
         // 确认保存
-        case 1:
+        case 2:
           saveMDFile(win, md).then((success) => {
             if (success) {
               setMd({ content: md.content, originContent: md.content });

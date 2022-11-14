@@ -1,13 +1,11 @@
 import * as Path from 'path';
-
-import { Menu, BrowserWindow, MenuItemConstructorOptions, ipcMain } from 'electron';
-import { appConfig, clearRecentDocument } from '../../utils/app-config';
+import fs from 'fs';
+import { Menu, MenuItemConstructorOptions, ipcMain, dialog } from 'electron';
+import { appConfig, clearRecentDocument, removeRecentDocument } from '../../utils/app-config';
 import { isWin } from '../../utils/platform';
-import { readMDFile } from '../../utils/file';
+import { openFile } from '../../utils/file';
 
-export function getRecentDocumentsMenu(
-  getWin: () => BrowserWindow | null,
-): MenuItemConstructorOptions {
+export function getRecentDocumentsMenu(): MenuItemConstructorOptions {
   function getSubmenu(): Menu {
     const submenu: MenuItemConstructorOptions[] = [
       {
@@ -22,8 +20,13 @@ export function getRecentDocumentsMenu(
       const list = appConfig.recentDocuments.map<MenuItemConstructorOptions>((filepath) => ({
         label: Path.basename(filepath),
         click() {
-          const win = getWin();
-          win && readMDFile(win, filepath);
+          const exists = fs.existsSync(filepath);
+          if (!exists) {
+            dialog.showErrorBox('提示', '文件不存在');
+            removeRecentDocument(filepath);
+            return;
+          }
+          openFile(async () => filepath);
         },
       }));
       submenu.unshift(...list, {

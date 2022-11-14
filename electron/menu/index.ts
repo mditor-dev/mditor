@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, Menu } from 'electron';
 import { getFileMenu } from './file';
 import { getEditMenu } from './edit';
 import { getViewMenu } from './view';
@@ -9,14 +9,14 @@ import { isMac } from '../utils/platform';
 import { getParagraphMenu } from './paragraph';
 import { getStyleMenu } from './style';
 
-export function setMenu(getWin: () => BrowserWindow | null): void {
+export function setMenu(): void {
   const menu = Menu.buildFromTemplate([
-    getFileMenu(getWin),
-    getEditMenu(getWin),
-    getParagraphMenu(getWin),
-    getStyleMenu(getWin),
+    getFileMenu(),
+    getEditMenu(),
+    getParagraphMenu(),
+    getStyleMenu(),
     getViewMenu(),
-    getThemeMenu(getWin),
+    getThemeMenu(),
     getWindowMenu(),
     getHelpMenu(),
   ]);

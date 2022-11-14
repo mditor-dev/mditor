@@ -1,8 +1,8 @@
-import { BrowserWindow, MenuItem } from 'electron';
+import { MenuItem } from 'electron';
 import { isMac } from '../utils/platform';
 import { appConfig, Theme, setTheme } from '../utils/app-config';
 
-export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
+export function getThemeMenu(): MenuItem {
   // 主题切换菜单
   return new MenuItem({
     id: 'ThemeMenu',
@@ -13,8 +13,7 @@ export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
         type: 'radio',
         checked: appConfig.window.theme === Theme.light,
         click() {
-          const win = getWin();
-          win && setTheme(win, Theme.light);
+          setTheme(Theme.light);
         },
       },
       {
@@ -22,8 +21,7 @@ export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
         type: 'radio',
         checked: appConfig.window.theme === Theme.dark,
         click() {
-          const win = getWin();
-          win && setTheme(win, Theme.dark);
+          setTheme(Theme.dark);
         },
       },
       {
@@ -31,8 +29,7 @@ export function getThemeMenu(getWin: () => BrowserWindow | null): MenuItem {
         type: 'radio',
         checked: appConfig.window.theme === Theme.system,
         click() {
-          const win = getWin();
-          win && setTheme(win, Theme.system);
+          setTheme(Theme.system);
         },
       },
     ],

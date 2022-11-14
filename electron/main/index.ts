@@ -19,10 +19,10 @@ if (app.isPackaged && isWin && process.argv[1]) {
 }
 
 app.whenReady().then(() => {
-  const win = createWindow(filePath);
+  createWindow(filePath);
   filePath = undefined;
 
-  setMenu(() => win);
+  setMenu();
   setTheme(appConfig.window.theme as Theme);
 
   // 使用nativeImage的话，就算图片是空的也会有个占位
@@ -46,9 +46,9 @@ app.on('before-quit', () => {
   let cancelQuit = false;
   // 因为拦截了关闭事件，所以要二次关闭，
   // 如果是退出的话，before-quit会在window的close事件之前触发
-  ipcMain.once('window:close', () => {
-    console.log('111123123');
-    // 不会触发窗口的close事件
+  // 使用window-all-closed代替自定义事件
+  // 当同时有多个窗口时按下退出快捷键，任何一个拦截都不能关闭app
+  app.once('window-all-closed', () => {
     if (!cancelQuit) app.exit();
   });
   // 保存文件期间，可能会选择取消保存，这时候要取消退出

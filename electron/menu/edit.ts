@@ -1,6 +1,6 @@
 import { MenuItem, BrowserWindow } from 'electron';
 import { isMac } from '../utils/platform';
-export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
+export function getEditMenu(): MenuItem {
   // 编辑菜单
   return new MenuItem({
     id: 'EditMenu',
@@ -49,7 +49,7 @@ export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
         label: '格式化',
         accelerator: 'CommandOrControl+Shift+f',
         click() {
-          getWin()?.webContents.send('format-md');
+          BrowserWindow.getFocusedWindow()?.webContents.send('md-store:format');
         },
       },
     ],

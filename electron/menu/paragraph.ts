@@ -1,9 +1,9 @@
 import { MenuItem, BrowserWindow, MenuItemConstructorOptions } from 'electron';
 import { isMac } from '../utils/platform';
-export function getParagraphMenu(getWin: () => BrowserWindow | null): MenuItem {
+export function getParagraphMenu(): MenuItem {
   const separator: MenuItemConstructorOptions = { type: 'separator' };
   const exec = (name: string, payload?: Record<string, any>) => () =>
-    getWin()?.webContents.send('editor:command', { name, payload });
+    BrowserWindow.getFocusedWindow()?.webContents.send('editor:command', { name, payload });
   // 段落菜单
   return new MenuItem({
     id: 'EditMenu',

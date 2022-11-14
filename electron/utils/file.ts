@@ -3,6 +3,8 @@ import * as Path from 'path';
 import { dialog, BrowserWindow } from 'electron';
 import { MDFile } from '../../types/interfaces';
 import { addRecentDocument } from './app-config';
+import { createWindow } from '../main/create-window';
+import { mdManager } from '../hooks/use-md';
 
 /**
  * 读取md文件
@@ -75,4 +77,41 @@ export async function saveMDFile(
     dialog.showErrorBox('保存md文件出错2', e);
     return Promise.reject('保存md文件出错2');
   }
+}
+
+export async function openFile(
+  getFilePath: (win: BrowserWindow) => Promise<string>,
+): Promise<void> {
+  async function useCurWindow(win: BrowserWindow, setMd: Function) {
+    try {
+      const filepath = await getFilePath(win);
+      const mdFile = await readMDFile(win, filepath);
+      mdFile && setMd(mdFile);
+    } catch (e: any) {
+      // error
+      console.log(e?.message);
+    }
+  }
+  const win = BrowserWindow.getFocusedWindow();
+
+  if (!win) {
+    const win = createWindow();
+    await useCurWindow(win, mdManager.get(win)!.setState);
+    return;
+  }
+
+  const hook = mdManager.get(win);
+  if (!hook) return;
+
+  const { state: md, isModify, setState: setMd } = hook;
+
+  // 有未保存的或者有已经打开的内容直接新建窗口 或者有已经打开的空文件
+  if (isModify() || md.content || md.path) {
+    const filepath = await getFilePath(win);
+    createWindow(filepath);
+    return;
+  }
+
+  // 否则使用当前窗口
+  useCurWindow(win, setMd);
 }
