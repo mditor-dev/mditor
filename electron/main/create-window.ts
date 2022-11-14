@@ -1,8 +1,8 @@
-import { BrowserWindow, app, shell, ipcMain } from 'electron';
+import { BrowserWindow, app, shell, dialog, ipcMain } from 'electron';
 import { join } from 'path';
-import { addRecentDocument, appConfig, saveAppConfig, setTheme, Theme } from '../utils/app-config';
+import { appConfig, saveAppConfig } from '../utils/app-config';
 import { readMDFile, saveMDFile } from '../utils/file';
-import { isMac } from '../utils/platform';
+import { useMd } from '../hooks/use-md';
 
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js');
@@ -27,9 +27,10 @@ export function createWindow(filePath?: string) {
     },
   });
 
+  const { setState: setMd, state: md, isModify: isMdModify } = useMd(win);
+
   if (app.isPackaged) {
     win.loadFile(indexHtml);
-    // win.webContents.openDevTools();
   } else {
     win.loadURL(url);
     // Open devTool if the app is not packaged
@@ -37,15 +38,19 @@ export function createWindow(filePath?: string) {
   }
 
   win.on('blur', function () {
-    win?.webContents.send('window-blur');
+    if (!isMdModify() || !md.path || win.isDestroyed()) return;
+    setMd({ originContent: md.content });
+    saveMDFile(win, md);
   });
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString());
-    setTheme(win as BrowserWindow, appConfig.window.theme as Theme);
+    win.webContents.send('main-process-message', new Date().toLocaleString());
     // 通过文件关联打开的app
-    filePath && readMDFile(win as BrowserWindow, filePath);
+    if (filePath) {
+      const file = readMDFile(win as BrowserWindow, filePath);
+      if (file) setMd(file);
+    }
   });
 
   // Make all links open with the browser, not with the application
@@ -54,30 +59,49 @@ export function createWindow(filePath?: string) {
     return { action: 'deny' };
   });
 
-  let canClose = false;
   win.on('close', (event) => {
-    if (!canClose) {
-      win?.webContents.send('win-close-tips');
-      event.preventDefault(); //阻止窗口的关闭事件
-      return;
-    }
+    console.log('close', isMdModify());
+    if (!isMdModify()) return;
 
-    canClose = false;
+    event.preventDefault(); //阻止窗口的关闭事件
 
-    if (isMac) {
-      // win = null;
-      return;
-    }
-
-    if (win?.isVisible()) {
-      win?.hide();
-      event.preventDefault();
-      // 使用ipcMain触发，不会被win.webContents.ipc.on('close-window')监听到
-      // 只为触发app.on('before-quit')内的close-window
-      ipcMain.emit('close-window');
-    } else {
-      app.exit(0);
-    }
+    (async function () {
+      function emitClose(delay = 0) {
+        // 使用ipcMain触发，不会被win.webContents.ipc.on('close-window')监听到
+        // 只为触发app.on('before-quit')内的close-window
+        setTimeout(() => {
+          win.close();
+          ipcMain.emit('window:close');
+        }, delay);
+      }
+      function emitCancel() {
+        ipcMain.emit('window:cancel-close');
+      }
+      // 内容已改动，询问是否保存
+      const { response } = await dialog.showMessageBox(win, {
+        type: 'question',
+        message: '文件未保存，是否保存再离开？',
+        buttons: ['放弃', '保存'],
+      });
+      switch (response) {
+        // 放弃
+        case 0:
+          md.content = md.originContent;
+          emitClose();
+          break;
+        // 确认保存
+        case 1:
+          saveMDFile(win, md).then((success) => {
+            if (success) {
+              setMd({ content: md.content, originContent: md.content });
+              emitClose(1000);
+            } else {
+              emitCancel();
+            }
+          });
+          break;
+      }
+    })();
   });
 
   win.on('resized', function () {
@@ -92,35 +116,8 @@ export function createWindow(filePath?: string) {
   //   console.log(e, args);
   // });
 
-  win.webContents.ipc.on('md-store:isModify', (_, isModify: boolean) => {
-    canClose = !isModify;
-    win?.setDocumentEdited(isModify);
-  });
-
-  win.webContents.ipc.on('set-window-size', (_event, { width, height }) => {
-    win?.setSize(width, height);
-  });
-
-  win.webContents.ipc.on('save-md-file', (_event, args) => {
-    win && saveMDFile(win, args);
-  });
-
-  win.webContents.ipc.on('drop-file', (_event, filePath: string) => {
-    // 记录最近打开的文件
-    addRecentDocument(filePath);
-    win?.setRepresentedFilename(filePath);
-  });
-
-  // 渲染线程请求关闭窗口
-  win.webContents.ipc.on('close-window', () => {
-    // 当不可关闭时，去询问渲染进程是否可关闭，
-    // 渲染进程判断可以关闭时才会触发，并把可以关闭的条件设置为true，
-    // 且不会再次询问渲染进程
-    canClose = true;
-    if (win && !win.isDestroyed()) {
-      // 会触发win的close事件
-      win.close();
-    }
+  win.webContents.ipc.on('save-md-file', () => {
+    saveMDFile(win, md);
   });
 
   return win;

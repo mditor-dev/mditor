@@ -5,6 +5,7 @@ import { join } from 'path';
 import { setMenu } from '../menu';
 import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
+import { appConfig, setTheme, Theme } from '../utils/app-config';
 
 // Remove electron security warnings
 // This warning only shows in development mode
@@ -22,6 +23,8 @@ app.whenReady().then(() => {
   filePath = undefined;
 
   setMenu(() => win);
+  setTheme(appConfig.window.theme as Theme);
+
   // 使用nativeImage的话，就算图片是空的也会有个占位
   const icon = nativeImage.createFromPath(join(process.env['PUBLIC'] as string, 'icon_tray.png'));
   const tray = new Tray(icon);
@@ -43,7 +46,8 @@ app.on('before-quit', () => {
   let cancelQuit = false;
   // 因为拦截了关闭事件，所以要二次关闭，
   // 如果是退出的话，before-quit会在window的close事件之前触发
-  ipcMain.once('close-window', () => {
+  ipcMain.once('window:close', () => {
+    console.log('111123123');
     // 不会触发窗口的close事件
     if (!cancelQuit) app.exit();
   });
@@ -55,7 +59,7 @@ app.on('before-quit', () => {
   // 4.在保存文件期间选择取消
   // 5.关闭窗口
   // 如果不取消的话，在第5步会关闭app而不是关闭窗口
-  ipcMain.once('close-window-cancel', () => {
+  ipcMain.once('window:cancel-close', () => {
     cancelQuit = true;
   });
 });

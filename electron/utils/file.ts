@@ -9,7 +9,7 @@ import { addRecentDocument } from './app-config';
  * @param win
  * @param filePath
  */
-export function readMDFile(win: BrowserWindow | null, filePath: string): void {
+export function readMDFile(win: BrowserWindow | null, filePath: string): MDFile | void {
   try {
     // 读取文件内容
     const content = fs.readFileSync(filePath).toString();
@@ -17,12 +17,8 @@ export function readMDFile(win: BrowserWindow | null, filePath: string): void {
     // 添加至最近打开的文件
     addRecentDocument(filePath);
     win?.setRepresentedFilename(filePath);
-    // 通知前台读取
-    win?.webContents.send('read-md-file', {
-      content,
-      name: Path.basename(filePath),
-      path: filePath,
-    });
+
+    return { content, name: Path.basename(filePath), originContent: content, path: filePath };
   } catch (e: any) {
     dialog.showErrorBox('读取文件失败', e);
   }
@@ -32,10 +28,9 @@ export function readMDFile(win: BrowserWindow | null, filePath: string): void {
  * 保存md文件
  */
 export async function saveMDFile(
-  win: BrowserWindow | null,
+  win: BrowserWindow,
   options: MDFile & { type?: 'save' | 'save-as' },
-): Promise<void> {
-  if (!win) return;
+): Promise<boolean> {
   const { content, type = 'save' } = options;
   let { path } = options;
   try {
@@ -53,7 +48,7 @@ export async function saveMDFile(
 
       if (res.canceled || !res.filePath) {
         win?.webContents.send('save-md-cancel');
-        return;
+        return false;
       }
 
       path = res.filePath;
@@ -70,10 +65,14 @@ export async function saveMDFile(
 
       // 通知渲染线程保存成功
       win?.webContents.send('save-md-success', { ...options, path, name: Path.basename(path) });
+
+      return true;
     } catch (e: any) {
       dialog.showErrorBox('保存md文件出错', e);
+      return Promise.reject('保存md文件出错');
     }
   } catch (e: any) {
     dialog.showErrorBox('保存md文件出错2', e);
+    return Promise.reject('保存md文件出错2');
   }
 }

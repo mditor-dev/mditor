@@ -12,6 +12,7 @@ import parserFlow from 'prettier/esm/parser-flow.mjs';
 import parserGraphql from 'prettier/esm/parser-graphql.mjs';
 import parserPostcss from 'prettier/esm/parser-postcss.mjs';
 import parserYaml from 'prettier/esm/parser-yaml.mjs';
+import { updateObj } from '@mxssfd/core';
 
 let isWatched = false;
 export const useMarkdownStore = defineStore('md-file-store', () => {
@@ -38,6 +39,14 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     },
     { immediate: true },
   );
+
+  let isFromIpcMain = false;
+  watch(state, (n) => {
+    if (!isFromIpcMain) {
+      ipcRenderer.send('md-store:update', { ...n });
+    }
+    isFromIpcMain = false;
+  });
 
   let blurCanCave = true;
   const actions = {
@@ -73,6 +82,11 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
   function addListener(): void {
     if (isWatched) return;
     isWatched = true;
+
+    ipcRenderer.on('md-store:update', (_, md: MDFile) => {
+      updateObj(state, md);
+      isFromIpcMain = true;
+    });
 
     ipcRenderer.on('md-store:get', () => {
       ipcRenderer.send('md-store:get-return', { ...state });
