@@ -3,7 +3,6 @@ import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron';
 
 import { join } from 'path';
 import { setMenu } from '../menu';
-import { readMDFile } from '../utils/file';
 import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
 
@@ -13,7 +12,7 @@ import { createWindow } from './create-window';
 // process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
 
 let filePath: string | undefined;
-// window关联app启动
+// windows关联app启动
 if (app.isPackaged && isWin && process.argv[1]) {
   filePath = process.argv[1];
 }
@@ -26,17 +25,13 @@ app.whenReady().then(() => {
   // 使用nativeImage的话，就算图片是空的也会有个占位
   const icon = nativeImage.createFromPath(join(process.env['PUBLIC'] as string, 'icon_tray.png'));
   const tray = new Tray(icon);
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: '退出',
-      role: 'quit',
-    },
-  ]);
+  const contextMenu = Menu.buildFromTemplate([{ label: '退出', role: 'quit' }]);
   tray.setToolTip('mditor');
   //显示程序页面
   tray.on('click', () => {
-    if (win) {
-      win.show();
+    const wins = BrowserWindow.getAllWindows();
+    if (wins.length) {
+      wins[wins.length - 1]?.show();
     } else {
       createWindow();
     }
@@ -72,23 +67,17 @@ app.on('window-all-closed', () => {
 });
 
 // mac专用：点击最近打开的文件或者通过文件关联打开app，读取文件
+// 只在打包安装后有效
 app.on('open-file', function (_event, filepath: string) {
-  const win = BrowserWindow.getFocusedWindow();
-  // 最近文件打开
-  if (win && !win.isDestroyed()) {
-    readMDFile(win, filepath);
-    return;
-  }
-
-  // 文件关联，但窗口关闭时打开
+  // 文件关联，但窗口关闭app还未关闭时打开
   if (app.isReady()) {
     // 当文件关闭窗口在dock栏的时候，此时没有了窗口
     // 需要重新开启一个窗口
     createWindow(filepath);
+  } else {
+    // app未启动，通过文件关联启动，whenReady().then
+    filePath = filepath;
   }
-
-  // app未启动，通过文件关联启动，whenReady().then
-  filePath = filepath;
 });
 
 // windows通过任务栏图标菜单上的最近的文件打开 或者 通过文件关联打开
