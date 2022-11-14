@@ -76,11 +76,20 @@ export async function saveMDFile(
 }
 
 export async function openFile(
-  getFilePath: (win: BrowserWindow) => Promise<string>,
+  getFilepath: (win: BrowserWindow) => Promise<string>,
 ): Promise<void> {
+  async function _getFilepath(win: BrowserWindow): Promise<string> {
+    const filepath = await getFilepath(win);
+    const exists = getWinByFilepath(filepath);
+    if (exists) {
+      exists.focus();
+      return Promise.reject('exists');
+    }
+    return filepath;
+  }
   async function useCurWindow(win: BrowserWindow, setMd: Function) {
     try {
-      const filepath = await getFilePath(win);
+      const filepath = await _getFilepath(win);
       const mdFile = await readMDFile(win, filepath);
       mdFile && setMd(mdFile);
     } catch (e: any) {
@@ -103,11 +112,17 @@ export async function openFile(
 
   // 有未保存的或者有已经打开的内容直接新建窗口 或者有已经打开的空文件
   if (isModify() || md.content || md.path) {
-    const filepath = await getFilePath(win);
+    const filepath = await _getFilepath(win);
     createWindow(filepath);
     return;
   }
 
   // 否则使用当前窗口
   useCurWindow(win, setMd);
+}
+
+export function getWinByFilepath(filepath: string) {
+  const wins = BrowserWindow.getAllWindows();
+
+  return wins.find((win) => mdManager.get(win)?.state.path === filepath);
 }
