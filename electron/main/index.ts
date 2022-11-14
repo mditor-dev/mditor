@@ -179,9 +179,8 @@ app.whenReady().then(() => {
 });
 app.on('ready', async () => {
   setMenu(() => win);
-  const iconPath = join(app.getAppPath(), (app.isPackaged ? '../' : 'public/') + 'icon_tray.png');
   // 使用nativeImage的话，就算图片是空的也会有个占位
-  const icon = nativeImage.createFromPath(iconPath);
+  const icon = nativeImage.createFromPath(join(process.env['PUBLIC'] as string, 'icon_tray.png'));
   tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([
     {
