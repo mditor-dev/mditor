@@ -54,9 +54,18 @@ body {
       background: #f5f5f5;
     }
   }
-  .toastui-editor-defaultUI,
+  .toastui-editor-defaultUI {
+    border: none;
+    .toastui-editor-main-container {
+      background-color: #fbfbfb;
+      .toastui-editor-ww-container {
+        background-color: #fbfbfb;
+      }
+    }
+  }
   .toastui-editor-mode-switch {
-    border: 0;
+    border-top: 1px solid #ebedf2;
+    background-color: #fbfbfb;
   }
   .toastui-editor-defaultUI-toolbar {
     background: none;
@@ -67,6 +76,19 @@ body {
   .toastui-editor-defaultUI-toolbar button {
     border-color: transparent;
   }
+}
+
+// 字体
+.toastui-editor-defaultUI,
+.ProseMirror,
+.toastui-editor-md-code,
+.toastui-editor-md-code-block,
+.toastui-editor-contents pre,
+.toastui-editor-contents code,
+.toastui-editor-tooltip,
+code[class*='language-'],
+pre[class*='language-'] {
+  font-family: system-ui;
 }
 
 // 滚动条美化
