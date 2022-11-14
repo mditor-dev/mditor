@@ -1,7 +1,7 @@
 import { BrowserWindow, app, shell, dialog, ipcMain } from 'electron';
 import { join } from 'path';
 import { appConfig, saveAppConfig } from '../utils/app-config';
-import { readMDFile, saveMDFile } from '../utils/file';
+import { readMDFile } from '../utils/file';
 import { useMd } from '../hooks/use-md';
 
 // Here, you can also use other preload
@@ -99,14 +99,11 @@ export function createWindow(filePath?: string) {
           break;
         // 确认保存
         case 2:
-          saveMDFile(win, md).then((success) => {
-            if (success) {
-              setMd({ content: md.content, originContent: md.content });
-              emitClose(1000);
-            } else {
-              emitCancel();
-            }
+          saveMd().then((file) => {
+            if (file) emitClose(1000);
+            else emitCancel();
           });
+
           break;
       }
     })();
@@ -123,10 +120,6 @@ export function createWindow(filePath?: string) {
   // win.webContents.on('ipc-message', (e, ...args) => {
   //   console.log(e, args);
   // });
-
-  win.webContents.ipc.on('save-md-file', () => {
-    saveMDFile(win, md);
-  });
 
   return win;
 }

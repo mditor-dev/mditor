@@ -29,8 +29,8 @@ export function useMd(win: BrowserWindow) {
 
   // 因为弹窗会触发blur保存，所以加个锁锁住save
   let saveLock = false;
-  const save = async (type: 'save' | 'save-as' = 'save') => {
-    if (saveLock) return Promise.resolve(false);
+  const save = async (type: 'save' | 'save-as' = 'save'): Promise<null | MDFile> => {
+    if (saveLock) return Promise.resolve(null);
     const file = await saveMDFile(win, { ..._state, type });
     file && setState(file);
     return file;
