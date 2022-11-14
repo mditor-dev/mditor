@@ -74,6 +74,10 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     if (isWatched) return;
     isWatched = true;
 
+    ipcRenderer.on('md-store:get', () => {
+      ipcRenderer.send('md-store:get-return', { ...state });
+    });
+
     // 打开文件时的通知
     ipcRenderer.on('read-md-file', (_event, { content, path, name }: MDFile) => {
       state.path = path;
