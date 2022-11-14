@@ -40,7 +40,7 @@ export async function saveMDFile(
       // 显示文件保存窗口
       const res = await dialog.showSaveDialog(win, {
         title: type === 'save-as' ? '另存为' : '',
-        defaultPath: path,
+        defaultPath: path || /^[^\n]+/.exec(content)?.[0]?.replace(/^#+/, '').trim(),
         // message: '111',
         filters: [
           { name: 'Markdown', extensions: ['md'] },
