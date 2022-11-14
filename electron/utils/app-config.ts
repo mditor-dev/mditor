@@ -12,7 +12,6 @@ export enum Theme {
 
 // 配置文件保存路径
 const configPath = Path.resolve(app.getPath('userData'), 'app.config.json');
-console.log(configPath);
 // 默认配置
 export let appConfig: AppConfig = {
   version: '0.0.0',
@@ -31,7 +30,6 @@ if (fs.existsSync(configPath)) {
     const read = JSON.parse(fs.readFileSync(configPath).toString()) as AppConfig;
     if (read.version === appConfig.version) {
       appConfig = read;
-      console.log(read);
     }
   } catch (e) {
     console.error(e);

@@ -173,7 +173,7 @@ onMounted(() => {
       { desc: '回退', keys: 'MetaOrControl+z', handler: exec('undo') },
       { desc: '前进', keys: isMac() ? 'Meta+Shift+z' : 'Control+y', handler: exec('redo') },
       // { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
-      { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
+      // { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
     ],
     editorDomRef.value as HTMLDivElement,
   );
