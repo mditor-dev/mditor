@@ -1,7 +1,15 @@
-import { MenuItem, BrowserWindow, dialog, MenuItemConstructorOptions } from 'electron';
+import {
+  MenuItem,
+  BrowserWindow,
+  dialog,
+  MenuItemConstructorOptions,
+  shell,
+  ipcMain,
+} from 'electron';
 import { readMDFile } from '../../utils/file';
 import { getRecentDocumentsMenu } from './recent-documents';
 import { isMac } from '../../utils/platform';
+import { MDFile } from '../../../types/interfaces';
 export function getFileMenu(getWin: () => BrowserWindow | null): MenuItem {
   const separator: MenuItemConstructorOptions = { type: 'separator' };
   return new MenuItem({
@@ -39,6 +47,18 @@ export function getFileMenu(getWin: () => BrowserWindow | null): MenuItem {
         accelerator: 'CommandOrControl+Shift+s',
         click() {
           getWin()?.webContents.send('md-store:save-as');
+        },
+      },
+      {
+        label: '打开文件位置',
+        click() {
+          const win = getWin();
+          if (!win) return;
+          ipcMain.once('md-store:get-return', function (_, file: MDFile) {
+            console.log(file);
+            if (file.path) shell.showItemInFolder(file.path);
+          });
+          win.webContents.send('md-store:get');
         },
       },
       separator,
