@@ -31,9 +31,9 @@ export function useMd(win: BrowserWindow) {
   let saveLock = false;
   const save = async (type: 'save' | 'save-as' = 'save') => {
     if (saveLock) return Promise.resolve(false);
-    const success = await saveMDFile(win, { ..._state, type });
-    success && setState({ originContent: _state.content });
-    return success;
+    const file = await saveMDFile(win, { ..._state, type });
+    file && setState(file);
+    return file;
   };
   const lockSave = () => (saveLock = true);
   const unlockSave = () => (saveLock = false);
