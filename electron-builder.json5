@@ -2,10 +2,11 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  appId: 'YourAppID',
+  appId: 'com.mditor-dev.mditor',
   asar: true,
   directories: {
     output: 'release/${version}',
+    buildResources: "electron/resources"
   },
   files: ['dist-electron', 'dist'],
   mac: {
@@ -21,13 +22,18 @@
     ],
     artifactName: '${productName}_${version}.${ext}',
   },
+  linux: {
+    icon: "electron/resources/iconset",
+    target: ["AppImage", "deb"],
+    artifactName: "${productName}-Linux-${version}.${ext}",
+  },
   fileAssociations: [
     {
       ext: ['md', 'mdc', 'mdown', 'mdtext', 'mdtxt', 'mmd'],
       name: 'Markdown Document',
       description: 'Markdown Document Editor',
       role: 'Editor',
-      icon: 'public/icon.png',
+      icon: 'public/file-icon.png',
     },
   ],
   nsis: {
