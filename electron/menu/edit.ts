@@ -38,7 +38,13 @@ export function getEditMenu(getWin: () => BrowserWindow | null): MenuItem {
       {
         type: 'separator',
       },
-
+      {
+        label: '删除行',
+        accelerator: 'CommandOrControl+d',
+      },
+      {
+        type: 'separator',
+      },
       {
         label: '格式化',
         accelerator: 'CommandOrControl+Shift+f',

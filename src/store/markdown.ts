@@ -39,6 +39,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     { immediate: true },
   );
 
+  let blurCanCave = true;
   const actions = {
     save(): void {
       // 通知electron保存文件
@@ -83,12 +84,44 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
 
     // 窗口blur通知
     ipcRenderer.on('window-blur', () => {
-      if (!isModify.value || !state.path) return;
+      console.log('blur');
+      if (!blurCanCave || !isModify.value || !state.path) return;
       actions.save();
     });
 
+    // 保存文件
+    ipcRenderer.on('md-store:save', () => {
+      actions.save();
+    });
+    // 新建
+    ipcRenderer.on('md-store:new', () => {
+      // 弹窗会触发blur
+      blurCanCave = false;
+      if (isModify.value) {
+        const confirm = window.confirm('文本未保存，是否丢弃？');
+        blurCanCave = true;
+        if (!confirm) return;
+      }
+      state.content = '';
+      state.originContent = '';
+      state.path = '';
+      state.name = '';
+      blurCanCave = true;
+    });
+    ipcRenderer.on('md-store:restore', () => {
+      // 弹窗会触发blur
+      blurCanCave = false;
+      if (isModify.value) {
+        const confirm = window.confirm('文本未保存，是否丢弃？');
+        blurCanCave = true;
+        if (!confirm) return;
+      }
+      state.content = state.originContent;
+      blurCanCave = true;
+    });
+
     // 另存为通知
-    ipcRenderer.on('save-as', (event) => {
+    ipcRenderer.on('md-store:save-as', (event) => {
       event.sender.send('save-md-file', { ...state, type: 'save-as' });
     });
 

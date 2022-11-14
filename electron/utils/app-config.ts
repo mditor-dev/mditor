@@ -12,7 +12,6 @@ export enum Theme {
 
 // 配置文件保存路径
 const configPath = Path.resolve(app.getPath('userData'), 'app.config.json');
-console.log(configPath);
 // 默认配置
 export let appConfig: AppConfig = {
   version: '0.0.0',

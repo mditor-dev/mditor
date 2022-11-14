@@ -13,6 +13,7 @@ import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
 import { debounce } from '@mxssfd/ts-utils';
 
+import { ipcRenderer } from 'electron';
 import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { MDDirectory } from '../../types/interfaces';
 import { useStore } from '@/store';
@@ -31,13 +32,9 @@ function getHeight() {
   return window.innerHeight + 'px';
 }
 
-function saveFile() {
-  mdStore.save();
-}
-
 type EditorMode = 'wysiwyg' | 'markdown';
 
-let editor: any;
+let editor: Editor;
 let lastHeadingList: HTMLElement[];
 let lastGetHeadingListTime = Date.now();
 
@@ -106,6 +103,7 @@ watch(mdStore, (n) => {
     editor.setMarkdown(n.content);
     setTimeout(() => {
       editor.setScrollTop(0);
+      editor.focus();
     }, 50);
   }
 });
@@ -166,15 +164,16 @@ onMounted(() => {
     emits('scroll', index);
   });
 
-  function exec(name: string) {
-    return () => editor.exec(name);
+  function exec(name: string, payload?: Record<string, any>) {
+    return () => editor.exec(name, payload);
   }
 
   const keymap = useKeymap(
     [
       { desc: '回退', keys: 'MetaOrControl+z', handler: exec('undo') },
       { desc: '前进', keys: isMac() ? 'Meta+Shift+z' : 'Control+y', handler: exec('redo') },
-      { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
+      // { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
+      // { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
     ],
     editorDomRef.value as HTMLDivElement,
   );
@@ -185,6 +184,17 @@ onMounted(() => {
       keymap.log();
     },
   });
+
+  ipcRenderer.on(
+    'editor:command',
+    (_, { name, payload }: { name: string; payload?: Record<string, any> }) => {
+      if (getEditorMode() === 'markdown' && name !== 'addTable' && /row|column/i.test(name)) {
+        alert('该操作只支持所见即所得模式');
+        return;
+      }
+      editor.exec(name, payload);
+    },
+  );
 });
 
 const isShowClick = () => {
