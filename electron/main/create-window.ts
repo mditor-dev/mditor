@@ -10,10 +10,13 @@ const url = process.env['VITE_DEV_SERVER_URL'] as string;
 const indexHtml = join(process.env['DIST'], 'index.html');
 
 export function createWindow(filePath?: string) {
+  const focusedWin = BrowserWindow.getFocusedWindow();
   const win = new BrowserWindow({
     ...appConfig.window,
     title: 'Main window',
     icon: join(process.env['PUBLIC'] as string, 'icon.png'),
+    x: focusedWin ? focusedWin.getBounds().x + 30 : undefined,
+    y: focusedWin ? focusedWin.getBounds().y + 30 : undefined,
     minWidth: 560,
     minHeight: 380,
     webPreferences: {
