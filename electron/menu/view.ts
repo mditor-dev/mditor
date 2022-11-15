@@ -46,7 +46,7 @@ export function getViewMenu(): MenuItem {
         type: 'separator',
       },
       {
-        label: '切换清爽模式',
+        label: '切换简洁模式',
         accelerator: 'CommandOrControl+Shift+9',
         click() {
           BrowserWindow.getFocusedWindow()?.webContents.send('editor:toggle-bar');
