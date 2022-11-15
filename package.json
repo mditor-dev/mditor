@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "dist-electron/main/index.js",
   "description": "所见即所得的 markdown 编辑器 app",
-  "author": "dyh_a",
+  "author": "mditor-dev",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -84,10 +84,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mengxinssfd/mditor.git"
+    "url": "git+https://github.com/mditor-dev/mditor.git"
   },
   "bugs": {
-    "url": "https://github.com/mengxinssfd/mditor/issues"
+    "url": "https://github.com/mditor-dev/mditor/issues"
   },
-  "homepage": "https://github.com/mengxinssfd/mditor#readme"
+  "homepage": "https://github.com/mditor-dev/mditor#readme"
 }
