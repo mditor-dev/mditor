@@ -47,12 +47,14 @@ export function getViewMenu(): MenuItem {
       },
       {
         label: '切换清爽模式',
+        accelerator: 'CommandOrControl+Shift+9',
         click() {
           BrowserWindow.getFocusedWindow()?.webContents.send('editor:toggle-bar');
         },
       },
       {
         label: '显示/隐藏预览栏目',
+        accelerator: 'CommandOrControl+Shift+8',
         click() {
           BrowserWindow.getFocusedWindow()?.webContents.send('editor:toggle-preview');
         },

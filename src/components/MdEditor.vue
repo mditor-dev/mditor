@@ -233,6 +233,9 @@ const isShowClick = () => {
   .toastui-editor-defaultUI {
     border-radius: 0;
   }
+  .toastui-editor-md-tab-container {
+    display: none !important;
+  }
   .toastui-editor-mode-switch[toggle-status='hide'] {
     margin-top: -1px;
   }
