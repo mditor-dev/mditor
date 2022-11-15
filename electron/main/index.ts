@@ -27,10 +27,10 @@ app.whenReady().then(() => {
   setTheme(appConfig.window.theme as Theme);
 
   // 使用nativeImage的话，就算图片是空的也会有个占位
-  const icon = nativeImage.createFromPath(join(process.env['PUBLIC'] as string, 'icon_tray.png'));
+  const icon = nativeImage.createFromPath(join(process.env['PUBLIC'] as string, 'tray.png'));
   const tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([{ label: '退出', role: 'quit' }]);
-  tray.setToolTip('mditor');
+  tray.setToolTip(app.getName());
   //显示程序页面
   tray.on('click', () => {
     const wins = BrowserWindow.getAllWindows();
