@@ -46,6 +46,21 @@ export function getViewMenu(): MenuItem {
         type: 'separator',
       },
       {
+        label: '切换清爽模式',
+        click() {
+          BrowserWindow.getFocusedWindow()?.webContents.send('editor:toggle-bar');
+        },
+      },
+      {
+        label: '显示/隐藏预览栏目',
+        click() {
+          BrowserWindow.getFocusedWindow()?.webContents.send('editor:toggle-preview');
+        },
+      },
+      {
+        type: 'separator',
+      },
+      {
         label: '自动隐藏菜单栏(按ALT显示菜单栏)',
         role: 'autoHideMenuBar',
         type: 'checkbox',
