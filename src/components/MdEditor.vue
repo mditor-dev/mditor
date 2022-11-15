@@ -11,7 +11,7 @@ import '@/assets/toastui-color-syntax.scss';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
-import { debounce } from '@mxssfd/ts-utils';
+import { debounce, toggleWidthOrHeight } from '@mxssfd/ts-utils';
 
 import { ipcRenderer } from 'electron';
 import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
@@ -195,6 +195,24 @@ onMounted(() => {
       editor.exec(name, payload);
     },
   );
+
+  let toggleOn = true;
+  ipcRenderer.on('editor:toggle-bar', () => {
+    toggleOn = !toggleOn;
+    store.isShowCatalogue = toggleOn;
+
+    const ed = editorDomRef.value;
+    if (!ed) return;
+
+    const toolbar = ed.querySelector<HTMLDialogElement>('.toastui-editor-toolbar');
+    const modeSwitch = ed.querySelector<HTMLDialogElement>('.toastui-editor-mode-switch');
+
+    toolbar && toggleWidthOrHeight(toolbar, 'height');
+    modeSwitch && toggleWidthOrHeight(modeSwitch, 'height');
+  });
+  ipcRenderer.on('editor:toggle-preview', () => {
+    editor.changePreviewStyle(editor.getCurrentPreviewStyle() === 'tab' ? 'vertical' : 'tab');
+  });
 });
 
 const isShowClick = () => {
@@ -214,6 +232,12 @@ const isShowClick = () => {
   box-sizing: border-box;
   .toastui-editor-defaultUI {
     border-radius: 0;
+  }
+  .toastui-editor-md-tab-container {
+    display: none !important;
+  }
+  .toastui-editor-mode-switch[toggle-status='hide'] {
+    margin-top: -1px;
   }
   .isShow {
     position: absolute;
