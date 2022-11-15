@@ -63,6 +63,13 @@ export function getViewMenu(): MenuItem {
         },
       },
       {
+        label: '保持窗口在最前端',
+        click() {
+          const win = BrowserWindow.getFocusedWindow();
+          win?.setAlwaysOnTop(!win.isAlwaysOnTop());
+        },
+      },
+      {
         label: '全屏切换',
         role: 'togglefullscreen',
         accelerator: isWin ? 'F11' : 'Control+f',
