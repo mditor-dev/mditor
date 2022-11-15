@@ -203,6 +203,21 @@ onMounted(() => {
     },
   });
 
+  // 注释命令
+  const commentCommand = () => {
+    const selectedText = editor.getSelectedText();
+
+    const content = /^<!--(.+)-->$/.test(selectedText)
+      ? RegExp.$1.trim()
+      : `<!--  ${selectedText}  -->`;
+
+    editor.insertText(content);
+
+    return true;
+  };
+  editor.addCommand('markdown', 'comment', commentCommand);
+  editor.addCommand('wysiwyg', 'comment', commentCommand);
+
   ipcRenderer.on(
     'editor:command',
     (_, { name, payload }: { name: string; payload?: Record<string, any> }) => {

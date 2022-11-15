@@ -25,6 +25,11 @@ export function getStyleMenu(): MenuItem {
         click: exec('strike'),
       },
       {
+        label: '注释',
+        accelerator: 'CommandOrControl+/',
+        click: exec('comment'),
+      },
+      {
         label: '行内代码块',
         accelerator: 'CommandOrControl+Alt+`',
         click: exec('code'),
