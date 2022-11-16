@@ -1,6 +1,6 @@
 {
   "name": "mditor",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "dist-electron/main/index.js",
   "description": "所见即所得的 markdown 编辑器 app",
   "author": "mditor-dev",
