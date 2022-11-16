@@ -134,6 +134,24 @@ onMounted(() => {
     language: 'zh-CN',
     usageStatistics: true,
     useCommandShortcut: false,
+    customHTMLRenderer: {
+      htmlBlock: {
+        iframe(node) {
+          return [
+            { type: 'openTag', tagName: 'iframe', outerNewLine: true, attributes: node.attrs },
+            { type: 'html', content: node.childrenHTML as string },
+            { type: 'closeTag', tagName: 'iframe', outerNewLine: true },
+          ];
+        },
+        video(node) {
+          return [
+            { type: 'openTag', tagName: 'video', outerNewLine: true, attributes: node.attrs },
+            { type: 'html', content: node.childrenHTML as string },
+            { type: 'closeTag', tagName: 'video', outerNewLine: true },
+          ];
+        },
+      },
+    },
     initialValue: mdStore.content,
     plugins: [[codeSyntaxHighlight, { highlighter: Prism }], colorSyntax, tableMergedCell],
   });
@@ -184,6 +202,21 @@ onMounted(() => {
       keymap.log();
     },
   });
+
+  // 注释命令
+  const commentCommand = () => {
+    const selectedText = editor.getSelectedText();
+
+    const content = /^<!--(.+)-->$/.test(selectedText)
+      ? RegExp.$1.trim()
+      : `<!--  ${selectedText}  -->`;
+
+    editor.insertText(content);
+
+    return true;
+  };
+  editor.addCommand('markdown', 'comment', commentCommand);
+  editor.addCommand('wysiwyg', 'comment', commentCommand);
 
   ipcRenderer.on(
     'editor:command',
