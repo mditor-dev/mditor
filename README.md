@@ -69,8 +69,10 @@ $ npm run dev
 
 你可以[下载](https://github.com/mditor-dev/mditor/releases/)适用于 Windows 和 macOS 的最新可安装版本 Mditor。
 
-如 macos 安装后出现
-![“mditor.app”已损坏，无法打开。 您应该将它移到废纸篓。](https://user-images.githubusercontent.com/28827520/202251088-e5a5c171-5700-4bd3-aedf-595e5bdfcb16.png)
+如果 macos 安装后出现
+<br>
+<img alt="“mditor.app”已损坏，无法打开。 您应该将它移到废纸篓。" style="width:180px;height:auto" src="https://user-images.githubusercontent.com/28827520/202251088-e5a5c171-5700-4bd3-aedf-595e5bdfcb16.png">
+<br>
 解决办法见<https://www.jianshu.com/p/563810424e9c>
 
 ## Credits
