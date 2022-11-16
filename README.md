@@ -20,6 +20,7 @@
 </p>
 
 ## 预览
+
 <video src="https://user-images.githubusercontent.com/28827520/202234063-ce8d843c-d5db-4415-b8ad-60cfb5bf14e1.mov" style="width: 100%;height: auto" autoplay muted></video>
 
 ## 主要功能
@@ -45,8 +46,6 @@
 - 跨平台
   - Windows, macOS （Linux 需要自己打包）
 
-
-
 ## 如何使用
 
 要克隆和运行此应用程序，你需要在计算机上安装 Git 和 Node.js（npm 附带）。
@@ -69,6 +68,10 @@ $ npm run dev
 ## 下载
 
 你可以[下载](https://github.com/mditor-dev/mditor/releases/)适用于 Windows 和 macOS 的最新可安装版本 Mditor。
+
+如 macos 安装后出现
+![“mditor.app”已损坏，无法打开。 您应该将它移到废纸篓。](https://user-images.githubusercontent.com/28827520/202251088-e5a5c171-5700-4bd3-aedf-595e5bdfcb16.png)
+解决办法见<https://www.jianshu.com/p/563810424e9c>
 
 ## Credits
 
