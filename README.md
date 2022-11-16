@@ -64,7 +64,7 @@ $ npm run dev
 
 ## 下载
 
-你可以下载适用于 Windows 和 macOS 的最新可安装版本 Mditor。
+你可以[下载](https://github.com/mditor-dev/mditor/releases/)适用于 Windows 和 macOS 的最新版本的 Mditor。
 
 ## Credits
 
