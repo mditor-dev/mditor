@@ -41,7 +41,7 @@
 - 跨平台
   - Windows, macOS （Linux 需要自己打包）
 
-<video style="width:100%;height:auto;" src="https://user-images.githubusercontent.com/28827520/202234063-ce8d843c-d5db-4415-b8ad-60cfb5bf14e1.mov" autoplay style="width: 100%;height: auto"> </video>
+<video src="https://user-images.githubusercontent.com/28827520/202234063-ce8d843c-d5db-4415-b8ad-60cfb5bf14e1.mov" style="width: 100%;height: auto" autoplay muted></video>
 
 ## 如何使用
 
