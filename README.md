@@ -41,6 +41,8 @@
 - 跨平台
   - Windows, macOS （Linux 需要自己打包）
 
+<video src="./docs/demo.mov" autoplay style="width: 100%;height: auto"> </video>
+
 ## 如何使用
 
 要克隆和运行此应用程序，你需要在计算机上安装 Git 和 Node.js（npm 附带）。
