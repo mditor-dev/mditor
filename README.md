@@ -11,12 +11,16 @@
 <h4 align="center">一款使用<a href="http://electron.atom.io" target="_blank">Electron</a>开发的 Markdown 编辑器桌面应用程序.</h4>
 
 <p align="center">
+  <a href="#预览">预览</a> •
   <a href="#主要功能">主要功能</a> •
   <a href="#如何使用">如何使用</a> •
   <a href="#下载">下载</a> •
   <a href="#credits">Credits</a> •
   <a href="#license">License</a>
 </p>
+
+## 预览
+<video src="https://user-images.githubusercontent.com/28827520/202234063-ce8d843c-d5db-4415-b8ad-60cfb5bf14e1.mov" style="width: 100%;height: auto" autoplay muted></video>
 
 ## 主要功能
 
@@ -41,7 +45,7 @@
 - 跨平台
   - Windows, macOS （Linux 需要自己打包）
 
-<video src="https://user-images.githubusercontent.com/28827520/202234063-ce8d843c-d5db-4415-b8ad-60cfb5bf14e1.mov" style="width: 100%;height: auto" autoplay muted></video>
+
 
 ## 如何使用
 
@@ -64,7 +68,7 @@ $ npm run dev
 
 ## 下载
 
-你可以[下载](https://github.com/mditor-dev/mditor/releases/)适用于 Windows 和 macOS 的最新版本的 Mditor。
+你可以[下载](https://github.com/mditor-dev/mditor/releases/)适用于 Windows 和 macOS 的最新可安装版本 Mditor。
 
 ## Credits
 
