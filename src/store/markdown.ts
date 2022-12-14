@@ -12,7 +12,7 @@ import parserFlow from 'prettier/esm/parser-flow.mjs';
 import parserGraphql from 'prettier/esm/parser-graphql.mjs';
 import parserPostcss from 'prettier/esm/parser-postcss.mjs';
 import parserYaml from 'prettier/esm/parser-yaml.mjs';
-import { updateObj } from '@mxssfd/core';
+import { updateObj } from '@tool-pack/basic';
 
 let isWatched = false;
 export const useMarkdownStore = defineStore('md-file-store', () => {

@@ -11,7 +11,8 @@ import '@/assets/toastui-color-syntax.scss';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
-import { debounce, toggleWidthOrHeight } from '@mxssfd/ts-utils';
+import { debounce } from '@tool-pack/basic';
+import { toggleWidthOrHeight } from '@mxssfd/ts-utils';
 
 import { ipcRenderer } from 'electron';
 import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';

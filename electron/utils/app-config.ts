@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as Path from 'path';
 import { app, ipcMain, nativeTheme } from 'electron';
-import { arrayRemoveItem, debounce } from '@mxssfd/core';
+import { arrayRemoveItem, debounce } from '@tool-pack/basic';
 import { AppConfig } from '../../types/interfaces';
 
 export enum Theme {
@@ -49,7 +49,7 @@ export const saveAppConfig = debounce(() => {
  */
 export function addRecentDocument(filepath: string) {
   app.addRecentDocument(filepath);
-  arrayRemoveItem(filepath, appConfig.recentDocuments);
+  arrayRemoveItem(appConfig.recentDocuments, filepath);
   appConfig.recentDocuments.unshift(filepath);
   saveAppConfig();
   ipcMain.emit('recent-document-change');
@@ -58,7 +58,7 @@ export function addRecentDocument(filepath: string) {
  * 添加最近打开的文件记录
  */
 export function removeRecentDocument(filepath: string) {
-  arrayRemoveItem(filepath, appConfig.recentDocuments);
+  arrayRemoveItem(appConfig.recentDocuments, filepath);
   saveAppConfig();
   ipcMain.emit('recent-document-change');
 }

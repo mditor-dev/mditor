@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron';
 import { MDFile } from '../../types/interfaces';
-import { updateObj } from '@mxssfd/core';
+import { updateObj } from '@tool-pack/basic';
 import { saveMDFile } from '../utils/file';
 
 export function useMd(win: BrowserWindow) {
