@@ -102,6 +102,11 @@ app.on('open-file', function (_event, filepath: string) {
   }
 });
 
+// mac新建标签页
+app.on('new-window-for-tab', function () {
+  BrowserWindow.getFocusedWindow()?.addTabbedWindow(createWindow());
+});
+
 // windows通过任务栏图标菜单上的最近的文件打开 或者 通过文件关联打开
 // 只在打包安装后有效
 app.on('second-instance', (_e, args) => {

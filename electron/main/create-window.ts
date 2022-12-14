@@ -3,12 +3,14 @@ import { join } from 'path';
 import { appConfig, saveAppConfig } from '../utils/app-config';
 import { readMDFile } from '../utils/file';
 import { useMd } from '../hooks/use-md';
+import { idGen } from '@tool-pack/basic';
 
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js');
 const url = process.env['VITE_DEV_SERVER_URL'] as string;
 const indexHtml = join(process.env['DIST'], 'index.html');
 
+const gen = idGen();
 export function createWindow(filePath?: string) {
   const focusedWin = BrowserWindow.getFocusedWindow();
   const win = new BrowserWindow({
@@ -19,6 +21,7 @@ export function createWindow(filePath?: string) {
     y: focusedWin ? focusedWin.getBounds().y + 30 : undefined,
     minWidth: 560,
     minHeight: 380,
+    tabbingIdentifier: gen.next() + '',
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production

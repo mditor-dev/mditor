@@ -103,6 +103,14 @@ export function getFileMenu(): MenuItem {
           createWindow();
         },
       },
+      {
+        label: '新建标签页',
+        visible: isMac,
+        accelerator: 'CommandOrControl+t',
+        click() {
+          BrowserWindow.getFocusedWindow()?.addTabbedWindow(createWindow());
+        },
+      },
       separator,
       { label: '退出', role: 'quit', accelerator: 'CommandOrControl+q' },
     ],
