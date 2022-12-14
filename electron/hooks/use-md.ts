@@ -2,6 +2,7 @@ import { BrowserWindow } from 'electron';
 import { MDFile } from '../../types/interfaces';
 import { updateObj } from '@tool-pack/basic';
 import { saveMDFile } from '../utils/file';
+import { addRecentDocument } from '../utils/app-config';
 
 export function useMd(win: BrowserWindow) {
   const _state: MDFile = {
@@ -19,6 +20,9 @@ export function useMd(win: BrowserWindow) {
 
   win.webContents.ipc.on('md-store:update', (_, md: MDFile) => {
     console.log('md-store:update');
+    if (md.path && md.path !== _state.path) {
+      addRecentDocument(md.path);
+    }
     updateObj(_state, md);
     win.setDocumentEdited(isModify());
   });
