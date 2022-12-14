@@ -1,9 +1,10 @@
 import { BrowserWindow, app, shell, dialog, ipcMain } from 'electron';
-import { join } from 'path';
+import { join, basename } from 'path';
 import { appConfig, saveAppConfig } from '../utils/app-config';
-import { readMDFile } from '../utils/file';
 import { useMd } from '../hooks/use-md';
 import { idGen } from '@tool-pack/basic';
+import { isMac } from '../utils/platform';
+import { getWinByFilepath } from '../utils/file';
 
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js');
@@ -33,14 +34,8 @@ export function createWindow(filePath?: string) {
     },
   });
 
-  const {
-    setState: setMd,
-    state: md,
-    isModify: isMdModify,
-    save: saveMd,
-    lockSave,
-    unlockSave,
-  } = useMd(win);
+  const mdStore = useMd(win);
+  const { state: md, isModify: isMdModify, save: saveMd, lockSave, unlockSave } = mdStore;
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);
@@ -59,10 +54,32 @@ export function createWindow(filePath?: string) {
   win.webContents.on('did-finish-load', () => {
     win.webContents.send('main-process-message', new Date().toLocaleString());
     // 通过文件关联打开的app
-    if (filePath) {
-      const file = readMDFile(win as BrowserWindow, filePath);
-      if (file) setMd(file);
+    if (filePath) mdStore.readMd(filePath, win);
+    // 否则同步一下
+    else mdStore.syncState();
+  });
+
+  win.webContents.ipc.on('drop-file', (_e, filepathList: string[]) => {
+    // 过滤掉已经打开的文档
+    filepathList = filepathList.filter((filepath) => {
+      if (getWinByFilepath(filepath)) {
+        return !dialog.showMessageBoxSync(win, {
+          message: `是否再次打开【${basename(filepath)}】`,
+          buttons: ['是', '否'],
+        });
+      }
+      return true;
+    });
+
+    if (!filepathList.length) return;
+    if (filepathList.length > 50) {
+      dialog.showMessageBox(win, { type: 'warning', message: '不能一次性打开超过50个文件' });
+      return;
     }
+
+    if (mdStore.isEmpty()) mdStore.readMd(filepathList.shift() as string, win);
+    const wins = filepathList.map(createWindow);
+    isMac && wins.forEach(win.addTabbedWindow.bind(win));
   });
 
   // Make all links open with the browser, not with the application

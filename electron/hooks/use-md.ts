@@ -12,10 +12,14 @@ export function useMd(win: BrowserWindow) {
     content: '',
   };
 
+  function syncState() {
+    win.webContents.send('md-store:update', _state);
+  }
+
   function setState(state: Partial<MDFile>) {
     updateObj(_state, state);
     win.setDocumentEdited(isModify());
-    win.webContents.send('md-store:update', _state);
+    syncState();
   }
 
   win.webContents.ipc.on('md-store:update', (_, md: MDFile) => {
@@ -67,6 +71,7 @@ export function useMd(win: BrowserWindow) {
     unlockSave,
     readMd,
     isEmpty,
+    syncState,
   };
 
   mdManager.set(win, hook);
