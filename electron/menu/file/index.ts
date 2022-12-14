@@ -36,6 +36,7 @@ export function getFileMenu(): MenuItem {
 
   return new MenuItem({
     id: 'FileMenu',
+    role: 'fileMenu',
     label: isMac ? '文件' : '文件(F)(&F)',
     submenu: [
       {
@@ -94,6 +95,7 @@ export function getFileMenu(): MenuItem {
           modifyMd('内容还原操作会把编辑器还原到未编辑状态，将丢弃未保存的文本', 'reset');
         },
       },
+      separator,
       {
         label: '新建窗口',
         accelerator: 'CommandOrControl+Shift+n',

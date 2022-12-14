@@ -4,6 +4,7 @@ export function getWindowMenu(): MenuItem {
   // 编辑菜单
   return new MenuItem({
     id: 'WindowMenu',
+    role: 'windowMenu',
     label: isMac ? '窗口' : '窗口(W)(&W)',
     submenu: [
       {

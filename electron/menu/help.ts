@@ -5,6 +5,7 @@ export function getHelpMenu(): MenuItem {
   // 编辑菜单
   return new MenuItem({
     id: 'HelpMenu',
+    role: 'help',
     label: isMac ? '帮助' : '帮助(H)(&H)',
     submenu: [
       {
