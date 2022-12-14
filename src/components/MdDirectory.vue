@@ -38,10 +38,14 @@ function editorScrollTo(index: number) {
 
 watch(
   propsRefs.activeTitleIndex,
-  throttle((index: number) => {
-    if (index === -1) return;
-    scrollTo(index);
-  }, 500),
+  throttle(
+    (index: number) => {
+      if (index === -1) return;
+      scrollTo(index);
+    },
+    500,
+    { leading: true, trailing: true },
+  ),
 );
 
 const directoryList = computed(() => {
