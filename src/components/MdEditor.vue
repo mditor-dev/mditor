@@ -227,19 +227,15 @@ onMounted(() => {
     },
   );
 
-  let toggleOn = true;
   ipcRenderer.on('editor:toggle-bar', () => {
-    toggleOn = !toggleOn;
-    store.directoryVisible = toggleOn;
-
     const ed = editorDomRef.value;
     if (!ed) return;
 
-    const toolbar = ed.querySelector<HTMLDialogElement>('.toastui-editor-toolbar');
-    const modeSwitch = ed.querySelector<HTMLDialogElement>('.toastui-editor-mode-switch');
+    const $toolbar = ed.querySelector<HTMLDialogElement>('.toastui-editor-toolbar');
+    const $modeSwitch = ed.querySelector<HTMLDialogElement>('.toastui-editor-mode-switch');
 
-    toolbar && toggleWidthOrHeight(toolbar, 'height');
-    modeSwitch && toggleWidthOrHeight(modeSwitch, 'height');
+    $toolbar && toggleWidthOrHeight($toolbar, 'height');
+    $modeSwitch && toggleWidthOrHeight($modeSwitch, 'height');
   });
   ipcRenderer.on('editor:toggle-preview', () => {
     editor.changePreviewStyle(editor.getCurrentPreviewStyle() === 'tab' ? 'vertical' : 'tab');
@@ -249,12 +245,6 @@ onMounted(() => {
 <template>
   <div class="md-editor">
     <div ref="editorDomRef" class="editor-wrapper"></div>
-    <img
-      src="../assets/mulu.svg"
-      alt="打开目录"
-      class="btn-directory-visible"
-      @click="store.toggleDirectoryVisible"
-    />
   </div>
 </template>
 
@@ -270,17 +260,6 @@ onMounted(() => {
   }
   .toastui-editor-mode-switch[toggle-status='hide'] {
     margin-top: -1px;
-  }
-  .btn-directory-visible {
-    position: absolute;
-    width: 25px;
-    bottom: 2px;
-    left: 5px;
-    color: rgb(138, 138, 138);
-    cursor: pointer;
-    &:hover {
-      filter: contrast(0);
-    }
   }
 }
 </style>

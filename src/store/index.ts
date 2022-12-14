@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { reactive, toRefs } from 'vue';
+import { ipcRenderer } from 'electron';
 
 export const useStore = defineStore('store', () => {
   const state = reactive({ directoryVisible: true, theme: 'light' });
@@ -24,6 +25,11 @@ export const useStore = defineStore('store', () => {
         console.log('亮色模式');
         state.theme = 'light';
       }
+    });
+
+    let visible = true;
+    ipcRenderer.on('editor:toggle-bar', () => {
+      state.directoryVisible = visible = !visible;
     });
   }
   addListener();

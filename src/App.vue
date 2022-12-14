@@ -42,6 +42,12 @@ if (isMac()) {
         @scroll="activeTitleIndex = $event"
         @directory="directory = $event"
       ></md-editor>
+      <img
+        src="./assets/mulu.svg"
+        alt="打开目录"
+        class="btn-directory-visible"
+        @click="store.toggleDirectoryVisible"
+      />
     </section>
   </div>
 </template>
@@ -58,8 +64,20 @@ if (isMac()) {
       }
     }
     &.editor {
+      position: relative;
       flex: 1;
       overflow: hidden;
+    }
+  }
+  .btn-directory-visible {
+    position: absolute;
+    width: 25px;
+    bottom: 2px;
+    left: 5px;
+    color: rgb(138, 138, 138);
+    cursor: pointer;
+    &:hover {
+      filter: contrast(0);
     }
   }
 }
