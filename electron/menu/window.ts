@@ -3,7 +3,7 @@ import { isMac } from '../utils/platform';
 export function getWindowMenu(): MenuItem {
   // 编辑菜单
   return new MenuItem({
-    id: 'EditMenu',
+    id: 'WindowMenu',
     label: isMac ? '窗口' : '窗口(W)(&W)',
     submenu: [
       {

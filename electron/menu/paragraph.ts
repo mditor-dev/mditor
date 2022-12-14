@@ -6,7 +6,7 @@ export function getParagraphMenu(): MenuItem {
     BrowserWindow.getFocusedWindow()?.webContents.send('editor:command', { name, payload });
   // 段落菜单
   return new MenuItem({
-    id: 'EditMenu',
+    id: 'ParagraphMenu',
     label: isMac ? '段落' : '段落(P)(&P)',
     submenu: [
       ...['一', '二', '三', '四', '五', '六'].map((num, index) => {
