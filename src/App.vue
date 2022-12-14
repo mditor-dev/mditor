@@ -60,6 +60,7 @@ function onDrop(event: DragEvent): void {
         @directory="directory = $event"
       ></md-editor>
       <img
+        :title="store.directoryVisible ? '隐藏目录' : '显示目录'"
         src="./assets/mulu.svg"
         alt="打开目录"
         class="btn-directory-visible"
