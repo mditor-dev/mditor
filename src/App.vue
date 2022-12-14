@@ -27,8 +27,8 @@ if (isMac()) {
 
 <template>
   <div class="app-main" @drop.stop.prevent="mdStore.onDrop" @dragover.stop.prevent>
-    <Transition duration="50500" name="dir">
-      <section v-if="store.isShowCatalogue" class="directory">
+    <Transition name="dir">
+      <section v-show="store.directoryVisible" class="directory">
         <md-directory
           :active-title-index="activeTitleIndex"
           :directory="directory"

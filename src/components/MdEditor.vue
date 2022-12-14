@@ -230,7 +230,7 @@ onMounted(() => {
   let toggleOn = true;
   ipcRenderer.on('editor:toggle-bar', () => {
     toggleOn = !toggleOn;
-    store.isShowCatalogue = toggleOn;
+    store.directoryVisible = toggleOn;
 
     const ed = editorDomRef.value;
     if (!ed) return;
@@ -245,15 +245,16 @@ onMounted(() => {
     editor.changePreviewStyle(editor.getCurrentPreviewStyle() === 'tab' ? 'vertical' : 'tab');
   });
 });
-
-const isShowClick = () => {
-  store.setIsShowCatalogue(!store.isShowCatalogue);
-};
 </script>
 <template>
   <div class="md-editor">
     <div ref="editorDomRef" class="editor-wrapper"></div>
-    <img src="../assets/mulu.svg" alt="打开目录" class="isShow" @click="isShowClick" />
+    <img
+      src="../assets/mulu.svg"
+      alt="打开目录"
+      class="btn-directory-visible"
+      @click="store.toggleDirectoryVisible"
+    />
   </div>
 </template>
 
@@ -270,7 +271,7 @@ const isShowClick = () => {
   .toastui-editor-mode-switch[toggle-status='hide'] {
     margin-top: -1px;
   }
-  .isShow {
+  .btn-directory-visible {
     position: absolute;
     width: 25px;
     bottom: 2px;

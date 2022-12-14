@@ -2,13 +2,13 @@ import { defineStore } from 'pinia';
 import { reactive, toRefs } from 'vue';
 
 export const useStore = defineStore('store', () => {
-  const state = reactive({ isShowCatalogue: true, theme: 'light' });
+  const state = reactive({ directoryVisible: true, theme: 'light' });
 
-  const actions = reactive({
-    setIsShowCatalogue(isShowCatalogue: boolean): void {
-      state.isShowCatalogue = isShowCatalogue;
+  const actions = {
+    toggleDirectoryVisible() {
+      state.directoryVisible = !state.directoryVisible;
     },
-  });
+  };
 
   function addListener(): void {
     const media = window.matchMedia('(prefers-color-scheme:dark)');
