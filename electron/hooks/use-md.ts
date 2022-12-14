@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron';
 import { MDFile } from '../../types/interfaces';
 import { updateObj } from '@tool-pack/basic';
-import { saveMDFile } from '../utils/file';
+import { readMDFile, saveMDFile } from '../utils/file';
 import { addRecentDocument } from '../utils/app-config';
 
 export function useMd(win: BrowserWindow) {
@@ -39,12 +39,35 @@ export function useMd(win: BrowserWindow) {
     file && setState(file);
     return file;
   };
-  const lockSave = () => (saveLock = true);
-  const unlockSave = () => (saveLock = false);
+  const lockSave = (): void => {
+    saveLock = true;
+  };
+  const unlockSave = (): void => {
+    saveLock = false;
+  };
 
   const reset = () => setState({ content: _state.originContent });
 
-  const hook = { state: _state, setState, isModify, clear, save, reset, lockSave, unlockSave };
+  const readMd = (filepath: string, win: BrowserWindow): boolean => {
+    const md = readMDFile(win, filepath);
+    md && setState(md);
+    return Boolean(md);
+  };
+
+  const isEmpty = (): boolean => Object.values(_state).every((v) => !v);
+
+  const hook = {
+    state: _state,
+    setState,
+    isModify,
+    clear,
+    save,
+    reset,
+    lockSave,
+    unlockSave,
+    readMd,
+    isEmpty,
+  };
 
   mdManager.set(win, hook);
 

@@ -7,6 +7,7 @@ import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
 import { appConfig, setTheme, Theme } from '../utils/app-config';
 import { getWinByFilepath } from '../utils/file';
+import { getFocusedWinMdHook } from '../hooks/use-md';
 
 // Remove electron security warnings
 // This warning only shows in development mode
@@ -74,8 +75,17 @@ app.on('window-all-closed', () => {
 });
 function openWindow(filepath: string) {
   const win = getWinByFilepath(filepath);
-  if (win) win.focus();
-  else createWindow(filepath);
+  if (win) {
+    win.focus();
+    return;
+  }
+  getFocusedWinMdHook()
+    .then(([hook, win]) => {
+      if (hook.isEmpty()) {
+        hook.readMd(filepath, win);
+      } else createWindow(filepath);
+    })
+    .catch(() => createWindow(filepath));
 }
 
 // mac专用：点击最近打开的文件或者通过文件关联打开app，读取文件

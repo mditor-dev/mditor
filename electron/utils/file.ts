@@ -90,7 +90,7 @@ export async function openFile(
   async function useCurWindow(win: BrowserWindow, setMd: Function) {
     try {
       const filepath = await _getFilepath(win);
-      const mdFile = await readMDFile(win, filepath);
+      const mdFile = readMDFile(win, filepath);
       mdFile && setMd(mdFile);
     } catch (e: any) {
       // error
