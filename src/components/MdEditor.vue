@@ -18,8 +18,8 @@ import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { MDDirectory } from '../../types/interfaces';
 import { useStore } from '@/store';
 import { useMarkdownStore } from '@/store/markdown';
-import { useKeymap } from '@/utils/useKeymap';
 import { isMac } from '@/utils';
+import { Keymap } from '@tool-pack/keymap';
 
 const emits = defineEmits(['scroll', 'directory']);
 
@@ -186,20 +186,17 @@ onMounted(() => {
     return () => editor.exec(name, payload);
   }
 
-  const keymap = useKeymap(
-    [
-      { desc: '回退', keys: 'MetaOrControl+z', handler: exec('undo') },
-      { desc: '前进', keys: isMac() ? 'Meta+Shift+z' : 'Control+y', handler: exec('redo') },
-      // { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
-      // { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
-    ],
-    editorDomRef.value as HTMLDivElement,
-  );
+  const keymap = new Keymap({ el: editorDomRef.value as HTMLDivElement }, [
+    { desc: '回退', keys: 'MetaOrControl+z', handler: exec('undo') },
+    { desc: '前进', keys: isMac() ? 'Meta+Shift+z' : 'Control+y', handler: exec('redo') },
+    // { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
+    // { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
+  ]);
   keymap.add({
     desc: '控制台打印快捷键映射',
     keys: 'MetaOrControl+l',
     handler() {
-      keymap.log();
+      console.table(keymap.maps);
     },
   });
 
