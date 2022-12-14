@@ -90,13 +90,19 @@ export function createWindow(filePath?: string) {
 
   win.on('close', (event) => {
     console.log('close', isMdModify());
-    if (!isMdModify()) return;
+    if (!isMdModify()) {
+      mdStore.destroy();
+      return;
+    }
 
     event.preventDefault(); //阻止窗口的关闭事件
 
     (async function () {
       function emitClose(delay = 0) {
-        setTimeout(() => win.close(), delay);
+        setTimeout(() => {
+          mdStore.destroy();
+          win.close();
+        }, delay);
       }
       function emitCancel() {
         // 使用ipcMain触发，不会被win.webContents.ipc.on('window:cancel-close')监听到

@@ -1,10 +1,59 @@
 import fs from 'fs';
 import * as Path from 'path';
-import { dialog, BrowserWindow } from 'electron';
+import { BrowserWindow, dialog } from 'electron';
 import { MDFile } from '../../types/interfaces';
 import { addRecentDocument } from './app-config';
 import { createWindow } from '../main/create-window';
 import { mdManager } from '../hooks/use-md';
+import chokidar from 'chokidar';
+
+export function watchFile(
+  filepath: string,
+  options: {
+    onChange: (content: string) => void;
+    onMove: (filepath: string, filename: string) => void;
+    onRemove: Function;
+  },
+) {
+  const watcher = chokidar.watch(filepath, { persistent: true });
+  watcher.on('raw', function (eventName, path) {
+    if (
+      eventName === 'moved' &&
+      path !== filepath &&
+      !fs.existsSync(filepath) &&
+      fs.existsSync(path)
+    ) {
+      console.log('moved', path);
+      watcher.unwatch(filepath);
+      filepath = path;
+      watcher.add(filepath);
+      options.onMove(filepath, Path.basename(filepath));
+    }
+  });
+  watcher.on('change', (path, stats) => {
+    console.log('change:', path, stats);
+    const content = readFile(filepath);
+    if (content !== undefined) options.onChange(content);
+  });
+  watcher.on('unlink', (...args: any[]) => {
+    console.log('unlink', args);
+    if (!fs.existsSync(filepath)) {
+      options.onRemove();
+    }
+  });
+  return () => {
+    console.log('close watch');
+    watcher.close();
+  };
+}
+
+export function readFile(filepath: string): string | void {
+  try {
+    return fs.readFileSync(filepath).toString();
+  } catch (e: any) {
+    dialog.showErrorBox('读取文件失败', e);
+  }
+}
 
 /**
  * 读取md文件
@@ -12,18 +61,15 @@ import { mdManager } from '../hooks/use-md';
  * @param filePath
  */
 export function readMDFile(win: BrowserWindow, filePath: string): MDFile | void {
-  try {
-    // 读取文件内容
-    const content = fs.readFileSync(filePath).toString();
+  // 读取文件内容
+  const content = readFile(filePath);
+  if (content === undefined) return;
 
-    // 添加至最近打开的文件
-    addRecentDocument(filePath);
-    win.setRepresentedFilename(filePath);
+  // 添加至最近打开的文件
+  addRecentDocument(filePath);
+  win.setRepresentedFilename(filePath);
 
-    return { content, name: Path.basename(filePath), originContent: content, path: filePath };
-  } catch (e: any) {
-    dialog.showErrorBox('读取文件失败', e);
-  }
+  return { content, name: Path.basename(filePath), originContent: content, path: filePath };
 }
 
 /**
@@ -40,10 +86,13 @@ export async function saveMDFile(
       // 显示文件保存窗口
       const res = await dialog.showSaveDialog(win, {
         title: type === 'save-as' ? '另存为' : '',
-        defaultPath: path || /^[^\n]+/.exec(content)?.[0]?.replace(/^#+/, '').trim(),
+        defaultPath:
+          path ||
+          options.name.replace(/(\.md)?\(已删除\)/, '') ||
+          /^[^\n]+/.exec(content)?.[0]?.replace(/^#+/, '').trim(),
         // message: '111',
         filters: [
-          { name: 'Markdown', extensions: ['md'] },
+          { name: 'Markdown', extensions: ['md', 'mdc', 'mdown', 'mdtext', 'mdtxt', 'mmd'] },
           { name: 'Plain Text', extensions: [''] },
         ],
       });

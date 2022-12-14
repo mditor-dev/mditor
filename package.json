@@ -70,7 +70,8 @@
   },
   "dependencies": {
     "@tool-pack/basic": "^0.0.2",
-    "@tool-pack/keymap": "^0.0.6"
+    "@tool-pack/keymap": "^0.0.6",
+    "chokidar": "^3.5.3"
   },
   "debug": {
     "env": {
