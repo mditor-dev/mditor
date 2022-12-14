@@ -46,7 +46,7 @@ export function getFileMenu(): MenuItem {
           openFile(async (win: BrowserWindow): Promise<string> => {
             const { filePaths, canceled } = await dialog.showOpenDialog(win, {
               filters: [
-                { name: 'Markdown', extensions: ['md'] },
+                { name: 'Markdown', extensions: ['md', 'mdc', 'mdown', 'mdtext', 'mdtxt', 'mmd'] },
                 { name: 'Plain Text', extensions: [''] },
               ],
             });
