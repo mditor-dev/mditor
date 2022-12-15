@@ -18,7 +18,7 @@ export function watchFile(
 ) {
   let dirPath = Path.dirname(filepath);
 
-  const watcher = chokidar.watch(filepath, { persistent: true, depth: 0 });
+  const watcher = chokidar.watch(filepath, { persistent: true, depth: isMac ? undefined : 0 });
 
   const onMove = (path: string): boolean => {
     if (!(path !== filepath && !fs.existsSync(filepath) && fs.existsSync(path))) return false;
@@ -33,6 +33,7 @@ export function watchFile(
   if (isMac) {
     // mac内经测试可以检测到文件moved
     watcher.on('raw', function (eventName, path) {
+      console.log('raw', eventName, path);
       if (eventName === 'moved') onMove(path);
     });
   } else {
