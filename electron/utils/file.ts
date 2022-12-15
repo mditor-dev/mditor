@@ -6,6 +6,7 @@ import { addRecentDocument } from './app-config';
 import { createWindow } from '../main/create-window';
 import { mdManager } from '../hooks/use-md';
 import chokidar from 'chokidar';
+import { isMac } from './platform';
 
 export function watchFile(
   filepath: string,
@@ -15,31 +16,46 @@ export function watchFile(
     onRemove: Function;
   },
 ) {
-  const watcher = chokidar.watch(filepath, { persistent: true });
-  watcher.on('raw', function (eventName, path) {
-    if (
-      eventName === 'moved' &&
-      path !== filepath &&
-      !fs.existsSync(filepath) &&
-      fs.existsSync(path)
-    ) {
-      console.log('moved', path);
-      watcher.unwatch(filepath);
-      filepath = path;
-      watcher.add(filepath);
-      options.onMove(filepath, Path.basename(filepath));
-    }
-  });
-  watcher.on('change', (path, stats) => {
-    console.log('change:', path, stats);
+  let dirPath = Path.dirname(filepath);
+
+  const watcher = chokidar.watch(filepath, { persistent: true, depth: 0 });
+
+  const onMove = (path: string): boolean => {
+    if (!(path !== filepath && !fs.existsSync(filepath) && fs.existsSync(path))) return false;
+    console.log('moved', path);
+    watcher.unwatch(filepath);
+    filepath = path;
+    watcher.add(filepath);
+    options.onMove(filepath, Path.basename(filepath));
+    return true;
+  };
+
+  if (isMac) {
+    // mac内经测试可以检测到文件moved
+    watcher.on('raw', function (eventName, path) {
+      if (eventName === 'moved') onMove(path);
+    });
+  } else {
+    // window不能监听到moved事件
+    // 需要监听文件夹内文件add才行
+    watcher.add(dirPath);
+    watcher.on('add', function (path) {
+      if (!onMove(path)) return;
+      const newDirPath = Path.dirname(path);
+      if (newDirPath === dirPath) return;
+      dirPath = newDirPath;
+      watcher.unwatch(dirPath);
+      watcher.add(newDirPath);
+    });
+  }
+  watcher.on('change', (path) => {
+    console.log('change:', path);
     const content = readFile(filepath);
     if (content !== undefined) options.onChange(content);
   });
   watcher.on('unlink', (...args: any[]) => {
     console.log('unlink', args);
-    if (!fs.existsSync(filepath)) {
-      options.onRemove();
-    }
+    if (!fs.existsSync(filepath)) options.onRemove();
   });
   return () => {
     console.log('close watch');
