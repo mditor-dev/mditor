@@ -1,4 +1,3 @@
-
 <h1 align="center">
   <br>
   <a href="https://github.com/mditor-dev/mditor">
@@ -34,8 +33,6 @@
 ![](https://img.shields.io/github/repo-size/mditor-dev/mditor)
 ![](https://img.shields.io/github/package-json/keywords/mditor-dev/mditor)
 
-
-
 ## 预览
 
 <video src="https://user-images.githubusercontent.com/28827520/202234063-ce8d843c-d5db-4415-b8ad-60cfb5bf14e1.mov" style="width: 100%;height: auto" autoplay muted></video>
@@ -58,6 +55,8 @@
 - 支持丰富的快捷键
 - 文档格式化功能
 - 自动保存功能
+- 支持文件外部修改更新
+- macos 支持 tab 标签页
 - 支持简洁模式
   - 当你能熟练使用 markdown 后，可以打开简洁模式，搭配快捷键，使用极简的编辑器界面，拒绝干扰
 - 跨平台
