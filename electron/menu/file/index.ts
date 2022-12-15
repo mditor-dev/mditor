@@ -36,6 +36,7 @@ export function getFileMenu(): MenuItem {
 
   return new MenuItem({
     id: 'FileMenu',
+    role: 'fileMenu',
     label: isMac ? '文件' : '文件(F)(&F)',
     submenu: [
       {
@@ -45,7 +46,7 @@ export function getFileMenu(): MenuItem {
           openFile(async (win: BrowserWindow): Promise<string> => {
             const { filePaths, canceled } = await dialog.showOpenDialog(win, {
               filters: [
-                { name: 'Markdown', extensions: ['md'] },
+                { name: 'Markdown', extensions: ['md', 'mdc', 'mdown', 'mdtext', 'mdtxt', 'mmd'] },
                 { name: 'Plain Text', extensions: [''] },
               ],
             });
@@ -94,11 +95,20 @@ export function getFileMenu(): MenuItem {
           modifyMd('内容还原操作会把编辑器还原到未编辑状态，将丢弃未保存的文本', 'reset');
         },
       },
+      separator,
       {
         label: '新建窗口',
         accelerator: 'CommandOrControl+Shift+n',
         click() {
           createWindow();
+        },
+      },
+      {
+        label: '新建标签页',
+        visible: isMac,
+        accelerator: 'CommandOrControl+t',
+        click() {
+          BrowserWindow.getFocusedWindow()?.addTabbedWindow(createWindow());
         },
       },
       separator,

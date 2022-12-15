@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, PropType, ref, toRefs, watch } from 'vue';
-import { throttle } from '@mxssfd/ts-utils';
+import { throttle } from '@tool-pack/basic';
 import MarkdownIt from 'markdown-it';
 import { MDDirectory } from '../../types/interfaces';
 
@@ -38,10 +38,14 @@ function editorScrollTo(index: number) {
 
 watch(
   propsRefs.activeTitleIndex,
-  throttle((index: number) => {
-    if (index === -1) return;
-    scrollTo(index);
-  }, 500),
+  throttle(
+    (index: number) => {
+      if (index === -1) return;
+      scrollTo(index);
+    },
+    500,
+    { leading: true, trailing: true },
+  ),
 );
 
 const directoryList = computed(() => {

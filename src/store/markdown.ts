@@ -12,7 +12,7 @@ import parserFlow from 'prettier/esm/parser-flow.mjs';
 import parserGraphql from 'prettier/esm/parser-graphql.mjs';
 import parserPostcss from 'prettier/esm/parser-postcss.mjs';
 import parserYaml from 'prettier/esm/parser-yaml.mjs';
-import { updateObj } from '@mxssfd/core';
+import { updateObj } from '@tool-pack/basic';
 
 let isWatched = false;
 export const useMarkdownStore = defineStore('md-file-store', () => {
@@ -44,31 +44,7 @@ export const useMarkdownStore = defineStore('md-file-store', () => {
     isFromIpcMain = false;
   });
 
-  const actions = {
-    onDrop(event: DragEvent): void {
-      const dt = event.dataTransfer;
-      if (!dt) return;
-      event.preventDefault();
-      event.stopPropagation();
-
-      // 可以拖放多个文件
-      const file = dt.files[0];
-      if (!file) return;
-
-      const fr = new FileReader();
-      fr.onload = (e) => {
-        if (!e.target) return;
-
-        state.content = e.target.result as string;
-        state.originContent = state.content;
-        state.path = file.path;
-        state.name = file.name;
-
-        ipcRenderer.send('drop-file', file.path);
-      };
-      fr.readAsText(file);
-    },
-  };
+  const actions = {};
 
   function addListener(): void {
     if (isWatched) return;

@@ -7,6 +7,7 @@ import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
 import { appConfig, setTheme, Theme } from '../utils/app-config';
 import { getWinByFilepath } from '../utils/file';
+import { getFocusedWinMdHook } from '../hooks/use-md';
 
 // Remove electron security warnings
 // This warning only shows in development mode
@@ -74,8 +75,17 @@ app.on('window-all-closed', () => {
 });
 function openWindow(filepath: string) {
   const win = getWinByFilepath(filepath);
-  if (win) win.focus();
-  else createWindow(filepath);
+  if (win) {
+    win.focus();
+    return;
+  }
+  getFocusedWinMdHook()
+    .then(([hook, win]) => {
+      if (hook.isEmpty()) {
+        hook.readMd(filepath, win);
+      } else createWindow(filepath);
+    })
+    .catch(() => createWindow(filepath));
 }
 
 // mac专用：点击最近打开的文件或者通过文件关联打开app，读取文件
@@ -90,6 +100,11 @@ app.on('open-file', function (_event, filepath: string) {
     // app未启动，通过文件关联启动，whenReady().then
     filePath = filepath;
   }
+});
+
+// mac新建标签页
+app.on('new-window-for-tab', function () {
+  BrowserWindow.getFocusedWindow()?.addTabbedWindow(createWindow());
 });
 
 // windows通过任务栏图标菜单上的最近的文件打开 或者 通过文件关联打开

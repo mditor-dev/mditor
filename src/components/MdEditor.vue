@@ -11,15 +11,16 @@ import '@/assets/toastui-color-syntax.scss';
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
-import { debounce, toggleWidthOrHeight } from '@mxssfd/ts-utils';
+import { debounce } from '@tool-pack/basic';
+import { toggleWidthOrHeight } from '@mxssfd/ts-utils';
 
 import { ipcRenderer } from 'electron';
 import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
 import { MDDirectory } from '../../types/interfaces';
 import { useStore } from '@/store';
 import { useMarkdownStore } from '@/store/markdown';
-import { useKeymap } from '@/utils/useKeymap';
 import { isMac } from '@/utils';
+import { Keymap } from '@tool-pack/keymap';
 
 const emits = defineEmits(['scroll', 'directory']);
 
@@ -186,20 +187,17 @@ onMounted(() => {
     return () => editor.exec(name, payload);
   }
 
-  const keymap = useKeymap(
-    [
-      { desc: '回退', keys: 'MetaOrControl+z', handler: exec('undo') },
-      { desc: '前进', keys: isMac() ? 'Meta+Shift+z' : 'Control+y', handler: exec('redo') },
-      // { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
-      // { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
-    ],
-    editorDomRef.value as HTMLDivElement,
-  );
+  const keymap = new Keymap({ el: editorDomRef.value as HTMLDivElement }, [
+    { desc: '回退', keys: 'MetaOrControl+z', handler: exec('undo') },
+    { desc: '前进', keys: isMac() ? 'Meta+Shift+z' : 'Control+y', handler: exec('redo') },
+    // { desc: '保存文件', keys: 'MetaOrControl+s', handler: saveFile },
+    // { desc: 'test', keys: 'MetaOrControl+1', handler: exec('heading', { level: 1 }) },
+  ]);
   keymap.add({
     desc: '控制台打印快捷键映射',
     keys: 'MetaOrControl+l',
     handler() {
-      keymap.log();
+      console.table(keymap.maps);
     },
   });
 
@@ -229,33 +227,24 @@ onMounted(() => {
     },
   );
 
-  let toggleOn = true;
   ipcRenderer.on('editor:toggle-bar', () => {
-    toggleOn = !toggleOn;
-    store.isShowCatalogue = toggleOn;
-
     const ed = editorDomRef.value;
     if (!ed) return;
 
-    const toolbar = ed.querySelector<HTMLDialogElement>('.toastui-editor-toolbar');
-    const modeSwitch = ed.querySelector<HTMLDialogElement>('.toastui-editor-mode-switch');
+    const $toolbar = ed.querySelector<HTMLDialogElement>('.toastui-editor-toolbar');
+    const $modeSwitch = ed.querySelector<HTMLDialogElement>('.toastui-editor-mode-switch');
 
-    toolbar && toggleWidthOrHeight(toolbar, 'height');
-    modeSwitch && toggleWidthOrHeight(modeSwitch, 'height');
+    $toolbar && toggleWidthOrHeight($toolbar, 'height');
+    $modeSwitch && toggleWidthOrHeight($modeSwitch, 'height');
   });
   ipcRenderer.on('editor:toggle-preview', () => {
     editor.changePreviewStyle(editor.getCurrentPreviewStyle() === 'tab' ? 'vertical' : 'tab');
   });
 });
-
-const isShowClick = () => {
-  store.setIsShowCatalogue(!store.isShowCatalogue);
-};
 </script>
 <template>
   <div class="md-editor">
     <div ref="editorDomRef" class="editor-wrapper"></div>
-    <img src="../assets/mulu.svg" alt="打开目录" class="isShow" @click="isShowClick" />
   </div>
 </template>
 
@@ -271,17 +260,6 @@ const isShowClick = () => {
   }
   .toastui-editor-mode-switch[toggle-status='hide'] {
     margin-top: -1px;
-  }
-  .isShow {
-    position: absolute;
-    width: 25px;
-    bottom: 2px;
-    left: 5px;
-    color: rgb(138, 138, 138);
-    cursor: pointer;
-    &:hover {
-      filter: contrast(0);
-    }
   }
 }
 </style>

@@ -4,6 +4,7 @@ export function getEditMenu(): MenuItem {
   // 编辑菜单
   return new MenuItem({
     id: 'EditMenu',
+    role: 'editMenu',
     label: isMac ? '编辑' : '编辑(E)(&E)',
     submenu: [
       {

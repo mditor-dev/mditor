@@ -1,14 +1,15 @@
 import { defineStore } from 'pinia';
 import { reactive, toRefs } from 'vue';
+import { ipcRenderer } from 'electron';
 
 export const useStore = defineStore('store', () => {
-  const state = reactive({ isShowCatalogue: true, theme: 'light' });
+  const state = reactive({ directoryVisible: true, theme: 'light' });
 
-  const actions = reactive({
-    setIsShowCatalogue(isShowCatalogue: boolean): void {
-      state.isShowCatalogue = isShowCatalogue;
+  const actions = {
+    toggleDirectoryVisible() {
+      state.directoryVisible = !state.directoryVisible;
     },
-  });
+  };
 
   function addListener(): void {
     const media = window.matchMedia('(prefers-color-scheme:dark)');
@@ -24,6 +25,11 @@ export const useStore = defineStore('store', () => {
         console.log('亮色模式');
         state.theme = 'light';
       }
+    });
+
+    let visible = true;
+    ipcRenderer.on('editor:toggle-bar', () => {
+      state.directoryVisible = visible = !visible;
     });
   }
   addListener();

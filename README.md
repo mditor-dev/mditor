@@ -1,3 +1,4 @@
+
 <h1 align="center">
   <br>
   <a href="https://github.com/mditor-dev/mditor">
@@ -18,6 +19,22 @@
   <a href="#credits">Credits</a> •
   <a href="#license">License</a>
 </p>
+
+[![](https://img.shields.io/github/languages/count/mditor-dev/mditor)](https://img.shields.io/github/languages/count/mditor-dev/mditor)
+![](https://img.shields.io/github/languages/top/mditor-dev/mditor)
+![](https://img.shields.io/github/license/mditor-dev/mditor)
+![](https://img.shields.io/github/commit-activity/y/mditor-dev/mditor)
+![](https://img.shields.io/github/commit-activity/m/mditor-dev/mditor)
+![](https://img.shields.io/github/commit-activity/w/mditor-dev/mditor)
+![](https://img.shields.io/github/contributors/mditor-dev/mditor)
+![](https://img.shields.io/github/last-commit/mditor-dev/mditor)
+![](https://img.shields.io/github/package-json/v/mditor-dev/mditor)
+![](https://img.shields.io/github/languages/code-size/mditor-dev/mditor)
+![](https://img.shields.io/github/directory-file-count/mditor-dev/mditor)
+![](https://img.shields.io/github/repo-size/mditor-dev/mditor)
+![](https://img.shields.io/github/package-json/keywords/mditor-dev/mditor)
+
+
 
 ## 预览
 

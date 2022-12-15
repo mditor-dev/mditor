@@ -6,6 +6,7 @@ export function getViewMenu(): MenuItem {
   return new MenuItem({
     id: 'ViewMenu',
     label: isMac ? '显示' : '显示(V)(&V)',
+    role: 'viewMenu',
     submenu: [
       ...(app.isPackaged
         ? ([] as any)

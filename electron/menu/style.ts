@@ -6,7 +6,7 @@ export function getStyleMenu(): MenuItem {
     BrowserWindow.getFocusedWindow()?.webContents.send('editor:command', { name, payload });
   // 段落菜单
   return new MenuItem({
-    id: 'EditMenu',
+    id: 'StyleMenu',
     label: isMac ? '格式' : '格式(S)(&S)',
     submenu: [
       {

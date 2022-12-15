@@ -1,7 +1,8 @@
 import { BrowserWindow } from 'electron';
 import { MDFile } from '../../types/interfaces';
-import { updateObj } from '@mxssfd/core';
-import { saveMDFile } from '../utils/file';
+import { updateObj } from '@tool-pack/basic';
+import { readMDFile, saveMDFile, watchFile } from '../utils/file';
+import { addRecentDocument } from '../utils/app-config';
 
 export function useMd(win: BrowserWindow) {
   const _state: MDFile = {
@@ -11,36 +12,87 @@ export function useMd(win: BrowserWindow) {
     content: '',
   };
 
-  function setState(state: Partial<MDFile>) {
-    updateObj(_state, state);
-    win.setDocumentEdited(isModify());
-    win.webContents.send('md-store:update', _state);
-  }
+  let watchCanceler: Function | null = null;
 
   win.webContents.ipc.on('md-store:update', (_, md: MDFile) => {
     console.log('md-store:update');
+    if (md.path && md.path !== _state.path) {
+      addRecentDocument(md.path);
+    }
     updateObj(_state, md);
-    win.setDocumentEdited(isModify());
+    win.setDocumentEdited(getters.isModify());
   });
 
-  const isModify = () => _state.originContent !== _state.content;
+  const _watchFile = (): void => {
+    watchCanceler?.();
+    watchCanceler = watchFile(_state.path, {
+      onChange(content: string) {
+        actions.setState({ content, originContent: content });
+      },
+      onMove(filepath, filename) {
+        actions.setState({ path: filepath, name: filename });
+      },
+      onRemove() {
+        actions.setState({ path: '', name: _state.name + '(已删除)' });
+        // actions.clear();
+        watchCanceler?.();
+      },
+    });
+  };
 
-  const clear = () => setState({ name: '', content: '', originContent: '', path: '' });
+  const getters = {
+    isModify: (): boolean => _state.originContent !== _state.content,
+    isEmpty: (): boolean => Object.values(_state).every((v) => !v),
+    isRemoved: (): boolean => !_state.path && _state.name.endsWith('(已删除)'),
+  };
 
   // 因为弹窗会触发blur保存，所以加个锁锁住save
   let saveLock = false;
-  const save = async (type: 'save' | 'save-as' = 'save'): Promise<null | MDFile> => {
-    if (saveLock) return Promise.resolve(null);
-    const file = await saveMDFile(win, { ..._state, type });
-    file && setState(file);
-    return file;
+  const actions = {
+    syncState(): void {
+      win.webContents.send('md-store:update', _state);
+    },
+    setState(state: Partial<MDFile>): void {
+      updateObj(_state, state);
+      win.setDocumentEdited(getters.isModify());
+      actions.syncState();
+    },
+    clear: (): void => actions.setState({ name: '', content: '', originContent: '', path: '' }),
+    save: async (type: 'save' | 'save-as' = 'save'): Promise<null | MDFile> => {
+      if (saveLock) return Promise.resolve(null);
+      const file = await saveMDFile(win, { ..._state, type });
+      if (file) {
+        if (!_state.path) _watchFile();
+        actions.setState(file);
+      }
+      return file;
+    },
+    lockSave: (): void => {
+      saveLock = true;
+    },
+    unlockSave: (): void => {
+      saveLock = false;
+    },
+    reset: (): void => actions.setState({ content: _state.originContent }),
+    readMd: (filepath: string, win: BrowserWindow): boolean => {
+      const md = readMDFile(win, filepath);
+      if (md) {
+        actions.setState(md);
+        _watchFile();
+      }
+      return Boolean(md);
+    },
+    destroy() {
+      console.log('md store destroy');
+      watchCanceler?.();
+    },
   };
-  const lockSave = () => (saveLock = true);
-  const unlockSave = () => (saveLock = false);
 
-  const reset = () => setState({ content: _state.originContent });
-
-  const hook = { state: _state, setState, isModify, clear, save, reset, lockSave, unlockSave };
+  const hook = {
+    state: _state,
+    ...getters,
+    ...actions,
+  };
 
   mdManager.set(win, hook);
 
