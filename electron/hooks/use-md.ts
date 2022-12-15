@@ -43,6 +43,7 @@ export function useMd(win: BrowserWindow) {
   const getters = {
     isModify: (): boolean => _state.originContent !== _state.content,
     isEmpty: (): boolean => Object.values(_state).every((v) => !v),
+    isRemoved: (): boolean => !_state.path && _state.name.endsWith('(已删除)'),
   };
 
   // 因为弹窗会触发blur保存，所以加个锁锁住save
@@ -82,7 +83,7 @@ export function useMd(win: BrowserWindow) {
       return Boolean(md);
     },
     destroy() {
-      console.log('destroy');
+      console.log('md store destroy');
       watchCanceler?.();
     },
   };

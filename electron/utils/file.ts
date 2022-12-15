@@ -57,10 +57,13 @@ export function watchFile(
     console.log('unlink', args);
     if (!fs.existsSync(filepath)) options.onRemove();
   });
-  return () => {
-    console.log('close watch');
+  let close = () => {
+    console.log('watch:close');
     watcher.close();
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    close = () => {};
   };
+  return close;
 }
 
 export function readFile(filepath: string): string | void {

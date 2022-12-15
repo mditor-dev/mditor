@@ -35,7 +35,6 @@ export function createWindow(filePath?: string) {
   });
 
   const mdStore = useMd(win);
-  const { state: md, isModify: isMdModify, save: saveMd, lockSave, unlockSave } = mdStore;
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);
@@ -46,8 +45,8 @@ export function createWindow(filePath?: string) {
   }
 
   win.on('blur', function () {
-    if (!isMdModify() || !md.path || win.isDestroyed()) return;
-    saveMd();
+    if (!mdStore.isModify() || !mdStore.state.path || win.isDestroyed()) return;
+    mdStore.save();
   });
 
   // Test actively push message to the Electron-Renderer
@@ -89,8 +88,8 @@ export function createWindow(filePath?: string) {
   });
 
   win.on('close', (event) => {
-    console.log('close', isMdModify());
-    if (!isMdModify()) {
+    console.log('close', mdStore.isModify());
+    if (!mdStore.isModify() && !mdStore.isRemoved()) {
       mdStore.destroy();
       return;
     }
@@ -109,30 +108,30 @@ export function createWindow(filePath?: string) {
         // 只为触发app.on('before-quit')内的事件
         ipcMain.emit('window:cancel-close');
       }
-      lockSave();
+      mdStore.lockSave();
       // 内容已改动，询问是否保存
       const { response } = await dialog.showMessageBox(win, {
         type: 'question',
         message: '文件未保存，是否保存再离开？',
         buttons: ['取消', '放弃', '保存'],
       });
-      unlockSave();
+      mdStore.unlockSave();
       switch (response) {
         case 0:
           emitCancel();
           break;
         // 放弃
         case 1:
-          md.content = md.originContent;
+          if (mdStore.isRemoved()) mdStore.clear();
+          else mdStore.reset();
           emitClose();
           break;
         // 确认保存
         case 2:
-          saveMd().then((file) => {
+          mdStore.save().then((file) => {
             if (file) emitClose(1000);
             else emitCancel();
           });
-
           break;
       }
     })();
