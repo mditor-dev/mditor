@@ -12,7 +12,7 @@ import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 import 'prismjs/themes/prism.min.css';
 import '@toast-ui/editor/dist/i18n/zh-cn';
 import { debounce } from '@tool-pack/basic';
-import { toggleWidthOrHeight } from '@mxssfd/ts-utils';
+import { toggleSize } from '@tool-pack/dom';
 
 import { ipcRenderer } from 'electron';
 import { onMounted, onUnmounted, ref, watch, defineExpose } from 'vue';
@@ -234,8 +234,8 @@ onMounted(() => {
     const $toolbar = ed.querySelector<HTMLDialogElement>('.toastui-editor-toolbar');
     const $modeSwitch = ed.querySelector<HTMLDialogElement>('.toastui-editor-mode-switch');
 
-    $toolbar && toggleWidthOrHeight($toolbar, 'height');
-    $modeSwitch && toggleWidthOrHeight($modeSwitch, 'height');
+    $toolbar && toggleSize($toolbar, 'height');
+    $modeSwitch && toggleSize($modeSwitch, 'height', { revertToAuto: false });
   });
   ipcRenderer.on('editor:toggle-preview', () => {
     editor.changePreviewStyle(editor.getCurrentPreviewStyle() === 'tab' ? 'vertical' : 'tab');
