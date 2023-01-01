@@ -78,7 +78,7 @@
     "to-regex-range": "^5.0.1",
     "is-number": "^7.0.0",
     "fill-range": "^7.0.1",
-    "glob-parent": "~5.1.2",
+    "glob-parent": "~6.0.2",
     "is-binary-path": "~2.1.0",
     "binary-extensions": "^2.0.0",
     "is-glob": "~4.0.1",
