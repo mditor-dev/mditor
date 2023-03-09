@@ -3,7 +3,11 @@
   "version": "0.0.3",
   "main": "dist-electron/main/index.js",
   "description": "所见即所得的 markdown 编辑器 app",
-  "author": "mditor-dev",
+  "author": {
+    "name": "mditor-dev",
+    "email": "xinzon32177@163.com",
+    "url": "https://github.com/mditor-dev/mditor"
+  },
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -13,6 +17,7 @@
     "build:electron-only": "electron-builder",
     "build:mac": "npm run ts-check:* && vite build && electron-builder --mac",
     "build:win": "npm run ts-check:* && vite build && electron-builder --win",
+    "build:linux": "npm run ts-check:* && vite build && electron-builder --linux",
     "lint": "eslint .",
     "ts-check:src": "vue-tsc --noEmit -p ./tsconfig.json",
     "ts-check:electron": "vue-tsc --noEmit -p ./tsconfig.node.json",

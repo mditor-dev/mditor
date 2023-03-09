@@ -23,8 +23,16 @@
     artifactName: '${productName}_${version}.${ext}',
   },
   linux: {
-    icon: "electron/resources/iconset",
-    target: ["AppImage", "deb"],
+    icon: "electron/resources/icon.icns",
+    "target": [
+      {
+        "target": "deb",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "category": "SmartAssembly",
     artifactName: "${productName}-Linux-${version}.${ext}",
   },
   fileAssociations: [
