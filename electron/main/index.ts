@@ -7,7 +7,7 @@ import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
 import { appConfig, setTheme, Theme } from '../utils/app-config';
 import { getWinByFilepath } from '../utils/file';
-import { getFocusedWinMdHook } from '../hooks/use-md';
+import { getFocusedWinMdStore } from '../store/md-store';
 
 // Remove electron security warnings
 // This warning only shows in development mode
@@ -79,7 +79,7 @@ function openWindow(filepath: string) {
     win.focus();
     return;
   }
-  getFocusedWinMdHook()
+  getFocusedWinMdStore()
     .then(([hook, win]) => {
       if (hook.isEmpty()) {
         hook.readMd(filepath, win);

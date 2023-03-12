@@ -1,7 +1,7 @@
 import { BrowserWindow, app, shell, dialog, ipcMain } from 'electron';
 import { join, basename } from 'path';
 import { appConfig, saveAppConfig } from '../utils/app-config';
-import { useMd } from '../hooks/use-md';
+import { useMdStore } from '../store/md-store';
 import { idGen } from '@tool-pack/basic';
 import { isMac } from '../utils/platform';
 import { getWinByFilepath } from '../utils/file';
@@ -34,7 +34,7 @@ export function createWindow(filePath?: string) {
     },
   });
 
-  const mdStore = useMd(win);
+  const mdStore = useMdStore(win);
 
   if (app.isPackaged) {
     win.loadFile(indexHtml);

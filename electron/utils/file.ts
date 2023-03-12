@@ -4,7 +4,7 @@ import { BrowserWindow, dialog } from 'electron';
 import { MDFile } from '../../types/interfaces';
 import { addRecentDocument } from './app-config';
 import { createWindow } from '../main/create-window';
-import { mdManager } from '../hooks/use-md';
+import { mdManager } from '../store/md-store';
 import chokidar from 'chokidar';
 import { isMac } from './platform';
 

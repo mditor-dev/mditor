@@ -4,7 +4,7 @@ import { updateObj } from '@tool-pack/basic';
 import { readMDFile, saveMDFile, watchFile } from '../utils/file';
 import { addRecentDocument } from '../utils/app-config';
 
-export function useMd(win: BrowserWindow) {
+export function useMdStore(win: BrowserWindow) {
   const _state: MDFile = {
     name: '',
     path: '',
@@ -98,10 +98,10 @@ export function useMd(win: BrowserWindow) {
 
   return hook;
 }
-export const mdManager = new WeakMap<BrowserWindow, ReturnType<typeof useMd>>();
+export const mdManager = new WeakMap<BrowserWindow, ReturnType<typeof useMdStore>>();
 
-export function getFocusedWinMdHook(): Promise<[ReturnType<typeof useMd>, BrowserWindow]> {
-  return new Promise<[ReturnType<typeof useMd>, BrowserWindow]>((res, rej) => {
+export function getFocusedWinMdStore(): Promise<[ReturnType<typeof useMdStore>, BrowserWindow]> {
+  return new Promise<[ReturnType<typeof useMdStore>, BrowserWindow]>((res, rej) => {
     const win = BrowserWindow.getFocusedWindow();
     if (!win) {
       rej();
