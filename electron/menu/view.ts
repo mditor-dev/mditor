@@ -1,4 +1,4 @@
-import { MenuItem, app, BrowserWindow } from 'electron';
+import { MenuItem, app, BrowserWindow, shell } from 'electron';
 import { isMac, isWin } from '../utils/platform';
 import { appConfig, saveAppConfig } from '../config/app.config';
 export function getViewMenu(): MenuItem {
@@ -25,6 +25,12 @@ export function getViewMenu(): MenuItem {
               label: 'Toggle Developer Tools',
               role: 'toggleDevTools',
               accelerator: 'CommandOrControl+Shift+Alt+f12',
+            },
+            {
+              label: '打开APP数据目录',
+              click() {
+                shell.openPath(app.getPath('userData'));
+              },
             },
             { type: 'separator' },
           ]),
