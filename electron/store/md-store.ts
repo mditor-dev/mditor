@@ -3,8 +3,16 @@ import { MDFile } from '../../types/interfaces';
 import { updateObj } from '@tool-pack/basic';
 import { readMDFile, saveMDFile, watchFile } from '../utils/file';
 import { addRecentDocument } from '../config/app.config';
+import { logger } from '../config/logger';
 
 export function useMdStore(win: BrowserWindow) {
+  const mdStoreLoggerScope = `md-store[${win.id}]`;
+
+  const scopeLog = (mdScope: string, msg: string) => {
+    mdScope = mdScope ? '.' + mdScope : mdScope;
+    logger.info(`[${mdStoreLoggerScope}${mdScope}] ${msg}`);
+  };
+
   const _state: MDFile = {
     name: '',
     path: '',
@@ -25,14 +33,18 @@ export function useMdStore(win: BrowserWindow) {
 
   const _watchFile = (): void => {
     watchCanceler?.();
+    scopeLog('fileWatch', `watch(${_state.path})`);
     watchCanceler = watchFile(_state.path, {
       onChange(content: string) {
+        scopeLog('fileWatch', `change(${_state.path})`);
         actions.setState({ content, originContent: content });
       },
       onMove(filepath, filename) {
+        scopeLog('fileWatch', `from(${_state.path}) move to(${filepath})`);
         actions.setState({ path: filepath, name: filename });
       },
       onRemove() {
+        scopeLog('fileWatch', `remove(${_state.path})`);
         actions.setState({ path: '', name: _state.name + '(已删除)' });
         // actions.clear();
         watchCanceler?.();
@@ -60,21 +72,36 @@ export function useMdStore(win: BrowserWindow) {
     clear: (): void => actions.setState({ name: '', content: '', originContent: '', path: '' }),
     save: async (type: 'save' | 'save-as' = 'save'): Promise<null | MDFile> => {
       if (saveLock) return Promise.resolve(null);
-      const file = await saveMDFile(win, { ..._state, type });
-      if (file) {
-        if (!_state.path) _watchFile();
-        actions.setState(file);
+
+      const originPath = _state.path;
+      scopeLog('save', `ready '${type}' (${originPath})`);
+      actions.lockSave();
+      try {
+        const file = await saveMDFile(win, { ..._state, type });
+        if (file) {
+          actions.setState(file);
+          scopeLog('save', `${type} success (${file.path})`);
+          if (!originPath || type === 'save-as') _watchFile();
+        } else {
+          scopeLog('save', `cancel '${type}'`);
+        }
+        return file;
+      } finally {
+        actions.unlockSave();
       }
-      return file;
     },
     lockSave: (): void => {
+      scopeLog('save.locker', 'lock');
       saveLock = true;
     },
     unlockSave: (): void => {
+      scopeLog('save.locker', 'unlock');
       saveLock = false;
     },
     reset: (): void => actions.setState({ content: _state.originContent }),
     readMd: (filepath: string, win: BrowserWindow): boolean => {
+      scopeLog('readMd', `read(${filepath})`);
+
       const md = readMDFile(win, filepath);
       if (md) {
         actions.setState(md);
@@ -83,7 +110,7 @@ export function useMdStore(win: BrowserWindow) {
       return Boolean(md);
     },
     destroy() {
-      console.log('md store destroy');
+      scopeLog('', 'destroy');
       watchCanceler?.();
     },
   };

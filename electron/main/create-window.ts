@@ -2,18 +2,18 @@ import { BrowserWindow, app, shell, dialog, ipcMain } from 'electron';
 import { join, basename } from 'path';
 import { appConfig, saveAppConfig } from '../config/app.config';
 import { useMdStore } from '../store/md-store';
-import { idGen } from '@tool-pack/basic';
 import { isMac } from '../utils/platform';
 import { getWinByFilepath } from '../utils/file';
+import { logger } from '../config/logger';
 
 // Here, you can also use other preload
 const preload = join(__dirname, '../preload/index.js');
 const url = process.env['VITE_DEV_SERVER_URL'] as string;
 const indexHtml = join(process.env['DIST'], 'index.html');
 
-const gen = idGen();
 export function createWindow(filePath?: string) {
   const focusedWin = BrowserWindow.getFocusedWindow();
+
   const win = new BrowserWindow({
     ...appConfig.window,
     title: 'Main window',
@@ -22,7 +22,6 @@ export function createWindow(filePath?: string) {
     y: focusedWin ? focusedWin.getBounds().y + 30 : undefined,
     minWidth: 560,
     minHeight: 380,
-    tabbingIdentifier: gen.next() + '',
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -33,6 +32,8 @@ export function createWindow(filePath?: string) {
       spellcheck: false,
     },
   });
+
+  logger.info(`[WIN] create[${win.id}]`);
 
   const mdStore = useMdStore(win);
 

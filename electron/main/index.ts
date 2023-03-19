@@ -22,7 +22,7 @@ if (app.isPackaged && isWin && process.argv[1]) {
 }
 
 app.whenReady().then(() => {
-  logger.info('应用程序已启动');
+  logger.info('[APP] ready --------------------');
 
   createWindow(filePath);
   filePath = undefined;
@@ -57,7 +57,7 @@ app.on('before-quit', () => {
   // 当同时有多个窗口时按下退出快捷键，任何一个拦截都不能关闭app
   app.once('window-all-closed', () => {
     if (!cancelQuit) {
-      logger.info('应用程序即将关闭');
+      logger.info('[APP] exit ======================');
       app.exit();
     }
   });
