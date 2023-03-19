@@ -1,6 +1,6 @@
 import { BrowserWindow, app, shell, dialog, ipcMain } from 'electron';
 import { join, basename } from 'path';
-import { appConfig, saveAppConfig } from '../utils/app-config';
+import { appConfig, saveAppConfig } from '../config/app.config';
 import { useMdStore } from '../store/md-store';
 import { idGen } from '@tool-pack/basic';
 import { isMac } from '../utils/platform';

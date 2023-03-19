@@ -1,6 +1,6 @@
 import { MenuItem, app, BrowserWindow } from 'electron';
 import { isMac, isWin } from '../utils/platform';
-import { appConfig, saveAppConfig } from '../utils/app-config';
+import { appConfig, saveAppConfig } from '../config/app.config';
 export function getViewMenu(): MenuItem {
   // 显示菜单
   return new MenuItem({

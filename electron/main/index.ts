@@ -3,10 +3,10 @@ import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron';
 
 import { join } from 'path';
 import { setMenu } from '../menu';
-import { logger } from './logger';
+import { logger } from '../config/logger';
 import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
-import { appConfig, setTheme, Theme } from '../utils/app-config';
+import { appConfig, setTheme, Theme } from '../config/app.config';
 import { getWinByFilepath } from '../utils/file';
 import { getFocusedWinMdStore } from '../store/md-store';
 

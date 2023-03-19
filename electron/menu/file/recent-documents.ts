@@ -1,7 +1,7 @@
 import * as Path from 'path';
 import fs from 'fs';
 import { Menu, MenuItemConstructorOptions, ipcMain, dialog } from 'electron';
-import { appConfig, clearRecentDocument, removeRecentDocument } from '../../utils/app-config';
+import { appConfig, clearRecentDocument, removeRecentDocument } from '../../config/app.config';
 import { isWin } from '../../utils/platform';
 import { openFile } from '../../utils/file';
 

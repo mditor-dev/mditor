@@ -2,7 +2,7 @@ import fs from 'fs';
 import * as Path from 'path';
 import { BrowserWindow, dialog } from 'electron';
 import { MDFile } from '../../types/interfaces';
-import { addRecentDocument } from './app-config';
+import { addRecentDocument } from '../config/app.config';
 import { createWindow } from '../main/create-window';
 import { mdManager } from '../store/md-store';
 import chokidar from 'chokidar';

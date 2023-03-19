@@ -2,7 +2,7 @@ import { BrowserWindow } from 'electron';
 import { MDFile } from '../../types/interfaces';
 import { updateObj } from '@tool-pack/basic';
 import { readMDFile, saveMDFile, watchFile } from '../utils/file';
-import { addRecentDocument } from '../utils/app-config';
+import { addRecentDocument } from '../config/app.config';
 
 export function useMdStore(win: BrowserWindow) {
   const _state: MDFile = {

@@ -1,6 +1,6 @@
 import { MenuItem } from 'electron';
 import { isMac } from '../utils/platform';
-import { appConfig, Theme, setTheme } from '../utils/app-config';
+import { appConfig, Theme, setTheme } from '../config/app.config';
 
 export function getThemeMenu(): MenuItem {
   // 主题切换菜单
