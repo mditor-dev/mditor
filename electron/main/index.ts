@@ -3,6 +3,7 @@ import { app, BrowserWindow, ipcMain, Tray, Menu, nativeImage } from 'electron';
 
 import { join } from 'path';
 import { setMenu } from '../menu';
+import { logger } from './logger';
 import { isWin } from '../utils/platform';
 import { createWindow } from './create-window';
 import { appConfig, setTheme, Theme } from '../utils/app-config';
@@ -21,6 +22,8 @@ if (app.isPackaged && isWin && process.argv[1]) {
 }
 
 app.whenReady().then(() => {
+  logger.info('应用程序已启动');
+
   createWindow(filePath);
   filePath = undefined;
 
@@ -53,7 +56,10 @@ app.on('before-quit', () => {
   // 使用window-all-closed代替自定义事件
   // 当同时有多个窗口时按下退出快捷键，任何一个拦截都不能关闭app
   app.once('window-all-closed', () => {
-    if (!cancelQuit) app.exit();
+    if (!cancelQuit) {
+      logger.info('应用程序即将关闭');
+      app.exit();
+    }
   });
   // 保存文件期间，可能会选择取消保存，这时候要取消退出
   // 重现步骤:
