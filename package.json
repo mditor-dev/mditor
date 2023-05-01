@@ -74,7 +74,7 @@
     "vue-tsc": "^1.0.9"
   },
   "dependencies": {
-    "@tool-pack/basic": "^0.0.12",
+    "@tool-pack/basic": "^0.0.19",
     "@tool-pack/keymap": "^0.0.6",
     "chokidar": "^3.5.3",
     "winston": "^3.8.2",
