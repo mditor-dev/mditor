@@ -42,7 +42,7 @@
     "@toast-ui/editor-plugin-code-syntax-highlight": "^3.1.0",
     "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
     "@toast-ui/editor-plugin-table-merged-cell": "^3.1.0",
-    "@tool-pack/dom": "0.0.1-beta.5",
+    "@tool-pack/dom": "0.0.1",
     "@types/markdown-it": "^12.2.3",
     "@types/prettier": "^2.7.1",
     "@types/prismjs": "^1.26.0",
