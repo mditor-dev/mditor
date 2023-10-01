@@ -52,7 +52,7 @@
     "chalk": "^5.2.0",
     "electron": "^25.0.1",
     "electron-builder": "^23.3.3",
-    "enquirer": "^2.3.6",
+    "enquirer": "^2.4.1",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^4.2.1",
