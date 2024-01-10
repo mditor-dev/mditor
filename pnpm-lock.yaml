@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@tool-pack/basic':
-    specifier: ^0.0.20
-    version: 0.0.20
+    specifier: ^0.3.1
+    version: 0.3.1
   '@tool-pack/keymap':
     specifier: ^0.0.6
     version: 0.0.6
@@ -592,17 +592,17 @@ packages:
       prosemirror-view: 1.29.0
     dev: true
 
-  /@tool-pack/basic@0.0.20:
-    resolution: {integrity: sha512-VcW/BVtgx9X1P69E9lcFMFkP8bE4qFOJkK0aFYLVk6kxepHWDLdDMySdVGasAQsa7Wvi0fCOFfvltUSfxaNa+Q==}
-    dependencies:
-      '@tool-pack/types': 0.0.2
-    dev: false
-
   /@tool-pack/basic@0.0.9:
     resolution: {integrity: sha512-cZ/UmMD0Mnp+AodcQIKR+xMwwZ/A9vYCOWVtbotqzpzp9ngPm/I0ej+vhVz1epnYiBnm5iYTUbB7EepRH0Mdmw==}
     dependencies:
       '@tool-pack/types': 0.0.1
     dev: true
+
+  /@tool-pack/basic@0.3.1:
+    resolution: {integrity: sha512-9Ttbr2Y5SE//HRIQNTu0zrWZGyEYMGJuQ6/LmZmDqvlThDYys7W/B3T1deLxj20CnJZaSbOLGmDA52fp991XGw==}
+    dependencies:
+      '@tool-pack/types': 0.0.6
+    dev: false
 
   /@tool-pack/dom@0.0.1:
     resolution: {integrity: sha512-QNe3mR0VJRXEhV3ajGsrHjhsYAaIbOW4BD7TI39ua/mDMU7/GRXoiXfm0BWW6KVUBgnBx0s6F4nZWx3rugBydQ==}
@@ -621,6 +621,11 @@ packages:
 
   /@tool-pack/types@0.0.2:
     resolution: {integrity: sha512-cbhzF9gkLZ4Xe9YmBqx8szLlFSQznELcWrAEe1mFA4D/lW7c7K78FH2v60K1Zib0tRMZ1cZfJMd4lJlh12/G9A==}
+    dev: true
+
+  /@tool-pack/types@0.0.6:
+    resolution: {integrity: sha512-V2puQW1R2ufXhhHtGy7v5Kt/ulwfpEc87NK8iADwySU058oebY7gv+SdgehgTmbf6H2odqilcH5DeY8Acmhaww==}
+    dev: false
 
   /@tootallnate/once@2.0.0:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
