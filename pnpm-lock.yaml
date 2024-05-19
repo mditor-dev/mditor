@@ -47,8 +47,8 @@ devDependencies:
     specifier: ^12.2.3
     version: 12.2.3
   '@types/prettier':
-    specifier: ^2.7.1
-    version: 2.7.1
+    specifier: ^3.0.0
+    version: 3.0.0
   '@types/prismjs':
     specifier: ^1.26.1
     version: 1.26.1
@@ -81,7 +81,7 @@ devDependencies:
     version: 9.1.0(eslint@8.52.0)
   eslint-plugin-prettier:
     specifier: ^4.2.1
-    version: 4.2.1(eslint-config-prettier@9.1.0)(eslint@8.52.0)(prettier@2.7.1)
+    version: 4.2.1(eslint-config-prettier@9.1.0)(eslint@8.52.0)(prettier@3.2.4)
   eslint-plugin-vue:
     specifier: ^9.19.2
     version: 9.19.2(eslint@8.52.0)
@@ -101,8 +101,8 @@ devDependencies:
     specifier: ^2.0.23
     version: 2.0.23(typescript@5.4.5)(vue@3.4.21)
   prettier:
-    specifier: ^2.7.1
-    version: 2.7.1
+    specifier: ^3.2.4
+    version: 3.2.4
   prismjs:
     specifier: ^1.29.0
     version: 1.29.0
@@ -746,8 +746,11 @@ packages:
     dev: true
     optional: true
 
-  /@types/prettier@2.7.1:
-    resolution: {integrity: sha512-ri0UmynRRvZiiUJdiz38MmIblKK+oH30MztdBVR95dv/Ubw6neWSb8u1XpRb72L4qsZOhz+L+z9JD40SJmfWow==}
+  /@types/prettier@3.0.0:
+    resolution: {integrity: sha512-mFMBfMOz8QxhYVbuINtswBp9VL2b4Y0QqYHwqLz3YbgtfAcat2Dl6Y1o4e22S/OVE6Ebl9m7wWiMT2lSbAs1wA==}
+    deprecated: This is a stub types definition. prettier provides its own type definitions, so you do not need this installed.
+    dependencies:
+      prettier: 2.7.1
     dev: true
 
   /@types/prismjs@1.26.1:
@@ -2334,7 +2337,7 @@ packages:
       eslint: 8.52.0
     dev: true
 
-  /eslint-plugin-prettier@4.2.1(eslint-config-prettier@9.1.0)(eslint@8.52.0)(prettier@2.7.1):
+  /eslint-plugin-prettier@4.2.1(eslint-config-prettier@9.1.0)(eslint@8.52.0)(prettier@3.2.4):
     resolution: {integrity: sha512-f/0rXLXUt0oFYs8ra4w49wYZBG5GKZpAYsJSm6rnYL5uVDjd+zowwMwVZHnAjf4edNrKpCDYfXDgmRE/Ak7QyQ==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
@@ -2347,7 +2350,7 @@ packages:
     dependencies:
       eslint: 8.52.0
       eslint-config-prettier: 9.1.0(eslint@8.52.0)
-      prettier: 2.7.1
+      prettier: 3.2.4
       prettier-linter-helpers: 1.0.0
     dev: true
 
@@ -4008,6 +4011,12 @@ packages:
   /prettier@2.7.1:
     resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
     engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
+  /prettier@3.2.4:
+    resolution: {integrity: sha512-FWu1oLHKCrtpO1ypU6J0SbK2d9Ckwysq6bHj/uaCP26DxrPpppCLQRGVuqAxSTvhF00AcvDRyYrLNW7ocBhFFQ==}
+    engines: {node: '>=14'}
     hasBin: true
     dev: true
 
